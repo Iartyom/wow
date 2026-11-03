@@ -2,7 +2,7 @@
 
 A personal leveling guide for an **Undead Demonology Warlock** in *World of Warcraft: Forever*. It covers your racials, the class changes, a 1–60 quest-and-dungeon route, an interactive map, class quests, and a progress tracker. The **Grimoire Sync** addon fills the tracker in from the game.
 
-**Site:** https://iartyom.github.io/forsaken-grimoire/
+**Site:** https://iartyom.github.io/wow/
 
 ## Layout
 
