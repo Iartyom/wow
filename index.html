@@ -879,6 +879,13 @@ const REAL = {
     "Feralas":[420,488],"Thousand Needles":[535,492],"Silithus":[420,585],"Un'Goro Crater":[497,578],"Tanaris":[565,570],
     "Riverglades":[640,560]}}
 };
+// Label side per pin where neighbours are close on the real map (default: above the pin).
+const LABEL_DIR = {"Tirisfal Glades":"left","Eastern Plaguelands":"right","Silverpine Forest":"left","Hillsbrad Foothills":"left",
+  "The Hinterlands":"right","Arathi Highlands":"right","Westfall":"left","Elwynn Forest":"left","Duskwood":"left","Deadwind Pass":"bottom",
+  "Swamp of Sorrows":"right","Blasted Lands":"right","Redridge Mountains":"right","Burning Steppes":"left","Badlands":"right",
+  "Darkshore":"left","Felwood":"left","Winterspring":"right","Azshara":"right","Durotar":"right","Mulgore":"bottom","Desolace":"left",
+  "Shen'dralas":"left","Feralas":"left","Silithus":"left","Tanaris":"right","Dustwallow Marsh":"right","Riverglades":"bottom","Stonetalon Mountains":"left"};
+const LABEL_OFF = {top:[0,-6], bottom:[0,6], left:[-6,0], right:[6,0]};
 let realMode = false, leaf = null, leafGroup = null, leafMarkers = {}, curCont = null;
 const pxToLL = p => [668-p[1], p[0]];   // Leaflet CRS.Simple has y up; image px have y down
 function zoneStyle(name){
@@ -897,7 +904,7 @@ function showContinent(c){
     const z = ZONES[name];
     const m = L.circleMarker(pxToLL(p), zoneStyle(name)).addTo(leafGroup);
     m.bindTooltip(z.other ? name : `${name}<span class="lvt" style="opacity:.65;font-family:var(--f-mono);font-size:10px"> ${z.lv}</span>`,
-      {permanent:true, direction:"top", offset:[0,-6], className: z.other ? "lt-minor" : ""});
+      {permanent:true, direction:LABEL_DIR[name]||"top", offset:LABEL_OFF[LABEL_DIR[name]||"top"], className: z.other ? "lt-minor" : ""});
     m.on("click", ()=>selectZone(name));
     leafMarkers[name] = m;
   }
