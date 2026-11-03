@@ -2,20 +2,21 @@
 <title>Forsaken Grimoire</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Grenze+Gotisch:wght@500;700&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
 /* Layout: a single long grimoire scroll; sticky tracker bar on top, sections as "pages", the route is the spine. */
 /* Deliberately single dark theme (Forsaken/fel look), so colors are set once on :root with color-scheme dark. */
 :root{
   color-scheme: dark;
-  --bg:#0d0a10;          /* crypt black, violet bias */
-  --surface:#16111b;     /* page panel */
-  --surface-2:#1f1824;   /* raised */
-  --line:#33283b;
-  --fg:#e4dccb;          /* bone parchment */
-  --muted:#9a8fa3;
-  --fel:#8fdc5a;         /* fel green: the single loud accent */
-  --fel-dim:#4f7c33;
+  --bg:#0a0c09;          /* Undercity crypt stone, green-black */
+  --surface:#131510;     /* page panel */
+  --surface-2:#1b1d16;   /* raised */
+  --line:#2f3024;
+  --fg:#e2dccb;          /* bone */
+  --muted:#9a9888;
+  --fel:#9bd44a;         /* plague green: the single loud accent */
+  --fel-dim:#58772c;
+  --rust:#7a4a2e;        /* iron frames, rivets */
   --void:#a57fe0;        /* shadow / demonology purple */
   --gold:#d6b25e;        /* new-content badge */
   --warn:#e0884f;
@@ -138,6 +139,50 @@ code.path{font-family:var(--f-mono);font-size:.8rem;background:var(--surface-2);
 .leaflet-control-attribution{background:rgba(13,10,16,.8);color:var(--muted);font-size:10px;padding:0 5px}
 .leaflet-control-attribution a{color:var(--muted)}
 .leaflet-tooltip{position:absolute;padding:0 3px;background:transparent;border:0;color:var(--fg);white-space:nowrap;pointer-events:none;font-size:12.5px;font-weight:500;text-shadow:0 0 3px #000,0 0 3px #000,0 0 6px #000}
+/* ---- Forsaken skin: blackletter display, plague fog, rusted iron frames, slime drips ----
+   The skull is an original simple glyph (not the Forsaken crest). Fog respects reduced motion. */
+:root{--f-black:"Grenze Gotisch","IM Fell English SC",Georgia,serif;
+  --skull:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23d8cfb8' d='M12 2C7 2 3.5 5.6 3.5 10.2c0 2.7 1.2 4.6 3 5.8V19c0 .6.4 1 1 1h1.2v-2h1.6v2h3.4v-2h1.6v2H17c.6 0 1-.4 1-1v-3c1.8-1.2 3-3.1 3-5.8C21 5.6 17.5 2 12 2zm-3.5 11a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm7 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4zM12 15.5l-1.2-2h2.4z'/%3E%3C/svg%3E")}
+body{background-color:var(--bg);background-image:
+  radial-gradient(ellipse 70% 40% at 50% -5%, rgba(155,212,74,.14), transparent 70%),
+  radial-gradient(ellipse 120% 70% at 50% 115%, rgba(90,40,120,.2), transparent 60%),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .6 0 0 0 0 .7 0 0 0 0 .5 0 0 0 .08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-attachment:fixed}
+/* plague fog: fixed, behind content (z -1 sits above the canvas background, below in-flow content) */
+body::after{content:"";position:fixed;inset:-10%;z-index:-1;pointer-events:none;
+  background:radial-gradient(38% 26% at 18% 82%, rgba(155,212,74,.07), transparent 70%),
+             radial-gradient(32% 22% at 82% 58%, rgba(155,212,74,.055), transparent 70%),
+             radial-gradient(45% 30% at 55% 30%, rgba(120,90,160,.05), transparent 70%);
+  animation:fog 38s ease-in-out infinite alternate}
+@keyframes fog{to{transform:translate3d(-5%,3%,0) scale(1.08)}}
+h1,h2,.brand{font-family:var(--f-black);font-weight:700;letter-spacing:.005em}
+h2{font-size:clamp(1.9rem,4vw,2.6rem)}
+.hero h1{font-size:clamp(3rem,8.5vw,5.8rem);line-height:.95;text-shadow:0 2px 0 #000,0 0 26px rgba(155,212,74,.18)}
+.hero h1 em{text-shadow:0 0 22px rgba(155,212,74,.55),0 2px 0 #000}
+.brand{font-size:1.4rem;display:inline-flex;align-items:center;gap:.35em;text-shadow:0 0 12px rgba(155,212,74,.35)}
+.brand::before{content:"";width:1.05em;height:1.05em;background:var(--skull) center/contain no-repeat;filter:drop-shadow(0 0 4px rgba(155,212,74,.5))}
+.bar{border-bottom:1px solid #3a2a1c;box-shadow:0 8px 20px -10px rgba(0,0,0,.9)}
+header.hero{position:relative}
+/* slime dripping off the hero */
+header.hero::after{content:"";position:absolute;left:0;right:0;bottom:-20px;height:26px;pointer-events:none;background-size:260px 26px;background-repeat:repeat-x;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 260 26'%3E%3Cpath fill='%2368962c' fill-opacity='.5' d='M0 0h260v3c-9 0-11 2-13 9s-6 9-8 1-5-8-15-8-14 1-16 5-4 15-8 15-4-10-6-13-9-5-21-5-19 1-21 5-3 8-6 8-4-6-8-8-19-2-31-2-17 2-19 7-4 13-8 13-4-9-6-12-10-5-24-5-16 2-18 5-3 6-6 6-5-7-10-8H0z'/%3E%3C/svg%3E")}
+/* rusted iron frames with rivets */
+.card,.step,.zinfo,.facts,.gamecard,.tablebox,.mapbox{border-color:#3b3324;box-shadow:inset 0 0 0 1px rgba(0,0,0,.55),inset 0 0 34px rgba(0,0,0,.5)}
+.card,.zinfo{position:relative;background:linear-gradient(180deg,rgba(155,212,74,.04),transparent 45%),var(--surface)}
+.card::before,.card::after,.zinfo::before,.zinfo::after{content:"";position:absolute;top:7px;left:7px;width:7px;height:7px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#b0845f,#4a2c1b 72%);box-shadow:0 0 0 1px #000,0 1px 2px rgba(0,0,0,.8)}
+.card::after,.zinfo::after{left:auto;right:7px}
+.card .tag{color:#b78fe6}
+.btn,.filters button,.contabs button{border-color:var(--rust)}
+.btn:hover,.filters button:hover,.contabs button:hover{border-color:var(--fel)}
+/* bone-and-rust divider with a skull at the center */
+section{border-top:0;position:relative}
+section::before{content:"";position:absolute;top:0;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));height:1px;
+  background:linear-gradient(90deg,transparent,var(--rust) 18%,var(--fel-dim) 47%,transparent 47.5%,transparent 52.5%,var(--fel-dim) 53%,var(--rust) 82%,transparent)}
+section::after{content:"";position:absolute;top:-11px;left:50%;width:22px;height:22px;transform:translateX(-50%);background:var(--skull) center/contain no-repeat;opacity:.75}
+.step.now{border-color:var(--fel);box-shadow:0 0 0 1px var(--fel-dim),0 0 28px -6px rgba(155,212,74,.45),inset 0 0 34px rgba(0,0,0,.5)}
+::selection{background:rgba(155,212,74,.35);color:#fff}
+@media (prefers-reduced-motion: reduce){body::after{animation:none}}
 .leaflet-tooltip.lt-minor{color:#d9cfbf;font-size:10.5px;font-style:italic;font-weight:400}
 .maplayout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:var(--s4)}
 @media (max-width:860px){.maplayout{grid-template-columns:1fr}}
