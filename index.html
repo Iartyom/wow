@@ -258,7 +258,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
   </div>
   <div class="wrap">
     <nav class="toc" aria-label="Sections">
-      <a href="#game">From the game</a><a href="#kit">Your kit</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#rotation">Demonology</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#sources">Sources</a>
+      <a href="#game">From the game</a><a href="#kit">Your kit</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#rotation">Demonology</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
     </nav>
   </div>
 </div>
@@ -290,13 +290,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
       <div class="drop" id="drop">…or drop the file here</div>
     </div>
     <p class="muted" id="importMsg" aria-live="polite" style="margin-top:var(--s2)"></p>
-    <ol class="steps">
-      <li>Once Forever is installed, run <code class="path">.\tools\install-addon.ps1</code> from the GitHub repo (link in Sources). Then enable <b>Grimoire Sync</b> on the character select screen. If it's flagged as out of date, tick "Load out of date AddOns".</li>
-      <li>Play. Type <kbd>/grimoire</kbd> in chat to check what it recorded.</li>
-      <li>Log out or <kbd>/reload</kbd>. WoW writes the file to <code class="path">World of Warcraft\&lt;forever folder&gt;\WTF\Account\&lt;ACCOUNT&gt;\SavedVariables\GrimoireSync.lua</code></li>
-      <li><b>GitHub site:</b> keep <code class="path">.\tools\sync.ps1 -Watch</code> running and the site updates itself after each logout. <b>Claude page:</b> load the file with the button above.</li>
-    </ol>
-    <p class="muted" style="margin-top:var(--s3)">Blizzard's official character API doesn't support Forever yet. Once it does, this page can read your character directly from your Battle.net account.</p>
+    <p class="muted" style="margin-top:var(--s2)">First time? See <a href="#setup">Addon setup</a> at the bottom.</p>
   </div>
 </section>
 
@@ -343,7 +337,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
 
 <section id="map">
   <div class="wrap">
-    <header><p class="eyebrow">Chapter II</p><h2>Route map</h2><p>The GitHub site shows the real Forever world maps, which you can zoom and drag. Claude pages can't load outside images, so here you get a drawn version. Green means your level, purple means on your route, gold marks new Forever zones, and the dashed line is your path. Tap a zone for details and its zone map.</p></header>
+    <header><p class="eyebrow">Chapter II</p><h2>Route map</h2><p>The GitHub site shows the real Forever world maps, which you can zoom and drag. Claude pages can't load outside images, so here you get a drawn version. Green means your level, purple means on your route, gold marks new Forever zones, and the dashed line is your path. Tap a zone for details and its zone map. On the GitHub site you can also just zoom: zoom in on a zone to open its map, and zoom out to go back.</p></header>
     <div class="maplayout">
       <div>
         <div class="contabs" id="contabs" role="group" aria-label="Continent" hidden>
@@ -485,6 +479,20 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
     <header><p class="eyebrow">Chapter VIII</p><h2>Your notes</h2><p>Use this for anything: guild name, gear you are after, a rare you saw. It saves on its own.</p></header>
     <label for="notesBox" class="eyebrow" style="display:block;margin-bottom:var(--s2)">Notes</label>
     <textarea id="notesBox" placeholder="e.g. Saw Gorefang in Silverpine at the lake. Need Tailoring 150 before Barrens."></textarea>
+  </div>
+</section>
+
+<!-- One-time install steps live at the end: irrelevant once the addon is running. -->
+<section id="setup">
+  <div class="wrap">
+    <header><p class="eyebrow">Appendix</p><h2>Addon setup</h2><p>One-time steps to connect the game to this page. Skip this once the From the game card shows your character.</p></header>
+    <ol class="steps">
+      <li>Once Forever is installed, run <code class="path">.\tools\install-addon.ps1</code> from the GitHub repo (link in Sources). Then enable <b>Grimoire Sync</b> on the character select screen. If it's flagged as out of date, tick "Load out of date AddOns".</li>
+      <li>Play. Type <kbd>/grimoire</kbd> in chat to check what it recorded.</li>
+      <li>Log out or <kbd>/reload</kbd>. WoW writes the file to <code class="path">World of Warcraft\&lt;forever folder&gt;\WTF\Account\&lt;ACCOUNT&gt;\SavedVariables\GrimoireSync.lua</code></li>
+      <li><b>GitHub site:</b> keep <code class="path">.\tools\sync.ps1 -Watch</code> running and the site updates itself after each logout. <b>Claude page:</b> load the file with the button in <a href="#game">From the game</a>.</li>
+    </ol>
+    <p class="muted" style="margin-top:var(--s3)">Blizzard's official character API doesn't support Forever yet. Once it does, this page can read your character directly from your Battle.net account.</p>
   </div>
 </section>
 
@@ -954,6 +962,36 @@ const CITY = {"Tirisfal Glades":["Undercity","Undercity_c60"], "Durotar":["Orgri
 const CONT_NAME = {EK:"Eastern Kingdoms", K:"Kalimdor"};
 const wikiImg = f => "https://warcraft.wiki.gg/images/WorldMap-" + f + ".jpg";
 let zoneView = null;   // null = continent view; else the zone name whose map (or city map) is open
+let zoneIsCity = false, zoneFitZoom = 0;
+// Semantic zoom: zooming in past ZOOM_OPEN on the continent opens the zone nearest the view
+// centre (wheel zoom centres on the cursor, so that's the zone under the mouse); zooming out
+// past the zone map's fit level steps back (city → zone → continent).
+const ZOOM_OPEN = 2, ZOOM_BACK = .6, OPEN_RADIUS = 70;   // radius in image px
+let autoBusy = false, autoT = 0;
+// Programmatic moves fire zoomend too; ignore them until things settle.
+function releaseAuto(){ clearTimeout(autoT); autoT = setTimeout(()=>{ autoBusy = false; }, 450); }
+function onSemanticZoom(){
+  if(autoBusy || !realMode) return;
+  const z = leaf.getZoom();
+  if(!zoneView){
+    if(z < ZOOM_OPEN) return;
+    const c = leaf.getCenter(), cx = c.lng, cy = 668 - c.lat;
+    let best = null, bd = Infinity;
+    for(const [n,p] of Object.entries(REAL[curCont].z)){
+      if(!ZMAP[n]) continue;
+      const d = Math.hypot(p[0]-cx, p[1]-cy); if(d < bd){ bd = d; best = n; }
+    }
+    if(best && bd < OPEN_RADIUS){ selZone = best; renderZoneInfo(); openZoneMap(best); }
+  } else if(z < zoneFitZoom - ZOOM_BACK){
+    const name = zoneView;
+    if(zoneIsCity){ openZoneMap(name); return; }
+    const cont = ZONES[name].cont, p = REAL[cont].z[name];
+    autoBusy = true; showContinent(cont);
+    // Land just below the open threshold, centred on the zone we left, so it doesn't bounce back in.
+    if(p) leaf.setView(pxToLL(p), ZOOM_OPEN - .75, {animate:false});
+    releaseAuto();
+  }
+}
 let realMode = false, leaf = null, leafGroup = null, leafMarkers = {}, curCont = null;
 const pxToLL = p => [668-p[1], p[0]];   // Leaflet CRS.Simple has y up; image px have y down
 function zoneStyle(name){
@@ -966,6 +1004,7 @@ function zoneStyle(name){
 function openZoneMap(name, isCity){
   if(!realMode || !ZMAP[name]) return;
   const file = isCity ? CITY[name][1] : ZMAP[name], title = isCity ? CITY[name][0] : name;
+  autoBusy = true;   // our own flyTo/fitBounds must not re-trigger the zoom handler
   const swap = ()=>{
     if(leafGroup) leafGroup.remove();
     leafGroup = L.layerGroup(); leafMarkers = {};
@@ -973,9 +1012,10 @@ function openZoneMap(name, isCity){
       .on("error", ()=>{ $("#zbody").insertAdjacentHTML("beforeend", '<p style="color:var(--warn)">This map didn\'t load. Try the Warcraft Wiki link.</p>'); })
       .addTo(leafGroup);
     leafGroup.addTo(leaf);
-    zoneView = name;
+    zoneView = name; zoneIsCity = !!isCity;
     $("#mapinner").classList.add("zoneview"); leaf.invalidateSize();   // zone maps are landscape
-    leaf.fitBounds([[0,0],[668,1002]]);
+    leaf.fitBounds([[0,0],[668,1002]], {animate:false});
+    zoneFitZoom = leaf.getZoom(); releaseAuto();
     renderZoneNav(name, title, isCity); renderZoneInfo();   // drop the "Open map" button now we're in it
   };
   const p = !zoneView && REAL[curCont].z[name];
@@ -1022,12 +1062,14 @@ function initRealMap(){
   probe.onload = ()=>{
     realMode = true;
     $("#mapinner").classList.add("real"); $("#leaf").hidden = false; $("#contabs").hidden = false;
-    leaf = L.map("leaf", {crs:L.CRS.Simple, minZoom:-1, maxZoom:2.5, zoomSnap:.25, maxBounds:[[-120,-120],[788,1122]]});
+    // minZoom well below fit so you can zoom out of a zone map even on a phone-width screen.
+    leaf = L.map("leaf", {crs:L.CRS.Simple, minZoom:-2.5, maxZoom:2.5, zoomSnap:.25, maxBounds:[[-120,-120],[788,1122]]});
     leaf.fitBounds([[0,0],[668,1002]]);
     leaf.attributionControl.setPrefix(false);
     // Level ranges and Alliance/off-route labels only once zoomed in (zoom 1 = 2x image scale).
     const zcls = ()=>$("#leaf").classList.toggle("z-low", leaf.getZoom() < 1);
     leaf.on("zoomend", zcls); zcls();
+    leaf.on("zoomend", onSemanticZoom);
     showContinent(ZONES[selZone].cont); renderMap();
   };
   probe.src = REAL.EK.img;
