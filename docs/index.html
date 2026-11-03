@@ -891,7 +891,8 @@ let realMode = false, leaf = null, leafGroup = null, leafMarkers = {}, curCont =
 const pxToLL = p => [668-p[1], p[0]];   // Leaflet CRS.Simple has y up; image px have y down
 function zoneStyle(name){
   const z = ZONES[name], r = lvRange(name), lv = state.level, inr = r && lv>=r[0] && lv<=r[1];
-  const fill = inr ? "#8fdc5a" : z.isNew ? "#d6b25e" : routeOrder().includes(name) ? "#a57fe0" : "#9a8fa3";
+  // Alliance/off-route zones stay grey even at a matching level: they're not where you should be.
+  const fill = z.other ? "#9a8fa3" : inr ? "#8fdc5a" : z.isNew ? "#d6b25e" : routeOrder().includes(name) ? "#a57fe0" : "#9a8fa3";
   return {radius: name===selZone ? 9 : inr ? 7 : 5, color: name===selZone ? "#e4dccb" : "#0d0a10", weight:2, fillColor:fill, fillOpacity: z.other ? .55 : .95};
 }
 function showContinent(c){
@@ -899,8 +900,13 @@ function showContinent(c){
   if(leafGroup) leafGroup.remove();
   leafGroup = L.layerGroup(); leafMarkers = {};
   L.imageOverlay(R.img, [[0,0],[668,1002]], {attribution:'Map © Blizzard Entertainment via <a href="https://warcraft.wiki.gg/wiki/Forever_map_comparison" target="_blank" rel="noopener">Warcraft Wiki</a>'}).addTo(leafGroup);
-  const pts = routeOrder().filter(z=>R.z[z]).map(z=>pxToLL(R.z[z]));
-  if(pts.length>1) L.polyline(pts, {color:"#8fdc5a", weight:2.5, opacity:.85, dashArray:"7 6", interactive:false}).addTo(leafGroup);
+  // Only join consecutive route stops that are both on this continent; a hop to the other
+  // continent breaks the line, otherwise it draws long fake diagonals across the map.
+  const ord = routeOrder();
+  for(let i=1;i<ord.length;i++){
+    const a = R.z[ord[i-1]], b = R.z[ord[i]];
+    if(a && b) L.polyline([pxToLL(a),pxToLL(b)], {color:"#8fdc5a", weight:2.5, opacity:.85, dashArray:"7 6", interactive:false}).addTo(leafGroup);
+  }
   for(const [name,p] of Object.entries(R.z)){
     const z = ZONES[name];
     const m = L.circleMarker(pxToLL(p), zoneStyle(name)).addTo(leafGroup);
