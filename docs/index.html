@@ -109,6 +109,9 @@ code.path{font-family:var(--f-mono);font-size:.8rem;background:var(--surface-2);
 /* Continents are portrait-shaped on landscape images: a tall box + fitting to land gives labels room. */
 .mapinner.real{min-width:0;aspect-ratio:4/5;max-height:88vh;width:100%}
 #leaf.z-low .lvt,#leaf.z-low .lt-minor{display:none}
+.mapinner.real.zoneview{aspect-ratio:1002/668}
+#zonenav{align-items:center;flex-wrap:wrap}
+#zonenav .zn-title{font-family:var(--f-display);font-size:1.15rem;color:var(--gold);padding-inline:var(--s2)}
 .mapinner.real #mapcv,.mapinner.real #mapsvg{display:none}
 #leaf{position:absolute;inset:0}
 .contabs{display:flex;gap:var(--s2);margin-bottom:var(--s2)}
@@ -303,6 +306,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
           <button type="button" data-c="EK" aria-pressed="true">Eastern Kingdoms</button>
           <button type="button" data-c="K" aria-pressed="false">Kalimdor</button>
         </div>
+        <div class="contabs" id="zonenav" role="group" aria-label="Zone map navigation" hidden></div>
         <div class="mapbox"><div class="mapinner" id="mapinner">
           <div id="leaf" hidden></div>
           <canvas id="mapcv" width="1000" height="560" aria-hidden="true"></canvas>
@@ -887,6 +891,25 @@ const LABEL_DIR = {"Tirisfal Glades":"left","Eastern Plaguelands":"right","Silve
   "Darkshore":"left","Felwood":"left","Winterspring":"right","Azshara":"right","Durotar":"right","Mulgore":"bottom","Desolace":"left",
   "Shen'dralas":"left","Feralas":"left","Silithus":"left","Tanaris":"right","Dustwallow Marsh":"right","Riverglades":"bottom","Stonetalon Mountains":"left"};
 const LABEL_OFF = {top:[0,-6], bottom:[0,6], left:[-6,0], right:[6,0]};
+// Forever zone maps on Warcraft Wiki (all 1002×668, verified via the wiki API on Nov 3, 2026).
+const ZMAP = {
+  "Alterac Mountains":"Alterac_c60","Arathi Highlands":"Arathi_c60","Badlands":"Badlands_c60","Blasted Lands":"BlastedLands_c60",
+  "Burning Steppes":"BurningSteppes_c60","Deadwind Pass":"DeadwindPass_c60","Duskwood":"Duskwood_c60","Dun Morogh":"DunMorogh_c60",
+  "Eastern Plaguelands":"EasternPlaguelands_c60","Elwynn Forest":"Elwynn_c60","Hillsbrad Foothills":"Hillsbrad_c60",
+  "The Hinterlands":"Hinterlands_c60","Loch Modan":"LochModan_c60","Redridge Mountains":"Redridge_c60","Searing Gorge":"SearingGorge_c60",
+  "Silverpine Forest":"Silverpine_c60","Stranglethorn Vale":"Stranglethorn_c60","Swamp of Sorrows":"SwampofSorrows_c60",
+  "Tirisfal Glades":"Tirisfal_c60","Western Plaguelands":"WesternPlaguelands_c60","Westfall":"Westfall_c60","Wetlands":"Wetlands_c60",
+  "Ashenvale":"Ashenvale_c60","Azshara":"Azshara_c60","The Barrens":"Barrens_c60","Darkshore":"Darkshore_c60","Desolace":"Desolace_c60",
+  "Durotar":"Durotar_c60","Dustwallow Marsh":"DustwallowMarsh_c60","Felwood":"Felwood_c60","Feralas":"Feralas_c60","Moonglade":"Moonglade_c60",
+  "Mulgore":"Mulgore_c60","Silithus":"Silithus_c60","Stonetalon Mountains":"StonetalonMountain_c60","Tanaris":"Tanaris_c60",
+  "Teldrassil":"Teldrassil_c60","Thousand Needles":"ThousandNeedles_c60","Un'Goro Crater":"UnGoroCrater_c60","Winterspring":"Winterspring_c60",
+  "Mount Hyjal":"Hyjal-forever","Riverglades":"Riverlands","Shen'dralas":"Shendralas"
+};
+// Horde cities reachable from a zone's map view.
+const CITY = {"Tirisfal Glades":["Undercity","Undercity_c60"], "Durotar":["Orgrimmar","Orgrimmar_c60"], "Mulgore":["Thunder Bluff","ThunderBluff_c60"]};
+const CONT_NAME = {EK:"Eastern Kingdoms", K:"Kalimdor"};
+const wikiImg = f => "https://warcraft.wiki.gg/images/WorldMap-" + f + ".jpg";
+let zoneView = null;   // null = continent view; else the zone name whose map (or city map) is open
 let realMode = false, leaf = null, leafGroup = null, leafMarkers = {}, curCont = null;
 const pxToLL = p => [668-p[1], p[0]];   // Leaflet CRS.Simple has y up; image px have y down
 function zoneStyle(name){
@@ -895,7 +918,36 @@ function zoneStyle(name){
   const fill = z.other ? "#9a8fa3" : inr ? "#8fdc5a" : z.isNew ? "#d6b25e" : routeOrder().includes(name) ? "#a57fe0" : "#9a8fa3";
   return {radius: name===selZone ? 9 : inr ? 7 : 5, color: name===selZone ? "#e4dccb" : "#0d0a10", weight:2, fillColor:fill, fillOpacity: z.other ? .55 : .95};
 }
+// Fly toward the zone's pin, then swap the layer for that zone's own map (or a city map).
+function openZoneMap(name, isCity){
+  if(!realMode || !ZMAP[name]) return;
+  const file = isCity ? CITY[name][1] : ZMAP[name], title = isCity ? CITY[name][0] : name;
+  const swap = ()=>{
+    if(leafGroup) leafGroup.remove();
+    leafGroup = L.layerGroup(); leafMarkers = {};
+    L.imageOverlay(wikiImg(file), [[0,0],[668,1002]], {attribution:'Map © Blizzard Entertainment via <a href="https://warcraft.wiki.gg/wiki/Forever_map_comparison" target="_blank" rel="noopener">Warcraft Wiki</a>'})
+      .on("error", ()=>{ $("#zbody").insertAdjacentHTML("beforeend", '<p style="color:var(--warn)">This map didn\'t load. Try the Warcraft Wiki link.</p>'); })
+      .addTo(leafGroup);
+    leafGroup.addTo(leaf);
+    zoneView = name;
+    $("#mapinner").classList.add("zoneview"); leaf.invalidateSize();   // zone maps are landscape
+    leaf.fitBounds([[0,0],[668,1002]]);
+    renderZoneNav(name, title, isCity);
+  };
+  const p = !zoneView && REAL[curCont].z[name];
+  if(p){ leaf.once("moveend", swap); leaf.flyTo(pxToLL(p), 2, {duration:.6}); } else swap();
+}
+function renderZoneNav(name, title, isCity){
+  const nav = $("#zonenav");
+  nav.innerHTML = `<button type="button" data-back>← ${CONT_NAME[ZONES[name].cont]}</button>`
+    + (isCity ? `<button type="button" data-openzone="${esc(name)}">← ${esc(name)}</button>` : "")
+    + `<span class="zn-title">${esc(title)}</span>`
+    + (!isCity && CITY[name] ? `<button type="button" data-city="${esc(name)}">${esc(CITY[name][0])} map</button>` : "");
+  nav.hidden = false; $("#contabs").hidden = true;
+}
 function showContinent(c){
+  zoneView = null; $("#zonenav").hidden = true; if(realMode) $("#contabs").hidden = false;
+  if($("#mapinner").classList.contains("zoneview")){ $("#mapinner").classList.remove("zoneview"); leaf.invalidateSize(); }
   curCont = c; const R = REAL[c];
   if(leafGroup) leafGroup.remove();
   leafGroup = L.layerGroup(); leafMarkers = {};
@@ -912,7 +964,7 @@ function showContinent(c){
     const m = L.circleMarker(pxToLL(p), zoneStyle(name)).addTo(leafGroup);
     m.bindTooltip(z.other ? name : `${name}<span class="lvt" style="opacity:.65;font-family:var(--f-mono);font-size:10px"> ${z.lv}</span>`,
       {permanent:true, direction:LABEL_DIR[name]||"top", offset:LABEL_OFF[LABEL_DIR[name]||"top"], className: z.other ? "lt-minor" : ""});
-    m.on("click", ()=>selectZone(name));
+    m.on("click", ()=>{ selZone = name; renderZoneInfo(); openZoneMap(name); });
     leafMarkers[name] = m;
   }
   leafGroup.addTo(leaf);
@@ -937,17 +989,29 @@ function initRealMap(){
   probe.src = REAL.EK.img;
 }
 document.querySelectorAll("#contabs button").forEach(b=>b.addEventListener("click",()=>showContinent(b.dataset.c)));
+// Delegated: zone-nav buttons and the "Open zone map" button in the info panel are re-rendered often.
+document.addEventListener("click", e=>{
+  const t = e.target.closest && e.target.closest("[data-back],[data-city],[data-openzone]"); if(!t) return;
+  if(t.hasAttribute("data-back")){ showContinent(curCont); renderZoneInfo(); }
+  else if(t.dataset.city) openZoneMap(t.dataset.city, true);
+  else if(t.dataset.openzone){ selZone = t.dataset.openzone; renderZoneInfo(); openZoneMap(t.dataset.openzone); }
+});
 
 function renderZoneInfo(){
   const z = ZONES[selZone];
   $("#zname").innerHTML = esc(selZone) + (z.isNew?' <span class="badge new">new</span>':"");
   const steps = ROUTE.filter(r=>r.zones.includes(selZone)).map(r=>`${r.lo}–${r.hi}`);
   const wiki = "https://warcraft.wiki.gg/wiki/" + encodeURIComponent(selZone.replace(/ /g,"_"));
+  const duns = DUNGEONS.filter(d=>d[3]===selZone || (selZone==="Durotar" && d[3]==="Orgrimmar"));
+  const openBtn = realMode && ZMAP[selZone] && zoneView!==selZone ? `<p><button type="button" class="btn" data-openzone="${esc(selZone)}">Open the ${esc(selZone)} map</button></p>` : "";
   $("#zbody").innerHTML = `<p class="mono" style="color:var(--fg)">Levels ${esc(z.lv)}</p><p>${esc(z.desc)}</p>
     ${steps.length?`<p>On your route in brackets ${steps.join(", ")}.</p>`:""}
-    <p><a href="${wiki}" target="_blank" rel="noopener">Open the zone map on Warcraft Wiki ↗</a></p>`;
+    ${duns.length?`<p>Dungeons: ${duns.map(d=>`${esc(d[2])} <span class="mono">(${d[0]??"?"}–${d[1]})</span>`).join(", ")}</p>`:""}
+    ${openBtn}
+    <p><a href="${wiki}" target="_blank" rel="noopener">Zone page on Warcraft Wiki ↗</a></p>`;
 }
 function renderMap(){
+  if(realMode && zoneView){ renderZoneInfo(); return; }   // inside a zone map: keep it, just refresh the panel
   if(realMode){
     const c = ZONES[selZone].cont;
     if(c !== curCont) showContinent(c);
