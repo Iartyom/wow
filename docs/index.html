@@ -987,9 +987,8 @@ function onSemanticZoom(){
     const name = zoneView;
     if(zoneIsCity){ openZoneMap(name); return; }
     const cont = ZONES[name].cont, p = REAL[cont].z[name];
-    autoBusy = true; showContinent(cont);
     // Land just below the open threshold, centred on the zone we left, so it doesn't bounce back in.
-    if(p) leaf.setView(pxToLL(p), ZOOM_OPEN - .75, {animate:false});
+    autoBusy = true; showContinent(cont, p ? pxToLL(p) : null);
     releaseAuto();
   }
 }
@@ -1030,7 +1029,8 @@ function renderZoneNav(name, title, isCity){
     + (!isCity && CITY[name] ? `<button type="button" data-city="${esc(name)}">${esc(CITY[name][0])} map</button>` : "");
   nav.hidden = false; $("#contabs").hidden = true;
 }
-function showContinent(c){
+// `at` (optional LatLng): centre there at just-below-open zoom instead of fitting the whole continent.
+function showContinent(c, at){
   zoneView = null; $("#zonenav").hidden = true; if(realMode) $("#contabs").hidden = false;
   if($("#mapinner").classList.contains("zoneview")){ $("#mapinner").classList.remove("zoneview"); leaf.invalidateSize(); }
   curCont = c; const R = REAL[c];
@@ -1053,7 +1053,8 @@ function showContinent(c){
     leafMarkers[name] = m;
   }
   leafGroup.addTo(leaf);
-  leaf.fitBounds([pxToLL([R.land[0][0], R.land[1][1]]), pxToLL([R.land[1][0], R.land[0][1]])]);
+  if(at) leaf.setView(at, ZOOM_OPEN - .75, {animate:false});
+  else leaf.fitBounds([pxToLL([R.land[0][0], R.land[1][1]]), pxToLL([R.land[1][0], R.land[0][1]])]);
   document.querySelectorAll("#contabs button").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.c===c)));
 }
 // Probe the image first: on claude.ai the CSP blocks it, so the drawn canvas map stays.
