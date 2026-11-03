@@ -931,7 +931,7 @@ function openZoneMap(name, isCity){
     zoneView = name;
     $("#mapinner").classList.add("zoneview"); leaf.invalidateSize();   // zone maps are landscape
     leaf.fitBounds([[0,0],[668,1002]]);
-    renderZoneNav(name, title, isCity);
+    renderZoneNav(name, title, isCity); renderZoneInfo();   // drop the "Open map" button now we're in it
   };
   const p = !zoneView && REAL[curCont].z[name];
   if(p){ leaf.once("moveend", swap); leaf.flyTo(pxToLL(p), 2, {duration:.6}); } else swap();
