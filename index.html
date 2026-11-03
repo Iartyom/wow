@@ -1,0 +1,1034 @@
+<title>Forsaken Grimoire</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a single long grimoire scroll; sticky tracker bar on top, sections as "pages", the route is the spine. */
+/* Deliberately single dark theme (Forsaken/fel look), so colors are set once on :root with color-scheme dark. */
+:root{
+  color-scheme: dark;
+  --bg:#0d0a10;          /* crypt black, violet bias */
+  --surface:#16111b;     /* page panel */
+  --surface-2:#1f1824;   /* raised */
+  --line:#33283b;
+  --fg:#e4dccb;          /* bone parchment */
+  --muted:#9a8fa3;
+  --fel:#8fdc5a;         /* fel green: the single loud accent */
+  --fel-dim:#4f7c33;
+  --void:#a57fe0;        /* shadow / demonology purple */
+  --gold:#d6b25e;        /* new-content badge */
+  --warn:#e0884f;
+  /* map-only tones (read by the canvas painter via getComputedStyle) */
+  --sea:#0f1320; --sea-2:#18203a; --land:#2b2530; --land-other:#201b25; --coast:#7a6a80;
+  --f-display:"IM Fell English SC", "Palatino Linotype", Georgia, serif;
+  --f-body:"Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", Consolas, monospace;
+  --s1:.25rem; --s2:.5rem; --s3:.75rem; --s4:1rem; --s5:1.5rem; --s6:2.5rem;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:110px}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.55;
+  background-image:radial-gradient(ellipse 80% 40% at 50% -10%, rgba(143,220,90,.08), transparent 70%);}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+a{color:var(--fel)}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,.btn:focus-within{outline:2px solid var(--fel);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;letter-spacing:.01em;margin:0}
+h2{font-size:clamp(1.6rem,3.5vw,2.2rem);color:var(--fg)}
+h3{font-size:1.2rem;color:var(--gold)}
+p{margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+
+/* ---- sticky tracker bar ---- */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5);padding-block:var(--s2)}
+.brand{font-family:var(--f-display);font-size:1.15rem;color:var(--fel);white-space:nowrap}
+.lvl{display:flex;align-items:center;gap:var(--s2);flex:1 1 260px;min-width:0}
+.lvl input[type=range]{flex:1;min-width:0;accent-color:var(--fel)}
+.lvl output{font-family:var(--f-mono);font-size:1.1rem;color:var(--fel);min-width:2.4ch;text-align:right}
+.prog{display:flex;align-items:center;gap:var(--s2);font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.meter{width:90px;height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--fel);width:0}
+.sync{font-family:var(--f-mono);font-size:.72rem;padding:2px 8px;border:1px solid var(--line);border-radius:99px;color:var(--muted)}
+.sync.ok{color:var(--fel);border-color:var(--fel-dim)}
+.sync.warn{color:var(--warn);border-color:var(--warn)}
+nav.toc{display:flex;gap:var(--s4);overflow-x:auto;padding-block:var(--s1) var(--s2);font-size:.85rem;scrollbar-width:none}
+nav.toc a{color:var(--muted);text-decoration:none;white-space:nowrap}
+nav.toc a:hover{color:var(--fel)}
+
+/* ---- hero ---- */
+header.hero{padding-block:var(--s6) var(--s5)}
+.hero h1{font-size:clamp(2.4rem,7vw,4.6rem);line-height:1;color:var(--fg)}
+.hero h1 em{font-style:normal;color:var(--fel)}
+.hero .lede{max-width:62ch;margin-top:var(--s4);color:var(--muted);font-size:1.08rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-top:var(--s5)}
+.facts div{background:var(--surface);padding:var(--s3) var(--s4);min-width:0}
+.facts b{display:block;font-family:var(--f-mono);font-size:1.15rem;color:var(--fg);font-weight:600}
+.facts span{font-size:.8rem;color:var(--muted)}
+#countdown b{color:var(--fel)}
+.notice{margin-top:var(--s4);border-left:3px solid var(--warn);padding:var(--s2) var(--s4);background:var(--surface);font-size:.92rem;max-width:80ch}
+
+section{padding-block:var(--s6) var(--s4);border-top:1px solid var(--line)}
+section > .wrap > header{display:flex;flex-direction:column;gap:var(--s1);margin-bottom:var(--s5)}
+section > .wrap > header p{max-width:68ch;color:var(--muted)}
+
+.grid{display:grid;gap:var(--s4);grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);padding:var(--s4);display:flex;flex-direction:column;gap:var(--s2);min-width:0}
+.card .tag{font-family:var(--f-mono);font-size:.7rem;color:var(--void);letter-spacing:.08em;text-transform:uppercase}
+ul.plain{margin:0;padding-left:1.1rem;display:flex;flex-direction:column;gap:var(--s1)}
+ul.plain li::marker{color:var(--fel-dim)}
+.badge{display:inline-block;font-family:var(--f-mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;padding:1px 6px;border-radius:3px;vertical-align:middle}
+.badge.new{background:rgba(214,178,94,.15);color:var(--gold);border:1px solid rgba(214,178,94,.4)}
+.badge.unv{background:rgba(224,136,79,.12);color:var(--warn);border:1px solid rgba(224,136,79,.35)}
+
+/* ---- from the game ---- */
+.gamecard{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.gamecard > div{background:var(--surface);padding:var(--s3) var(--s4);min-width:0}
+.gamecard b{display:block;font-family:var(--f-mono);font-size:1.1rem;font-weight:600;overflow-wrap:anywhere}
+.gamecard span{font-size:.8rem;color:var(--muted)}
+.gamecard .empty{grid-column:1/-1}
+.xpbar{height:4px;background:var(--surface-2);margin-top:6px}.xpbar i{display:block;height:100%;background:var(--void)}
+.importrow{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3);margin-top:var(--s4)}
+.btn{display:inline-flex;align-items:center;gap:var(--s2);font:inherit;font-weight:500;background:var(--surface-2);color:var(--fg);border:1px solid var(--fel-dim);padding:6px 14px;cursor:pointer}
+.btn:hover{border-color:var(--fel);color:var(--fel)}
+.drop{border:1px dashed var(--line);padding:var(--s3) var(--s4);color:var(--muted);font-size:.9rem;flex:1 1 260px}
+.drop.over{border-color:var(--fel);color:var(--fel)}
+code.path{font-family:var(--f-mono);font-size:.8rem;background:var(--surface-2);padding:2px 6px;overflow-wrap:anywhere}
+.steps{margin:var(--s4) 0 0;padding-left:1.4rem;display:flex;flex-direction:column;gap:var(--s2);max-width:80ch}
+.steps li::marker{font-family:var(--f-mono);color:var(--fel)}
+
+/* ---- map ---- */
+.mapbox{background:var(--sea);border:1px solid var(--line);overflow-x:auto}
+.mapinner{position:relative;min-width:680px;aspect-ratio:1000/560}
+#mapcv,#mapsvg{position:absolute;inset:0;width:100%;height:100%;display:block}
+/* Real-map mode (GitHub Pages): Leaflet over the Warcraft Wiki continent images; drawn map hidden. */
+.mapinner.real{min-width:0;aspect-ratio:1002/668}
+.mapinner.real #mapcv,.mapinner.real #mapsvg{display:none}
+#leaf{position:absolute;inset:0}
+.contabs{display:flex;gap:var(--s2);margin-bottom:var(--s2)}
+.contabs button{font:inherit;font-size:.85rem;background:var(--surface);color:var(--fg);border:1px solid var(--line);padding:4px 14px;cursor:pointer}
+.contabs button[aria-pressed=true]{border-color:var(--fel);color:var(--fel)}
+/* minimal Leaflet 1.9.4 CSS (inlined: the artifact CSP blocks external stylesheets) */
+.leaflet-pane,.leaflet-tile,.leaflet-marker-icon,.leaflet-tile-container,.leaflet-pane>svg,.leaflet-pane>canvas,.leaflet-zoom-box,.leaflet-image-layer,.leaflet-layer{position:absolute;left:0;top:0}
+.leaflet-container{overflow:hidden;-webkit-tap-highlight-color:transparent;background:var(--sea);font-family:var(--f-body);touch-action:none}
+.leaflet-container img.leaflet-image-layer{max-width:none!important;max-height:none!important}
+.leaflet-pane{z-index:400}.leaflet-overlay-pane{z-index:400}.leaflet-marker-pane{z-index:600}.leaflet-tooltip-pane{z-index:650}.leaflet-popup-pane{z-index:700}
+.leaflet-map-pane canvas{z-index:100}.leaflet-map-pane svg{z-index:200}
+.leaflet-pane>svg{pointer-events:none}.leaflet-pane>svg path.leaflet-interactive{pointer-events:auto;cursor:pointer}
+.leaflet-zoom-animated{transform-origin:0 0}
+.leaflet-zoom-anim .leaflet-zoom-animated{transition:transform .25s cubic-bezier(0,0,.25,1)}
+.leaflet-zoom-anim .leaflet-zoom-hide{visibility:hidden}
+.leaflet-grab{cursor:grab}.leaflet-dragging .leaflet-grab{cursor:move}
+.leaflet-top,.leaflet-bottom{position:absolute;z-index:1000;pointer-events:none}.leaflet-top{top:0}.leaflet-bottom{bottom:0}.leaflet-left{left:0}.leaflet-right{right:0}
+.leaflet-control{position:relative;z-index:800;pointer-events:auto;float:left;clear:both}
+.leaflet-right .leaflet-control{float:right}
+.leaflet-top .leaflet-control{margin-top:10px}.leaflet-left .leaflet-control{margin-left:10px}
+.leaflet-bar{border:1px solid var(--line)}
+.leaflet-bar a{display:block;width:30px;height:30px;text-align:center;text-decoration:none;background:var(--surface);color:var(--fg);font:600 18px/30px var(--f-mono)}
+.leaflet-bar a+a{border-top:1px solid var(--line)}
+.leaflet-control-attribution{background:rgba(13,10,16,.8);color:var(--muted);font-size:10px;padding:0 5px}
+.leaflet-control-attribution a{color:var(--muted)}
+.leaflet-tooltip{position:absolute;padding:0 3px;background:transparent;border:0;color:var(--fg);white-space:nowrap;pointer-events:none;font-size:12.5px;font-weight:500;text-shadow:0 0 3px #000,0 0 3px #000,0 0 6px #000}
+.leaflet-tooltip.lt-minor{color:#d9cfbf;font-size:10.5px;font-style:italic;font-weight:400}
+.maplayout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:var(--s4)}
+@media (max-width:860px){.maplayout{grid-template-columns:1fr}}
+.zinfo{background:var(--surface);border:1px solid var(--line);padding:var(--s4);display:flex;flex-direction:column;gap:var(--s2);align-self:start}
+.legend{display:flex;flex-wrap:wrap;gap:var(--s3);font-size:.8rem;color:var(--muted);margin-top:var(--s2)}
+.legend i{display:inline-block;width:12px;height:12px;margin-right:4px;vertical-align:-1px;border:1px solid var(--coast)}
+svg .zone{cursor:pointer}
+svg .zone circle{fill:var(--fg)}
+svg .zone:focus{outline:none}
+svg .zone:focus circle,svg .zone.sel circle{fill:var(--fel)}
+svg text{font-family:var(--f-body);fill:var(--fg);font-size:12.5px;paint-order:stroke;stroke:var(--sea);stroke-width:3.5px;stroke-linejoin:round;pointer-events:none}
+svg text.minor{fill:var(--muted);font-size:10.5px;font-style:italic}
+svg text.cont{font-family:var(--f-display);fill:var(--coast);font-size:26px;letter-spacing:.2em;stroke-width:0}
+svg text.lv{font-family:var(--f-mono);font-size:9.5px;fill:var(--muted)}
+svg text.sea{font-family:var(--f-display);fill:var(--sea-2);font-size:18px;letter-spacing:.3em;stroke-width:0;font-style:italic}
+
+/* ---- route ---- */
+ol.route{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s3)}
+.step{display:grid;grid-template-columns:88px minmax(0,1fr);gap:var(--s4);background:var(--surface);border:1px solid var(--line);padding:var(--s4)}
+.step.now{border-color:var(--fel);box-shadow:0 0 0 1px var(--fel-dim),0 0 24px -8px rgba(143,220,90,.35)}
+.step.done{opacity:.6}
+.step .range{font-family:var(--f-mono);font-size:1.25rem;color:var(--fel);line-height:1.1}
+.step .range small{display:block;font-size:.7rem;color:var(--muted);margin-top:4px}
+.step .body{display:flex;flex-direction:column;gap:var(--s2);min-width:0}
+.step .zones{font-family:var(--f-display);font-size:1.15rem}
+.step dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:2px var(--s3);margin:0;font-size:.93rem}
+.step dt{color:var(--muted);font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;padding-top:3px}
+.step dd{margin:0}
+@media (max-width:520px){.step{grid-template-columns:1fr}.step dl{grid-template-columns:1fr}.step dt{padding-top:6px}}
+
+/* ---- checkboxes ---- */
+label.chk{display:flex;gap:var(--s2);align-items:flex-start;cursor:pointer;font-size:.93rem}
+label.chk input{accent-color:var(--fel);margin-top:4px;flex:none;width:16px;height:16px}
+label.chk.on span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--fel-dim)}
+
+/* ---- tables ---- */
+.tablebox{overflow-x:auto;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.92rem}
+th,td{text-align:left;padding:var(--s2) var(--s3);border-bottom:1px solid var(--line)}
+th{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:400;background:var(--surface-2)}
+td.mono{white-space:nowrap}
+tr.inrange td{background:rgba(143,220,90,.07)}
+tr.inrange td:first-child{box-shadow:inset 3px 0 0 var(--fel)}
+.filters{display:flex;flex-wrap:wrap;gap:var(--s2);margin-bottom:var(--s3)}
+.filters button{font:inherit;font-size:.85rem;background:var(--surface);color:var(--fg);border:1px solid var(--line);padding:4px 12px;border-radius:99px;cursor:pointer}
+.filters button[aria-pressed=true]{border-color:var(--fel);color:var(--fel)}
+
+/* ---- rotation / talents ---- */
+ol.rot{margin:0;padding-left:1.4rem;display:flex;flex-direction:column;gap:var(--s2)}
+ol.rot li::marker{font-family:var(--f-mono);color:var(--fel)}
+kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border:1px solid var(--line);border-bottom-width:2px;padding:0 5px;border-radius:3px;color:var(--fg)}
+.talents{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s2) var(--s4);font-size:.93rem}
+.talents dt{font-family:var(--f-mono);color:var(--void);font-size:.8rem;padding-top:2px;white-space:nowrap}
+.talents dd{margin:0}
+
+textarea{width:100%;min-height:140px;background:var(--surface);color:var(--fg);border:1px solid var(--line);padding:var(--s3);font:inherit;resize:vertical}
+footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1px solid var(--line)}
+.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--s2)}
+.links a{display:block;background:var(--surface);border:1px solid var(--line);padding:var(--s3);text-decoration:none;color:var(--fg)}
+.links a span{display:block;font-size:.8rem;color:var(--muted)}
+.links a:hover{border-color:var(--fel)}
+</style>
+
+<div class="bar">
+  <div class="wrap">
+    <span class="brand">Forsaken Grimoire</span>
+    <div class="lvl">
+      <label for="level" class="eyebrow">Level</label>
+      <input type="range" id="level" min="1" max="60" value="1">
+      <output id="levelOut" for="level">1</output>
+    </div>
+    <div class="prog"><span id="progTxt">0/0</span><span class="meter"><i id="progBar"></i></span></div>
+    <span class="sync" id="sync">connecting…</span>
+  </div>
+  <div class="wrap">
+    <nav class="toc" aria-label="Sections">
+      <a href="#game">From the game</a><a href="#kit">Your kit</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#rotation">Demonology</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#sources">Sources</a>
+    </nav>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">World of Warcraft: Forever · Undead Warlock · Demonology · Normal realm · 1 → 60</p>
+    <h1>Rise, <em>Forsaken.</em><br>Your demons answer to you.</h1>
+    <p class="lede">A personal field guide for one Undead Demonology Warlock: racials, demons, a drawn route map, a quest-and-dungeon route through every bracket, and a tracker that the GrimoireSync addon fills in from the game.</p>
+    <div class="facts">
+      <div id="countdown"><b>—</b><span>Global launch · Nov 4, 3:00 pm PST</span></div>
+      <div><b>60</b><span>Level cap, permanent</span></div>
+      <div><b>Demonology</b><span>Your leveling spec</span></div>
+      <div><b>Lv 40 · 10g</b><span>Dual spec at class trainer</span></div>
+      <div><b>Dec 9</b><span>Barrow Deeps, Hyjal, Onyxia open</span></div>
+    </div>
+    <p class="notice"><b>Read this first.</b> Forever is brand new, and every guide out there today comes from the beta, which ended Oct 23. Forever adds more than 1,000 quests, so the zone order below is built from the Classic Horde route plus the new dungeons. Items marked <span class="badge unv">verify</span> are details from Classic that Forever may have changed.</p>
+  </div>
+</header>
+
+<section id="game">
+  <div class="wrap">
+    <header><p class="eyebrow">Live from Azeroth</p><h2>From the game</h2>
+      <p>The GrimoireSync addon records your level, zone, gold, demons and professions every time you log out or type <kbd>/reload</kbd>. Importing that file updates your level and ticks the matching class quests and profession goals below.</p></header>
+    <div class="gamecard" id="gameCard"></div>
+    <div class="importrow">
+      <label class="btn" for="svFile">Load GrimoireSync.lua</label>
+      <input type="file" id="svFile" accept=".lua,text/plain" hidden>
+      <div class="drop" id="drop">…or drop the file here</div>
+    </div>
+    <p class="muted" id="importMsg" aria-live="polite" style="margin-top:var(--s2)"></p>
+    <ol class="steps">
+      <li>Once Forever is installed, run <code class="path">.\tools\install-addon.ps1</code> from the GitHub repo (link in Sources). Then enable <b>Grimoire Sync</b> on the character select screen. If it's flagged as out of date, tick "Load out of date AddOns".</li>
+      <li>Play. Type <kbd>/grimoire</kbd> in chat to check what it recorded.</li>
+      <li>Log out or <kbd>/reload</kbd>. WoW writes the file to <code class="path">World of Warcraft\&lt;forever folder&gt;\WTF\Account\&lt;ACCOUNT&gt;\SavedVariables\GrimoireSync.lua</code></li>
+      <li><b>GitHub site:</b> keep <code class="path">.\tools\sync.ps1 -Watch</code> running and the site updates itself after each logout. <b>Claude page:</b> load the file with the button above.</li>
+    </ol>
+    <p class="muted" style="margin-top:var(--s3)">Blizzard's official character API doesn't support Forever yet. Once it does, this page can read your character directly from your Battle.net account.</p>
+  </div>
+</section>
+
+<section id="kit">
+  <div class="wrap">
+    <header><p class="eyebrow">Chapter I</p><h2>Your kit</h2><p>What makes an Undead Warlock in Forever different from the one you may remember.</p></header>
+    <div class="grid">
+      <article class="card">
+        <span class="tag">Undead racials</span>
+        <h3>Will of the Forsaken</h3>
+        <p>Breaks Charm, Fear and Sleep (2 min cooldown). In Forever it leaves <b>no 5-second immunity window</b>, so you can be feared again right away. Hold it for the second fear in a pull, not the first.</p>
+        <h3>Touch of the Grave</h3>
+        <p>Passive. 30% chance on hit to drain up to 5% of your max health (15 s internal cooldown).</p>
+        <h3>Cannibalize</h3>
+        <p>Restores 7% health and mana every 2 s for 10 s from a Humanoid or Undead corpse within 5 yards. Use it after every pull of humanoids to skip eating.</p>
+        <p class="muted">Underwater Breathing: breath lasts 300% longer.</p>
+      </article>
+      <article class="card">
+        <span class="tag">Warlock changes in Forever</span>
+        <ul class="plain">
+          <li><b>Demons scale with your stats.</b> This is the best change for Demonology: gear upgrades for you also upgrade your demon.</li>
+          <li><b>Felguard and Metamorphosis are not in the game.</b> Demonology's capstone is <b>Demonic Pact</b>.</li>
+          <li><b>DoTs and drains can crit.</b></li>
+          <li><b>Life Tap scales with Spirit</b>, not spell damage.</li>
+          <li><b>Banes:</b> Agony and Doom are Banes. You can keep <b>one Bane and one Curse</b> on the same target.</li>
+          <li><b>Curse of the Elements</b> now raises damage taken from every magic school.</li>
+          <li><b>Firestone and Spellstone</b> are weapon imbues that stack with weapon oils.</li>
+          <li><b>Soul Shards:</b> Drain Soul ticks can grant a shard before the target dies. A Drain Soul killing blow always grants one.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <span class="tag">Which demon, when</span>
+        <ul class="plain">
+          <li><b>Imp</b> (1–10): ranged fire damage and the Blood Pact stamina buff.</li>
+          <li><b>Voidwalker</b> (10+): your main questing demon. Demonology talents make it a real tank.</li>
+          <li><b>Succubus</b> (20+): kills single mobs faster when you can take a few hits. Seduction is crowd control in dungeons.</li>
+          <li><b>Felhunter</b> (30+): Devour Magic and Spell Lock against casters.</li>
+          <li><b>Demonic Pact</b> (capstone): sacrifice one demon for its buff, then summon another and keep both.</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="map">
+  <div class="wrap">
+    <header><p class="eyebrow">Chapter II</p><h2>Route map</h2><p>The GitHub site shows the real Forever world maps, which you can zoom and drag. Claude pages can't load outside images, so here you get a drawn version. Green means your level, purple means on your route, gold marks new Forever zones, and the dashed line is your path. Tap a zone for details and its zone map.</p></header>
+    <div class="maplayout">
+      <div>
+        <div class="contabs" id="contabs" role="group" aria-label="Continent" hidden>
+          <button type="button" data-c="EK" aria-pressed="true">Eastern Kingdoms</button>
+          <button type="button" data-c="K" aria-pressed="false">Kalimdor</button>
+        </div>
+        <div class="mapbox"><div class="mapinner" id="mapinner">
+          <div id="leaf" hidden></div>
+          <canvas id="mapcv" width="1000" height="560" aria-hidden="true"></canvas>
+          <svg id="mapsvg" viewBox="0 0 1000 560" role="img" aria-label="Map of Kalimdor and the Eastern Kingdoms with the Horde leveling route"></svg>
+        </div></div>
+        <div class="legend">
+          <span><i style="background:#4d6b36"></i>At your level</span>
+          <span><i style="background:#4a3a62"></i>On your route</span>
+          <span><i style="background:#5e5034"></i>New in Forever</span>
+          <span><i style="background:var(--land-other)"></i>Off-route or Alliance</span>
+        </div>
+      </div>
+      <aside class="zinfo" id="zinfo" aria-live="polite">
+        <span class="eyebrow">Selected zone</span>
+        <h3 id="zname">Tirisfal Glades</h3>
+        <div id="zbody" class="muted"></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section id="route">
+  <div class="wrap">
+    <header><p class="eyebrow">Chapter III</p><h2>Leveling route, 1 → 60</h2><p>A mix of questing and dungeons. The bracket that matches your level is highlighted. Tick a bracket when you finish it.</p></header>
+    <ol class="route" id="routeList"></ol>
+  </div>
+</section>
+
+<section id="rotation">
+  <div class="wrap">
+    <header><p class="eyebrow">Chapter IV</p><h2>Playing Demonology</h2><p>Your demon tanks and you deal damage from behind it. Demonology is slower to kill than Affliction, but you will rarely die. At 40, dual spec lets you add a second build without giving this one up.</p></header>
+    <div class="grid">
+      <article class="card">
+        <span class="tag">Talent priority</span>
+        <dl class="talents">
+          <dt>10–20</dt><dd><b>Demonic Embrace</b> and <b>Improved Voidwalker</b>: more Stamina for you and a sturdier Voidwalker.</dd>
+          <dt>20–30</dt><dd><b>Fel Domination</b>: an instant demon summon when your demon dies, which saves pulls that go wrong. Then <b>Fel Stamina</b> and <b>Fel Intellect</b>.</dd>
+          <dt>30–40</dt><dd><b>Unholy Power</b> and <b>Master Summoner</b>, then <b>Master Demonologist</b> (bonus effect based on which demon is out).</dd>
+          <dt>40+</dt><dd><b>Soul Link</b>, if Forever's tree still has it (it shares damage with your demon). Then <b>Demonic Sacrifice</b>, then the <b>Demonic Pact</b> capstone.</dd>
+          <dt>Spare points</dt><dd><b>Improved Corruption</b> in Affliction, for faster kills.</dd>
+        </dl>
+        <p class="muted"><span class="badge unv">verify</span> These are the Classic talent names, and Forever rebalanced every tree. Check the Zockify talent calculator before spending points; the goal is the same either way: survival first, then demon damage.</p>
+      </article>
+      <article class="card">
+        <span class="tag">Solo pull</span>
+        <ol class="rot">
+          <li>Send the <b>Voidwalker</b> in. Wait for one Torment or a couple of hits so it has threat.</li>
+          <li>Cast <b>Corruption</b>, then <b>Bane of Agony</b>, then a <b>Curse</b>.</li>
+          <li><b>Shadow Bolt</b> or wand until the mob is low.</li>
+          <li>If the Voidwalker drops low, use <b>Health Funnel</b>. Don't let it die mid-pull.</li>
+          <li>Finish with <b>Drain Soul</b> for a guaranteed shard.</li>
+          <li>Between pulls: <b>Life Tap</b>, then <b>Cannibalize</b>.</li>
+        </ol>
+      </article>
+      <article class="card">
+        <span class="tag">Trouble &amp; dungeons</span>
+        <ul class="plain">
+          <li>On an extra mob: <b>Fear</b> it, or let the Voidwalker taunt it with Suffering.</li>
+          <li>If the demon dies, use <b>Fel Domination</b> plus an instant summon.</li>
+          <li><b>Sacrifice</b> the Voidwalker for a shield, then <b>Healthstone</b>.</li>
+          <li>Keep a <b>Soulstone</b> on yourself before risky pulls.</li>
+          <li>In dungeons, run the <b>Imp</b> (Blood Pact), or the <b>Succubus</b> if the tank needs crowd control. Apply <b>Curse of the Elements</b>, hand out Healthstones, and use <b>Ritual of Summoning</b> to bring players in.</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="dungeons">
+  <div class="wrap">
+    <header><p class="eyebrow">Chapter V</p><h2>Every dungeon, by level</h2><p>Rows in your level range are highlighted. Levels are the minimum and recommended ranges from beta data. <span class="badge new">new</span> marks a dungeon added in Forever.</p></header>
+    <div class="filters" role="group" aria-label="Filter dungeons">
+      <button type="button" data-f="all" aria-pressed="true">All</button>
+      <button type="button" data-f="new" aria-pressed="false">New only</button>
+      <button type="button" data-f="near" aria-pressed="false">Near my level</button>
+    </div>
+    <div class="tablebox"><table><thead><tr><th>Level</th><th>Dungeon</th><th>Zone</th><th>Horde notes</th></tr></thead><tbody id="dungeonBody"></tbody></table></div>
+    <p class="muted" style="margin-top:var(--s3)">Raids open Dec 9: <b>Barrow Deeps</b> (10-player, Mount Hyjal), <b>Hyjal Summit</b> (20-player) and <b>Onyxia's Lair</b> (40-player, Dustwallow).</p>
+  </div>
+</section>
+
+<section id="quests">
+  <div class="wrap">
+    <header><p class="eyebrow">Chapter VI</p><h2>Class quests &amp; milestones</h2><p>Your demons and mounts come from class quests. Ask your warlock trainer in Brill or the Undercity Magic Quarter when you reach each level. With the addon, finished demons tick themselves.</p></header>
+    <div class="grid" id="checkGroups"></div>
+  </div>
+</section>
+
+<section id="extras">
+  <div class="wrap">
+    <header><p class="eyebrow">Chapter VII</p><h2>Professions, gold &amp; addons</h2></header>
+    <div class="grid">
+      <article class="card">
+        <span class="tag">Professions</span>
+        <p><b>Tailoring and Enchanting</b> is the classic warlock pairing. Tailoring turns the cloth you loot into your own gear and bags. Enchanting turns the gear you don't need into enchanting materials, and early on it makes <b>wands</b>, which are a big upgrade at levels 10–20.</p>
+        <p class="muted">For more gold early, take <b>Herbalism and Skinning</b> or <b>Mining</b> to 40, then switch. Minor Healing Potions are now a First Aid recipe. Leveling crafting professions also earns Legacy Points.</p>
+      </article>
+      <article class="card">
+        <span class="tag">Gold plan</span>
+        <ul class="plain">
+          <li>Forever has no WoW Token and no paid boosts, so all gold comes from playing.</li>
+          <li><b>Savings targets:</b> 10g for dual spec at 40, plus training costs at every even level.</li>
+          <li>Sell cloth stacks and leather on the Auction House. Disenchant the green items you don't need.</li>
+          <li>Skip vendor food: Cannibalize and Life Tap cover most of your downtime.</li>
+          <li>Look into the new systems: Waylaid Crates, Merchant's Favor and the Azeroth Commerce Authority recipes.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <span class="tag">Addons</span>
+        <p>Forever supports addons, but Classic Era addons may need updating. On CurseForge or Wago, look for versions tagged for Forever.</p>
+        <ul class="plain">
+          <li><b>Grimoire Sync</b>: the addon that feeds this page.</li>
+          <li><b>Questie</b>: quest markers on the map. Wait for its Forever quest database.</li>
+          <li><b>Details!</b>: damage meter, plus Leatrix Plus and AtlasLoot.</li>
+          <li><b>A demon helper</b> such as Necrosis, to track shards and summon timers.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <span class="tag">Systems to use</span>
+        <ul class="plain">
+          <li><b>Camping:</b> unlocked by a quest in the starting zone around level 5. Tradeskills upgrade the rest buff from skill 20.</li>
+          <li><b>Legacy:</b> points are account-wide and spent per character. Unlocks at 15, 25, 40 and 55 points.</li>
+          <li><b>Hardcore</b> arrives in Winter 2026/27, if you want a second character later.</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="notes">
+  <div class="wrap">
+    <header><p class="eyebrow">Chapter VIII</p><h2>Your notes</h2><p>Use this for anything: guild name, gear you are after, a rare you saw. It saves on its own.</p></header>
+    <label for="notesBox" class="eyebrow" style="display:block;margin-bottom:var(--s2)">Notes</label>
+    <textarea id="notesBox" placeholder="e.g. Saw Gorefang in Silverpine at the lake. Need Tailoring 150 before Barrens."></textarea>
+  </div>
+</section>
+
+<section id="sources">
+  <div class="wrap">
+    <header><p class="eyebrow">Appendix</p><h2>Sources &amp; tools</h2><p>Check these after launch for corrected routes and talent builds.</p></header>
+    <div class="links">
+      <a href="https://github.com/Iartyom/forsaken-grimoire" target="_blank" rel="noopener">This guide on GitHub<span>Addon, sync script, public site</span></a>
+      <a href="https://news.blizzard.com/en-us/article/24315820/world-of-warcraft-forever-goes-live-globally-november-4" target="_blank" rel="noopener">Blizzard launch post<span>Official launch time and access</span></a>
+      <a href="https://warcraft.wiki.gg/wiki/World_of_Warcraft:_Forever" target="_blank" rel="noopener">Warcraft Wiki: Forever<span>Features, dungeons, raids, roadmap</span></a>
+      <a href="https://www.zockify.com/forever/warlock/" target="_blank" rel="noopener">Zockify: Warlock<span>Class changes, talents</span></a>
+      <a href="https://www.zockify.com/forever/" target="_blank" rel="noopener">Zockify: Forever hub<span>Talent calculator, gear planner, Legacy calculator</span></a>
+      <a href="https://www.zockify.com/forever/dungeons/" target="_blank" rel="noopener">Zockify: Dungeons<span>All dungeons with level ranges</span></a>
+      <a href="https://www.zockify.com/forever/zones/" target="_blank" rel="noopener">Zockify: New zones<span>Riverglades, Hyjal, Shen'dralas maps</span></a>
+      <a href="https://www.pcgamer.com/games/world-of-warcraft/forever-release-date-launch-times/" target="_blank" rel="noopener">PC Gamer: launch times<span>Your local start time</span></a>
+    </div>
+  </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<footer><div class="wrap">Built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+
+<script>
+/* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
+   State {level, checks:{id:true}, notes, game} lives in db at data/users/<uid>/progress (private per viewer)
+   on the Claude page; localStorage is the fallback (GitHub Pages, signed out, preview).
+   `game` is the last GrimoireSync addon snapshot, imported from its SavedVariables .lua file. */
+
+// ---------- content data ----------
+const ROUTE = [
+  {id:"r1", lo:1, hi:6, zones:["Tirisfal Glades"], hub:"Deathknell", dun:"—",
+   tip:"Start with the Imp and Shadow Bolt. Finish the starting-zone quest that unlocks Camping (around level 5)."},
+  {id:"r2", lo:6, hi:11, zones:["Tirisfal Glades"], hub:"Brill · Undercity", dun:"—",
+   tip:"Train in Brill. At 10, do the Voidwalker quest; the Voidwalker is now your main demon. Pick up Tailoring and Enchanting in the Undercity."},
+  {id:"r3", lo:11, hi:15, zones:["Silverpine Forest","Tirisfal Glades"], hub:"The Sepulcher", dun:"Ruins of Lordaeron (new, ~13–15)",
+   tip:"Ruins of Lordaeron is the new dungeon right under the Undercity. Gather its quests in Tirisfal before you go in."},
+  {id:"r4", lo:15, hi:20, zones:["The Barrens","Silverpine Forest"], hub:"Crossroads (zeppelin to Orgrimmar)", dun:"Wailing Caverns (~17) · Shadowfang Keep (~18) · Ragefire (optional)",
+   tip:"Take the zeppelin from Tirisfal to Durotar. The Barrens is the Horde's big questing zone. Go back to Silverpine for Shadowfang Keep."},
+  {id:"r5", lo:20, hi:25, zones:["Stonetalon Mountains","Ashenvale","Hillsbrad Foothills"], hub:"Sun Rock · Splintertree · Tarren Mill", dun:"Blackfathom Deeps (~22) · Razorfen Kraul (~24)",
+   tip:"Do the Succubus quest at 20. Learn Fel Domination as soon as you can."},
+  {id:"r6", lo:25, hi:30, zones:["Hillsbrad Foothills","Alterac Mountains","Thousand Needles"], hub:"Tarren Mill · Freewind Post", dun:"City of Dalaran (new, ~26–28) · SM Graveyard & Library",
+   tip:"Dalaran now sits in Alterac Mountains as a new dungeon. Scarlet Monastery is near the Undercity, a short trip home."},
+  {id:"r7", lo:30, hi:35, zones:["Arathi Highlands","Desolace","Stranglethorn Vale"], hub:"Hammerfall · Shadowprey · Grom'gol", dun:"SM Armory & Cathedral · Razorfen Downs (~34)",
+   tip:"Do the Felhunter quest at 30. Stranglethorn is contested, so expect Alliance players there even on a Normal realm."},
+  {id:"r8", lo:35, hi:40, zones:["Stranglethorn Vale","Dustwallow Marsh","Badlands"], hub:"Grom'gol · Brackenwall · Kargath", dun:"The Drowned City (new, ~35) · Uldaman (~35)",
+   tip:"The Drowned City is the new Stranglethorn dungeon. Save gold now for level 40."},
+  {id:"r9", lo:38, hi:45, zones:["Riverglades","Tanaris","Desolace"], hub:"Powderfuse Port · Gadgetzan", dun:"Krol'dok Stronghold (new, ~40) · Zul'Farrak · Maraudon",
+   tip:"Riverglades is a new zone with about 200 quests. Take the Steamwheedle ship from Tanaris to get there. At 40: get dual spec (10g) and do the Felsteed quest."},
+  {id:"r10", lo:45, hi:50, zones:["Feralas","The Hinterlands","Searing Gorge","Swamp of Sorrows"], hub:"Camp Mojache · Revantusk · Stonard", dun:"Alcaz Prison (new, ~48) · Sunken Temple · Blackrock Depths",
+   tip:"Blackrock Depths is long. Run it in parts with the same group."},
+  {id:"r11", lo:50, hi:55, zones:["Un'Goro Crater","Felwood","Burning Steppes","Azshara"], hub:"Marshal's Refuge · Bloodvenom Post", dun:"Lower Blackrock Spire · Blackmaw Hold (new, ~55) · Dire Maul",
+   tip:"Look for the Inferno questline around 50. Un'Goro quests reward good gear."},
+  {id:"r12", lo:55, hi:60, zones:["Winterspring","Western Plaguelands","Eastern Plaguelands","Silithus"], hub:"Everlook · Bulwark · Light's Hope", dun:"Stratholme · Scholomance · UBRS · Shaper's Terrace (new, ~58)",
+   tip:"At 60: the Dreadsteed epic mount questline (Dire Maul). Then gear up for raids opening Dec 9."}
+];
+
+// Map zones on a 1000×560 canvas. Positions are a stylized layout, not survey-accurate.
+// other:true = not on the Horde route (Alliance or skipped); they still own territory so the map reads complete.
+const ZONES = {
+  // Eastern Kingdoms
+  "Tirisfal Glades":{x:700,y:72,lv:"1–12",cont:"EK",desc:"Start in Deathknell, then Brill. The Undercity holds your trainers, the Auction House, the zeppelins and the new Ruins of Lordaeron dungeon."},
+  "Western Plaguelands":{x:790,y:82,lv:"51–58",cont:"EK",desc:"The Bulwark. Scholomance is here."},
+  "Eastern Plaguelands":{x:880,y:72,lv:"53–60",cont:"EK",desc:"Light's Hope Chapel. Stratholme is here."},
+  "Silverpine Forest":{x:648,y:140,lv:"10–20",cont:"EK",desc:"The Sepulcher is the hub. Shadowfang Keep is at the zone's southern edge."},
+  "Alterac Mountains":{x:760,y:140,lv:"28–35",cont:"EK",desc:"Now home to the City of Dalaran dungeon (new, ~26–28)."},
+  "Hillsbrad Foothills":{x:712,y:190,lv:"20–30",cont:"EK",desc:"Tarren Mill is the hub. Alliance players from Southshore are nearby."},
+  "The Hinterlands":{x:870,y:160,lv:"40–50",cont:"EK",desc:"Revantusk Village."},
+  "Arathi Highlands":{x:810,y:205,lv:"30–40",cont:"EK",desc:"Hammerfall is the Horde outpost."},
+  "Wetlands":{x:790,y:258,lv:"20–30",cont:"EK",other:true,desc:"Alliance-leaning. Home of the new Excavation Site dungeon."},
+  "Dun Morogh":{x:718,y:300,lv:"1–10",cont:"EK",other:true,desc:"Alliance starting zone (Ironforge, Hall of Thanes, Gnomeregan)."},
+  "Loch Modan":{x:828,y:290,lv:"10–20",cont:"EK",other:true,desc:"Alliance zone."},
+  "Badlands":{x:855,y:335,lv:"35–45",cont:"EK",desc:"Kargath. Uldaman is here."},
+  "Searing Gorge":{x:770,y:345,lv:"43–50",cont:"EK",desc:"Thorium Point."},
+  "Burning Steppes":{x:800,y:385,lv:"50–58",cont:"EK",desc:"Blackrock Mountain: BRD, LBRS and UBRS."},
+  "Elwynn Forest":{x:700,y:395,lv:"1–10",cont:"EK",other:true,desc:"Alliance starting zone (Stormwind)."},
+  "Redridge Mountains":{x:860,y:410,lv:"15–25",cont:"EK",other:true,desc:"Alliance zone."},
+  "Westfall":{x:632,y:440,lv:"10–20",cont:"EK",other:true,desc:"Alliance zone. The Deadmines are here."},
+  "Duskwood":{x:722,y:448,lv:"18–30",cont:"EK",other:true,desc:"Alliance-leaning zone."},
+  "Deadwind Pass":{x:800,y:452,lv:"55–60",cont:"EK",other:true,desc:"Karazhan's tower. No questing hub."},
+  "Swamp of Sorrows":{x:885,y:452,lv:"35–45",cont:"EK",desc:"Stonard. Sunken Temple is here."},
+  "Stranglethorn Vale":{x:690,y:512,lv:"30–45",cont:"EK",desc:"Grom'gol. The new Drowned City dungeon (~35). Contested zone."},
+  "Blasted Lands":{x:862,y:505,lv:"45–55",cont:"EK",other:true,desc:"The Dark Portal. Optional."},
+  // Kalimdor
+  "Teldrassil":{x:150,y:60,lv:"1–10",cont:"K",other:true,desc:"Night elf island."},
+  "Darkshore":{x:205,y:125,lv:"10–20",cont:"K",other:true,desc:"Alliance zone."},
+  "Moonglade":{x:300,y:58,lv:"—",cont:"K",other:true,desc:"Druid sanctuary."},
+  "Winterspring":{x:385,y:70,lv:"55–60",cont:"K",desc:"Everlook."},
+  "Felwood":{x:270,y:118,lv:"48–55",cont:"K",desc:"Bloodvenom Post."},
+  "Mount Hyjal":{x:345,y:130,lv:"60",cont:"K",isNew:true,desc:"A new Forever zone. Raids: Barrow Deeps (10-player) and Hyjal Summit (20-player), opening Dec 9."},
+  "Azshara":{x:445,y:145,lv:"45–55",cont:"K",desc:"The new Blackmaw Hold dungeon (~55)."},
+  "Ashenvale":{x:265,y:185,lv:"18–30",cont:"K",desc:"Splintertree Post. Blackfathom Deeps is here."},
+  "Stonetalon Mountains":{x:170,y:225,lv:"15–27",cont:"K",desc:"Sun Rock Retreat."},
+  "Durotar":{x:425,y:240,lv:"Hub",cont:"K",desc:"Orgrimmar. Take the zeppelin from Tirisfal. Ragefire Chasm is here."},
+  "The Barrens":{x:335,y:290,lv:"10–25",cont:"K",desc:"Crossroads. Wailing Caverns, Razorfen Kraul and Razorfen Downs."},
+  "Mulgore":{x:245,y:300,lv:"1–10",cont:"K",other:true,desc:"Tauren starting zone (Thunder Bluff)."},
+  "Desolace":{x:140,y:305,lv:"30–40",cont:"K",desc:"Shadowprey Village. Maraudon is here. Shen'dralas (new) lies to the south."},
+  "Shen'dralas":{x:135,y:365,lv:"TBA",cont:"K",isNew:true,desc:"A new area south of Desolace, linked to Eldre'Thalas and Dire Maul. Level range not announced yet."},
+  "Thousand Needles":{x:320,y:395,lv:"25–35",cont:"K",desc:"Freewind Post."},
+  "Dustwallow Marsh":{x:430,y:360,lv:"35–45",cont:"K",desc:"Brackenwall Village. The new Alcaz Prison (~48) and Onyxia's Lair."},
+  "Feralas":{x:195,y:425,lv:"40–50",cont:"K",desc:"Camp Mojache. Dire Maul is here."},
+  "Un'Goro Crater":{x:290,y:470,lv:"48–55",cont:"K",desc:"Marshal's Refuge. The new Shaper's Terrace (~58)."},
+  "Tanaris":{x:395,y:465,lv:"40–50",cont:"K",desc:"Gadgetzan. Zul'Farrak. The Steamwheedle ship to Riverglades leaves from here."},
+  "Silithus":{x:195,y:500,lv:"55–60",cont:"K",desc:"Cenarion Hold."},
+  "Riverglades":{x:482,y:505,lv:"35–45",cont:"K",isNew:true,desc:"A new Forever zone with about 200 quests and the Krol'dok Stronghold dungeon. Reached by Steamwheedle ship from Tanaris to Powderfuse Port. Its position on this map is approximate."}
+};
+
+// Dungeons: [min, rec, name, zone, isNew, note]. null min = not verified in beta data.
+const DUNGEONS = [
+  [10,13,"Ragefire Chasm","Orgrimmar",0,"In Orgrimmar. Optional."],
+  [null,13,"Hall of Thanes","Ironforge",1,"Inside Alliance territory. Check Horde access."],
+  [null,15,"Ruins of Lordaeron","Tirisfal Glades",1,"Your home dungeon. Run it."],
+  [10,16,"The Deadmines","Westfall",0,"Deep in Alliance land. Use the dungeon finder or skip it."],
+  [10,17,"Wailing Caverns","The Barrens",0,"Has many Barrens quests."],
+  [14,18,"Shadowfang Keep","Silverpine Forest",0,"Run it with the Sepulcher quests."],
+  [15,22,"Blackfathom Deeps","Ashenvale",0,""],
+  [15,23,"Stormwind Stockade","Stormwind City",0,"Alliance city. Skip it."],
+  [20,24,"Razorfen Kraul","The Barrens",0,""],
+  [19,25,"Gnomeregan","Dun Morogh",0,"Alliance side. Optional."],
+  [null,26,"Excavation Site: Wetlands","Wetlands",1,""],
+  [null,28,"City of Dalaran","Alterac Mountains",1,"Close to home, through Hillsbrad."],
+  [20,30,"SM: Graveyard","Tirisfal Glades",0,"Near the Undercity. Good first Scarlet wing."],
+  [20,30,"SM: Library","Tirisfal Glades",0,""],
+  [20,30,"SM: Armory","Tirisfal Glades",0,""],
+  [20,30,"SM: Cathedral","Tirisfal Glades",0,""],
+  [28,34,"Razorfen Downs","The Barrens",0,""],
+  [30,35,"Uldaman","Badlands",0,""],
+  [null,35,"The Drowned City","Stranglethorn Vale",1,""],
+  [null,40,"Krol'dok Stronghold","Riverglades",1,"Run it with the Riverglades quests."],
+  [35,42,"Zul'Farrak","Tanaris",0,""],
+  [35,42,"Maraudon","Desolace",0,""],
+  [35,45,"Sunken Temple","Swamp of Sorrows",0,""],
+  [null,48,"Alcaz Prison","Dustwallow Marsh",1,""],
+  [40,48,"Blackrock Depths","Burning Steppes",0,"Long. Run it in parts."],
+  [44,53,"Lower Blackrock Spire","Burning Steppes",0,""],
+  [52,54,"Dire Maul","Feralas",0,"The Dreadsteed questline happens here at 60."],
+  [null,55,"Blackmaw Hold","Azshara",1,""],
+  [45,55,"Stratholme","Eastern Plaguelands",0,""],
+  [45,57,"Scholomance","Western Plaguelands",0,""],
+  [48,58,"Upper Blackrock Spire","Burning Steppes",0,""],
+  [null,58,"Shaper's Terrace","Un'Goro Crater",1,""]
+];
+
+// Checklist groups. Ids are stable keys in saved state AND in the addon (DEMON_SPELLS); don't rename them.
+const CHECKS = [
+  {title:"Demons & mounts", tag:"Class quests", items:[
+    ["cq-imp","Imp (level 1, you start with it)"],
+    ["cq-vw","Voidwalker (level 10)"],
+    ["cq-succ","Succubus (level 20)"],
+    ["cq-fh","Felhunter (level 30)"],
+    ["cq-felsteed","Felsteed mount (level 40)"],
+    ["cq-inferno","Inferno (around level 50) ⚑ verify"],
+    ["cq-dread","Dreadsteed epic mount (level 60, Dire Maul)"]
+  ]},
+  {title:"Milestones", tag:"Progress", items:[
+    ["ms-camp","Unlock Camping (starting-zone quest)"],
+    ["ms-ruins","Clear Ruins of Lordaeron"],
+    ["ms-zep","Take the zeppelin to Kalimdor"],
+    ["ms-wand","Equip your first wand"],
+    ["ms-feldom","Learn Fel Domination"],
+    ["ms-dual","Buy dual spec (level 40, 10g)"],
+    ["ms-river","Reach Riverglades"],
+    ["ms-60","Reach level 60"]
+  ]},
+  {title:"Legacy & professions", tag:"Account", items:[
+    ["lg-15","Legacy: 15 points (toy)"],
+    ["lg-25","Legacy: 25 points (companion)"],
+    ["lg-40","Legacy: 40 points (tabard)"],
+    ["lg-55","Legacy: 55 points (mount)"],
+    ["pf-tail150","Tailoring 150"],
+    ["pf-tail300","Tailoring 300"],
+    ["pf-ench150","Enchanting 150"],
+    ["pf-ench300","Enchanting 300"]
+  ]}
+];
+const PROF_CHECKS = [["Tailoring",150,"pf-tail150"],["Tailoring",300,"pf-tail300"],["Enchanting",150,"pf-ench150"],["Enchanting",300,"pf-ench300"]];
+
+// ---------- state ----------
+let state = {level:1, checks:{}, notes:"", game:null};
+let docRef = null, saveTimer = null, saving = Promise.resolve(), mode = "connecting";
+const LS_KEY = "forsaken-grimoire-v1";
+const $ = s => document.querySelector(s);
+const esc = s => String(s??"").replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function allCheckIds(){ return [...ROUTE.map(r=>r.id), ...CHECKS.flatMap(g=>g.items.map(i=>i[0]))]; }
+
+// ---------- from the game ----------
+// Minimal parser for WoW SavedVariables (Lua table literals). Handles ["k"]=v, k=v, positional
+// entries, strings with escapes, numbers, booleans, nil and "-- [n]" comments WoW writes.
+function parseLuaSV(s){
+  let i = 0;
+  const ws = ()=>{ for(;;){ while(i<s.length && /\s/.test(s[i])) i++; if(s.startsWith("--",i)){ while(i<s.length && s[i]!=="\n") i++; } else break; } };
+  const ident = ()=>{ const m=/^[A-Za-z_]\w*/.exec(s.slice(i,i+200)); return m && m[0]; };
+  function str(){
+    const q = s[i++]; let out = "";
+    while(i<s.length && s[i]!==q){
+      if(s[i]==="\\"){ i++; const e=s[i++];
+        if(e==="n") out+="\n"; else if(e==="t") out+="\t";
+        else if(/\d/.test(e)){ let d=e; while(d.length<3 && /\d/.test(s[i])) d+=s[i++]; out+=String.fromCharCode(+d); }
+        else out+=e;
+      } else out+=s[i++];
+    }
+    i++; return out;
+  }
+  function val(){
+    ws(); const c = s[i];
+    if(c==="{") return table();
+    if(c==='"'||c==="'") return str();
+    if(s.startsWith("true",i)){ i+=4; return true; }
+    if(s.startsWith("false",i)){ i+=5; return false; }
+    if(s.startsWith("nil",i)){ i+=3; return null; }
+    const m = /^-?(?:0x[0-9a-fA-F]+|\d+\.?\d*(?:[eE][-+]?\d+)?|\.\d+)/.exec(s.slice(i,i+64));
+    if(!m) throw new Error("Unexpected text at position "+i);
+    i += m[0].length; return Number(m[0]);
+  }
+  function table(){
+    i++; const obj = {}, arr = []; let keyed = false;
+    for(;;){
+      ws(); if(i>=s.length) throw new Error("File ends inside a table");
+      if(s[i]==="}"){ i++; break; }
+      if(s[i]==="["){ i++; const k=val(); ws(); i++; ws(); i++; obj[k]=val(); keyed=true; }
+      else { const id=ident(), save=i;
+        if(id && !["true","false","nil"].includes(id)){ i+=id.length; ws(); if(s[i]==="="){ i++; obj[id]=val(); keyed=true; } else { i=save; arr.push(val()); } }
+        else arr.push(val());
+      }
+      ws(); if(s[i]===","||s[i]===";") i++;
+    }
+    if(!keyed) return arr;
+    arr.forEach((v,k)=>{ obj[k+1]=v; }); return obj;
+  }
+  const out = {};
+  for(;;){ ws(); const id=ident(); if(!id) break; i+=id.length; ws(); if(s[i]!=="=") break; i++; out[id]=val(); }
+  return out;
+}
+
+// Merge an addon snapshot into state. Returns a message for the import line.
+function applyGame(sv, source){
+  const s = sv && sv.GrimoireSyncDB && sv.GrimoireSyncDB.last;
+  if(!s || !s.level) throw new Error("This file has no character snapshot yet. Log in with the addon enabled, then log out or /reload.");
+  if(state.game && (s.time||0) <= (state.game.time||0)) return source==="auto" ? "" : "This snapshot is not newer than the one already loaded.";
+  const demons = (Array.isArray(s.demons) ? s.demons : Object.values(s.demons||{})).filter(x=>typeof x==="string");
+  const profs = (s.profs && typeof s.profs==="object" && !Array.isArray(s.profs)) ? s.profs : {};
+  state.game = {level:s.level, cls:s.class||"", race:s.race||"", zone:s.zone||"", subzone:s.subzone||"",
+    money:+s.money||0, quests:(s.quests??null), xp:+s.xp||0, xpMax:+s.xpMax||0, time:+s.time||0, demons, profs};
+  state.level = Math.max(1, Math.min(60, Math.round(s.level)));
+  demons.forEach(id=>{ state.checks[id]=true; });
+  PROF_CHECKS.forEach(([p,r,id])=>{ if((+profs[p]||0) >= r) state.checks[id]=true; });
+  if(s.level >= 60) state.checks["ms-60"] = true;
+  // Prefer the zone you actually logged out in, if the map knows it; else follow the level.
+  if(ZONES[s.zone]) selZone = s.zone; else followLevel();
+  renderAll(); scheduleSave();
+  return `Loaded level ${state.level} in ${s.zone||"an unknown zone"}. ${demons.length} demon quest(s) ticked.`;
+}
+
+function fmtMoney(c){ const g=Math.floor(c/10000), s=Math.floor(c%10000/100), cc=c%100; return `${g}g ${s}s ${cc}c`; }
+function ago(t){ if(!t) return "—"; const m=Math.round((Date.now()-t*1000)/60000);
+  return m<1?"just now":m<60?m+" min ago":m<1440?Math.round(m/60)+" h ago":Math.round(m/1440)+" days ago"; }
+function renderGame(){
+  const g = state.game, el = $("#gameCard");
+  if(!g){ el.innerHTML = `<div class="empty"><b>No game data yet</b><span>Install the addon (steps below), play a little, then log out or type /reload. The file it writes fills this in.</span></div>`; return; }
+  const pct = g.xpMax ? Math.round(100*g.xp/g.xpMax) : 0;
+  const profs = Object.entries(g.profs||{}).filter(([k])=>!/Language|Defense|Staves|Daggers|Swords|Wands|Unarmed|Cloth/.test(k)).map(([k,v])=>`${k} ${v}`).join(" · ") || "—";
+  el.innerHTML = `
+    <div><b>${esc(g.level)}</b><span>Level · ${pct}% to next</span><div class="xpbar"><i style="width:${pct}%"></i></div></div>
+    <div><b>${esc(g.zone||"—")}</b><span>${esc(g.subzone||"Zone")}</span></div>
+    <div><b>${fmtMoney(g.money)}</b><span>Gold on hand</span></div>
+    <div><b>${g.quests??"—"}</b><span>Quests completed</span></div>
+    <div><b>${g.demons.length}</b><span>Demons and mounts learned</span></div>
+    <div><b>${esc(ago(g.time))}</b><span>Last logout or reload</span></div>
+    <div style="grid-column:1/-1"><span>Skills: ${esc(profs)}</span></div>`;
+}
+function setImportMsg(t){ $("#importMsg").textContent = t||""; }
+async function importFile(file){
+  try{ setImportMsg(applyGame(parseLuaSV(await file.text()), "manual")); }
+  catch(e){ setImportMsg("Couldn't read that file: "+e.message); }
+}
+// GitHub Pages: tools/sync.ps1 pushes docs/sync/GrimoireSync.lua next to the page. On claude.ai this 404s; ignored.
+async function autoFetchSV(){
+  try{ const r = await fetch("sync/GrimoireSync.lua", {cache:"no-store"}); if(!r.ok) return;
+       const msg = applyGame(parseLuaSV(await r.text()), "auto"); if(msg) setImportMsg("Synced from your PC: "+msg); }catch(e){}
+}
+
+// ---------- rendering ----------
+function renderRoute(){
+  const L = state.level;
+  $("#routeList").innerHTML = ROUTE.map(r=>{
+    const now = L>=r.lo && L<=r.hi, done = !!state.checks[r.id];
+    return `<li class="step${now?" now":""}${done?" done":""}">
+      <div class="range">${r.lo}–${r.hi}<small>${now?"you are here":"levels"}</small></div>
+      <div class="body">
+        <div class="zones">${r.zones.map(z=>ZONES[z]&&ZONES[z].isNew?`${z} <span class="badge new">new</span>`:z).join(" · ")}</div>
+        <dl><dt>Hub</dt><dd>${r.hub}</dd><dt>Dungeons</dt><dd>${r.dun}</dd><dt>Tip</dt><dd>${r.tip}</dd></dl>
+        <label class="chk${done?" on":""}"><input type="checkbox" data-id="${r.id}" ${done?"checked":""}><span>Bracket finished</span></label>
+      </div></li>`;
+  }).join("");
+}
+
+let dFilter = "all";
+function renderDungeons(){
+  const L = state.level;
+  $("#dungeonBody").innerHTML = DUNGEONS.filter(d=>{
+    const min = d[0]??(d[1]-5);
+    if(dFilter==="new") return d[4];
+    if(dFilter==="near") return L >= min-2 && L <= d[1]+2;
+    return true;
+  }).map(d=>{
+    const min = d[0]??(d[1]-5);       // unverified minimum: assume ~5 below recommended, for highlighting only
+    const inr = L>=min && L<=d[1];
+    return `<tr class="${inr?"inrange":""}"><td class="mono">${d[0]??"?"}–${d[1]}</td>
+      <td>${d[2]} ${d[4]?'<span class="badge new">new</span>':""}</td><td>${d[3]}</td><td class="muted">${d[5]}</td></tr>`;
+  }).join("") || `<tr><td colspan="4" class="muted">No dungeons are within 2 levels of ${L}. Try "All".</td></tr>`;
+}
+
+function renderChecks(){
+  $("#checkGroups").innerHTML = CHECKS.map(g=>`<article class="card"><span class="tag">${g.tag}</span><h3>${g.title}</h3>
+    ${g.items.map(([id,t])=>{
+      const on = !!state.checks[id];
+      const txt = t.replace("⚑ verify",'<span class="badge unv">verify</span>');
+      return `<label class="chk${on?" on":""}"><input type="checkbox" data-id="${id}" ${on?"checked":""}><span>${txt}</span></label>`;
+    }).join("")}</article>`).join("");
+}
+
+// ---------- map ----------
+// Land = union of ellipses + low-frequency sine noise for coastlines. Each land pixel belongs to its
+// nearest zone (same continent), sampled through a small wobble so borders aren't straight Voronoi lines.
+// The nearest-zone index is computed once; repainting for a new level only recolors.
+const MW = 1000, MH = 560;
+const LAND = [ // [cx, cy, rx, ry]
+  [300,100,170,72],[285,300,200,170],[320,470,170,78],[482,505,52,40],[150,60,42,30],
+  [780,100,170,78],[800,255,108,105],[765,445,175,100]
+];
+const zoneNames = Object.keys(ZONES);
+let zoneIdx = null, coastMask = null;
+function landAt(x,y){
+  let v = -1;
+  for(const [cx,cy,rx,ry] of LAND){ const dx=(x-cx)/rx, dy=(y-cy)/ry; v = Math.max(v, 1-(dx*dx+dy*dy)); }
+  const n = Math.sin(x*.045+1.3)*Math.cos(y*.052)*.13 + Math.sin((x*.7+y)*.021)*.09 + Math.sin(x*.13+y*.11)*.045;
+  return v + n > 0;
+}
+function buildIndex(){
+  const pts = zoneNames.map(n=>ZONES[n]);
+  zoneIdx = new Int16Array(MW*MH);
+  for(let y=0;y<MH;y++) for(let x=0;x<MW;x++){
+    let k = -1;
+    if(landAt(x,y)){
+      const sx = x + Math.sin(y*.09)*6, sy = y + Math.cos(x*.08)*6, ek = x > 540;
+      let best = 1e12;
+      for(let i=0;i<pts.length;i++){ const p=pts[i]; if((p.cont==="EK")!==ek) continue;
+        const dx=sx-p.x, dy=sy-p.y, d=dx*dx+dy*dy; if(d<best){ best=d; k=i; } }
+    }
+    zoneIdx[y*MW+x] = k;
+  }
+  // shallows: water within ~6px of land
+  coastMask = new Uint8Array(MW*MH);
+  for(let y=0;y<MH;y++) for(let x=0;x<MW;x++){
+    if(zoneIdx[y*MW+x] >= 0) continue;
+    for(const [dx,dy] of [[6,0],[-6,0],[0,6],[0,-6],[4,4],[-4,-4],[4,-4],[-4,4]]){
+      const X=x+dx, Y=y+dy; if(X>=0&&Y>=0&&X<MW&&Y<MH && zoneIdx[Y*MW+X]>=0){ coastMask[y*MW+x]=1; break; }
+    }
+  }
+}
+const hex = h => { h=h.trim().replace("#",""); return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16)); };
+const mix = (a,b,t) => a.map((v,i)=>Math.round(v+(b[i]-v)*t));
+function lvRange(z){ const m=(ZONES[z].lv||"").match(/(\d+)(?:–(\d+))?/); return m?[+m[1],+(m[2]||m[1])]:null; }
+function routeOrder(){ const seen=[]; ROUTE.forEach(r=>r.zones.forEach(z=>{ if(!seen.includes(z)) seen.push(z); })); return seen; }
+let selZone = "Tirisfal Glades";
+
+function paintMap(){
+  if(!zoneIdx) buildIndex();
+  const cs = getComputedStyle(document.documentElement), C = n => hex(cs.getPropertyValue(n));
+  const sea=C("--sea"), sea2=C("--sea-2"), land=C("--land"), other=C("--land-other"), coast=C("--coast"),
+        fel=C("--fel"), voidc=C("--void"), gold=C("--gold");
+  const L = state.level, order = routeOrder();
+  const zc = zoneNames.map(n=>{
+    const z = ZONES[n], r = lvRange(n), inr = r && L>=r[0] && L<=r[1];
+    let c = z.other ? other : inr ? mix(land,fel,.42) : z.isNew ? mix(land,gold,.32) : order.includes(n) ? mix(land,voidc,.28) : land;
+    if(n===selZone) c = mix(c,[255,255,255],.12);
+    return c;
+  });
+  const ctx = $("#mapcv").getContext("2d"), img = ctx.createImageData(MW,MH), d = img.data;
+  for(let y=0;y<MH;y++) for(let x=0;x<MW;x++){
+    const i = y*MW+x, k = zoneIdx[i], o = i*4; let c;
+    if(k < 0){
+      // water: faint diagonal swell, lighter shallows near coasts
+      const w = (Math.sin(x*.06+y*.03)+Math.sin(y*.11-x*.02))*.5;
+      c = coastMask[i] ? mix(sea,sea2,.85) : mix(sea,sea2,.18+.12*w);
+    } else {
+      c = zc[k];
+      const r = x+1<MW ? zoneIdx[i+1] : k, b = y+1<MH ? zoneIdx[i+MW] : k;
+      if(r<0 || b<0 || (x>0&&zoneIdx[i-1]<0) || (y>0&&zoneIdx[i-MW]<0)) c = coast;            // coastline
+      else if(r!==k || b!==k) c = mix(c,[10,8,12],.55);                                         // zone border
+      else { const g=((x*7+y*13)%17)/17; c = mix(c,[0,0,0],g*.06); }                            // paper grain
+    }
+    d[o]=c[0]; d[o+1]=c[1]; d[o+2]=c[2]; d[o+3]=255;
+  }
+  ctx.putImageData(img,0,0);
+}
+
+function renderMapOverlay(){
+  const order = routeOrder().filter(z=>ZONES[z]);
+  // Split the route per continent; the hops between continents are drawn as zeppelin/ship arcs.
+  let paths = "", seg = [], hops = "";
+  order.forEach((z,i)=>{
+    const p = ZONES[z], prev = i ? ZONES[order[i-1]] : null;
+    if(prev && prev.cont!==p.cont){
+      paths += seg.length>1 ? `<path d="M${seg.join(" L")}" class="rt"/>` : "";
+      const mx=(prev.x+p.x)/2, my=Math.min(prev.y,p.y)-70;
+      hops += `<path d="M${prev.x} ${prev.y} Q${mx} ${my} ${p.x} ${p.y}" fill="none" stroke="var(--fg)" stroke-opacity=".35" stroke-width="1.2" stroke-dasharray="2 5"/>`;
+      seg = [];
+    }
+    seg.push(p.x+" "+p.y);
+  });
+  if(seg.length>1) paths += `<path d="M${seg.join(" L")}" class="rt"/>`;
+  let s = `<style>.rt{fill:none;stroke:var(--fel);stroke-opacity:.7;stroke-width:2;stroke-dasharray:7 5;stroke-linejoin:round}</style>
+    <text class="cont" x="40" y="545">KALIMDOR</text><text class="cont" x="960" y="30" text-anchor="end">EASTERN KINGDOMS</text>
+    <text class="sea" x="545" y="300" text-anchor="middle">GREAT SEA</text>${hops}${paths}`;
+  for(const name of zoneNames){
+    const z = ZONES[name], onR = order.includes(name);
+    const cls = z.other ? "minor" : "";
+    s += `<g class="zone${name===selZone?" sel":""}" data-z="${esc(name)}" tabindex="0" role="button" aria-label="${esc(name)}, levels ${esc(z.lv)}">
+      ${onR||z.isNew ? `<circle cx="${z.x}" cy="${z.y}" r="3.5"/>` : ""}
+      <text class="${cls}" x="${z.x}" y="${z.y-8}" text-anchor="middle">${esc(name)}</text>
+      ${z.other ? "" : `<text class="lv" x="${z.x}" y="${z.y+15}" text-anchor="middle">${esc(z.lv)}</text>`}</g>`;
+  }
+  $("#mapsvg").innerHTML = s;
+}
+// ---------- real map (Leaflet) ----------
+// Pixel positions on the Warcraft Wiki Forever continent maps (1002×668), read off the images by eye.
+// Riverglades and Shen'dralas aren't drawn on those images yet, so their pins are approximate.
+// Images are hotlinked, not copied into the repo: the art is Blizzard's.
+const REAL = {
+  EK:{img:"https://warcraft.wiki.gg/images/WorldMap-EasternKingdoms_c60.jpg?96b6e6", z:{
+    "Tirisfal Glades":[430,142],"Western Plaguelands":[500,140],"Eastern Plaguelands":[578,140],"Silverpine Forest":[422,205],
+    "Alterac Mountains":[468,212],"Hillsbrad Foothills":[490,248],"The Hinterlands":[552,215],"Arathi Highlands":[545,255],
+    "Wetlands":[530,310],"Loch Modan":[578,362],"Dun Morogh":[448,378],"Searing Gorge":[503,440],"Badlands":[590,440],
+    "Burning Steppes":[468,470],"Redridge Mountains":[538,478],"Elwynn Forest":[466,512],"Westfall":[415,520],
+    "Duskwood":[478,552],"Deadwind Pass":[510,538],"Swamp of Sorrows":[556,505],"Blasted Lands":[545,552],"Stranglethorn Vale":[468,598]}},
+  K:{img:"https://warcraft.wiki.gg/images/WorldMap-Kalimdor_c60.jpg?7be496", z:{
+    "Teldrassil":[425,75],"Darkshore":[455,200],"Moonglade":[535,135],"Winterspring":[588,150],"Felwood":[488,172],
+    "Mount Hyjal":[540,215],"Azshara":[625,245],"Ashenvale":[470,272],"Stonetalon Mountains":[430,315],"Durotar":[590,320],
+    "The Barrens":[530,398],"Mulgore":[470,408],"Desolace":[405,410],"Shen'dralas":[400,458],"Dustwallow Marsh":[576,455],
+    "Feralas":[420,488],"Thousand Needles":[535,492],"Silithus":[420,585],"Un'Goro Crater":[497,578],"Tanaris":[565,570],
+    "Riverglades":[640,560]}}
+};
+let realMode = false, leaf = null, leafGroup = null, leafMarkers = {}, curCont = null;
+const pxToLL = p => [668-p[1], p[0]];   // Leaflet CRS.Simple has y up; image px have y down
+function zoneStyle(name){
+  const z = ZONES[name], r = lvRange(name), lv = state.level, inr = r && lv>=r[0] && lv<=r[1];
+  const fill = inr ? "#8fdc5a" : z.isNew ? "#d6b25e" : routeOrder().includes(name) ? "#a57fe0" : "#9a8fa3";
+  return {radius: name===selZone ? 9 : inr ? 7 : 5, color: name===selZone ? "#e4dccb" : "#0d0a10", weight:2, fillColor:fill, fillOpacity: z.other ? .55 : .95};
+}
+function showContinent(c){
+  curCont = c; const R = REAL[c];
+  if(leafGroup) leafGroup.remove();
+  leafGroup = L.layerGroup(); leafMarkers = {};
+  L.imageOverlay(R.img, [[0,0],[668,1002]], {attribution:'Map © Blizzard Entertainment via <a href="https://warcraft.wiki.gg/wiki/Forever_map_comparison" target="_blank" rel="noopener">Warcraft Wiki</a>'}).addTo(leafGroup);
+  const pts = routeOrder().filter(z=>R.z[z]).map(z=>pxToLL(R.z[z]));
+  if(pts.length>1) L.polyline(pts, {color:"#8fdc5a", weight:2.5, opacity:.85, dashArray:"7 6", interactive:false}).addTo(leafGroup);
+  for(const [name,p] of Object.entries(R.z)){
+    const z = ZONES[name];
+    const m = L.circleMarker(pxToLL(p), zoneStyle(name)).addTo(leafGroup);
+    m.bindTooltip(z.other ? name : `${name} <span style="opacity:.65;font-family:var(--f-mono);font-size:10px">${z.lv}</span>`,
+      {permanent:true, direction:"top", offset:[0,-6], className: z.other ? "lt-minor" : ""});
+    m.on("click", ()=>selectZone(name));
+    leafMarkers[name] = m;
+  }
+  leafGroup.addTo(leaf);
+  document.querySelectorAll("#contabs button").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.c===c)));
+}
+// Probe the image first: on claude.ai the CSP blocks it, so the drawn canvas map stays.
+function initRealMap(){
+  if(!window.L) return;
+  const probe = new Image();
+  probe.onload = ()=>{
+    realMode = true;
+    $("#mapinner").classList.add("real"); $("#leaf").hidden = false; $("#contabs").hidden = false;
+    leaf = L.map("leaf", {crs:L.CRS.Simple, minZoom:-1, maxZoom:2.5, zoomSnap:.25, maxBounds:[[-120,-120],[788,1122]]});
+    leaf.fitBounds([[0,0],[668,1002]]);
+    leaf.attributionControl.setPrefix(false);
+    showContinent(ZONES[selZone].cont); renderMap();
+  };
+  probe.src = REAL.EK.img;
+}
+document.querySelectorAll("#contabs button").forEach(b=>b.addEventListener("click",()=>showContinent(b.dataset.c)));
+
+function renderZoneInfo(){
+  const z = ZONES[selZone];
+  $("#zname").innerHTML = esc(selZone) + (z.isNew?' <span class="badge new">new</span>':"");
+  const steps = ROUTE.filter(r=>r.zones.includes(selZone)).map(r=>`${r.lo}–${r.hi}`);
+  const wiki = "https://warcraft.wiki.gg/wiki/" + encodeURIComponent(selZone.replace(/ /g,"_"));
+  $("#zbody").innerHTML = `<p class="mono" style="color:var(--fg)">Levels ${esc(z.lv)}</p><p>${esc(z.desc)}</p>
+    ${steps.length?`<p>On your route in brackets ${steps.join(", ")}.</p>`:""}
+    <p><a href="${wiki}" target="_blank" rel="noopener">Open the zone map on Warcraft Wiki ↗</a></p>`;
+}
+function renderMap(){
+  if(realMode){
+    const c = ZONES[selZone].cont;
+    if(c !== curCont) showContinent(c);
+    else for(const [n,m] of Object.entries(leafMarkers)) m.setStyle(zoneStyle(n));
+  } else { paintMap(); renderMapOverlay(); }
+  renderZoneInfo();
+}
+// When the level changes, point the map at the first zone of the matching bracket.
+function followLevel(){
+  const r = ROUTE.find(r=>state.level>=r.lo && state.level<=r.hi);
+  if(r) selZone = r.zones[0];
+}
+
+function renderBar(){
+  $("#level").value = state.level; $("#levelOut").textContent = state.level;
+  const ids = allCheckIds(), n = ids.filter(i=>state.checks[i]).length;
+  $("#progTxt").textContent = `${n}/${ids.length}`;
+  $("#progBar").style.width = (100*n/ids.length)+"%";
+  const sy = $("#sync");
+  sy.className = "sync" + (mode==="cloud"?" ok":mode==="local"||mode==="offline"?" warn":"");
+  sy.textContent = mode==="cloud"?"synced":mode==="saving"?"saving…":mode==="local"?"this browser only":mode==="offline"?"can't reach sync":"connecting…";
+}
+function renderAll(){ renderBar(); renderGame(); renderRoute(); renderDungeons(); renderChecks(); renderMap();
+  const nb=$("#notesBox"); if(document.activeElement!==nb) nb.value = state.notes||""; }
+
+// ---------- persistence ----------
+function saveLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){} }
+function loadLocal(){ try{ const v=JSON.parse(localStorage.getItem(LS_KEY)||"null"); if(v) state={...state,...v}; }catch(e){} }
+
+// Debounced, serialized cloud write: one in-flight write per doc, as the db contract asks.
+function scheduleSave(){
+  saveLocal();
+  if(!docRef) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{
+    const body = {level:state.level, checks:{...state.checks}, notes:state.notes, game:state.game||null, updated:Date.now()};
+    mode="saving"; renderBar();
+    saving = saving.then(()=>docRef.set(body)).then(()=>{ mode="cloud"; renderBar(); })
+      .catch(e=>{ console.warn("save failed",e); if(e&&e.code==="invalid_argument"){ docRef=null; mode="local"; } else mode="offline"; renderBar(); });
+  }, 700);
+}
+
+async function initCloud(){
+  if(!window.claude || !window.claude.use){ mode="local"; renderBar(); return; }
+  const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+  const uid = user ? await user.id() : null;
+  if(!db || !uid){ mode="local"; renderBar(); return; }
+  docRef = db.doc("data/users/"+uid+"/progress");
+  let answered = false;
+  const t = setTimeout(()=>{ if(!answered){ mode="offline"; renderBar(); } }, 10000);
+  docRef.onSnapshot(snap=>{
+    if(snap.metadata.hasPendingWrites) return;      // our own echo; local state is already ahead
+    if(!snap.metadata.fromCache){ answered=true; clearTimeout(t); }
+    if(snap.exists){
+      const d = snap.data();
+      state = {level:d.level||1, checks:{...(d.checks||{})}, notes:d.notes||"", game:d.game||null};
+      saveLocal(); renderAll();
+    } else if(!snap.metadata.fromCache){
+      // First visit on this account: push whatever this browser already had up once.
+      if(state.level>1 || Object.keys(state.checks).length || state.notes || state.game) scheduleSave();
+    }
+    if(mode!=="saving"){ mode="cloud"; renderBar(); }
+  }, err=>{ clearTimeout(t); console.warn("db",err); mode="local"; docRef=null; renderBar(); });
+}
+
+// ---------- events ----------
+$("#level").addEventListener("input", e=>{ state.level=+e.target.value; followLevel(); renderBar(); renderRoute(); renderDungeons(); renderMap(); scheduleSave(); });
+document.addEventListener("change", e=>{
+  if(e.target.id==="svFile"){ const f=e.target.files[0]; if(f) importFile(f); e.target.value=""; return; }
+  const id = e.target && e.target.dataset && e.target.dataset.id; if(!id) return;
+  if(e.target.checked) state.checks[id]=true; else delete state.checks[id];
+  renderAll(); scheduleSave();
+});
+$("#notesBox").addEventListener("input", e=>{ state.notes=e.target.value; scheduleSave(); });
+document.querySelectorAll(".filters button").forEach(b=>b.addEventListener("click",()=>{
+  dFilter=b.dataset.f; document.querySelectorAll(".filters button").forEach(x=>x.setAttribute("aria-pressed",x===b)); renderDungeons();
+}));
+const drop = $("#drop");
+["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{ e.preventDefault(); drop.classList.add("over"); }));
+["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{ e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e=>{ const f=e.dataTransfer.files[0]; if(f) importFile(f); });
+
+// Map picking: any pixel picks the territory under it (labels and dots too).
+function selectZone(name){ if(name && ZONES[name]){ selZone=name; renderMap(); } }
+$("#mapsvg").addEventListener("click", e=>{
+  const g = e.target.closest && e.target.closest(".zone"); if(g) return selectZone(g.dataset.z);
+  const svg = $("#mapsvg"), pt = svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY;
+  const p = pt.matrixTransform(svg.getScreenCTM().inverse()), x=Math.round(p.x), y=Math.round(p.y);
+  if(zoneIdx && x>=0 && y>=0 && x<MW && y<MH){ const k=zoneIdx[y*MW+x]; if(k>=0) selectZone(zoneNames[k]); }
+});
+$("#mapsvg").addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ const g=e.target.closest(".zone"); if(g){ e.preventDefault(); selectZone(g.dataset.z); } } });
+
+// Countdown to global launch: Nov 4 2026 23:00 UTC.
+const LAUNCH = Date.UTC(2026,10,4,23,0,0);
+function tick(){
+  const ms = LAUNCH-Date.now(), el=$("#countdown b");
+  if(ms<=0){ el.textContent="LIVE"; return; }
+  const h=Math.floor(ms/3.6e6), m=Math.floor(ms%3.6e6/6e4), s=Math.floor(ms%6e4/1e3);
+  el.textContent = h>=48 ? `${Math.floor(h/24)}d ${h%24}h` : `${h}h ${String(m).padStart(2,"0")}m ${String(s).padStart(2,"0")}s`;
+}
+tick(); setInterval(tick,1000);
+
+loadLocal(); followLevel(); renderAll(); initRealMap(); initCloud(); autoFetchSV();
+</script>
