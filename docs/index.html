@@ -2,7 +2,7 @@
 <title>Forsaken Grimoire</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Grenze+Gotisch:wght@500;700&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Cinzel:wght@600;700;800&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
 /* Layout: a single long grimoire scroll; sticky tracker bar on top, sections as "pages", the route is the spine. */
 /* Deliberately single dark theme (Forsaken/fel look), so colors are set once on :root with color-scheme dark. */
@@ -237,6 +237,41 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:18px;
   background-size:180px 100%,100% 100%;box-shadow:0 0 24px rgba(155,212,74,.35);animation:sewer 6s linear infinite}
 @keyframes sewer{to{background-position:180px 0,0 0}}
 @media (prefers-reduced-motion: reduce){.ruins .win,.crows g,footer::before{animation:none}.crows{display:none}}
+/* ---- WoW pass: Forsaken violet stone, gold WoW-style titles, spiked iron trim, game tooltips,
+   quest-log parchment, real spell icons. Cinzel stands in for WoW's title face (that font isn't free). ---- */
+:root{--bg:#0e0b12;--surface:#17121c;--surface-2:#211a28;--line:#3a2f44;--f-wow:"Cinzel","IM Fell English SC",Georgia,serif;--wgold:#ffd100}
+body{background-image:
+  radial-gradient(ellipse 70% 40% at 50% -5%, rgba(155,212,74,.12), transparent 70%),
+  radial-gradient(ellipse 120% 70% at 50% 115%, rgba(110,50,150,.28), transparent 60%),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .6 0 0 0 0 .55 0 0 0 0 .7 0 0 0 .08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+h1,h2,.brand{font-family:var(--f-wow);font-weight:700;letter-spacing:.02em}
+.hero h1{font-size:clamp(2.3rem,6.4vw,4.4rem);line-height:1.05}
+h2{font-weight:800;background:linear-gradient(180deg,#fff3b8 0%,var(--wgold) 45%,#b07a10 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 #000)}
+h3{font-family:var(--f-wow);font-weight:700;color:var(--wgold);font-size:1.02rem;letter-spacing:.02em;text-shadow:0 1px 0 #000}
+.brand{color:var(--wgold);font-size:1.15rem}
+.card .tag{color:#c9a7ff}
+/* spiked iron trim under the sticky bar, like Lordaeron battlements */
+.bar::after{content:"";position:absolute;left:0;right:0;bottom:-9px;height:9px;pointer-events:none;
+  background:linear-gradient(135deg,#3a2a1c 33%,transparent 34%) 0 0/14px 9px repeat-x,linear-gradient(225deg,#3a2a1c 33%,transparent 34%) 0 0/14px 9px repeat-x}
+/* WoW-style tooltip for the zone panel */
+.zinfo{background:rgba(6,6,22,.95)!important;background-image:none!important;border:2px solid #7b7b8c;border-radius:6px;box-shadow:0 0 0 1px #000,0 8px 22px rgba(0,0,0,.6)}
+.zinfo::before,.zinfo::after{display:none}
+/* map zone labels in WoW's gold map lettering */
+.leaflet-tooltip{color:var(--wgold);font-family:var(--f-wow);font-weight:700;font-size:12px}
+.leaflet-tooltip.lt-minor{font-family:var(--f-body)}
+/* class quests on quest-log parchment */
+#checkGroups .card{background-color:#d9c597!important;color:#2b1d0e;
+  background-image:radial-gradient(ellipse at 50% 40%,rgba(255,248,220,.55),transparent 70%),radial-gradient(ellipse at 100% 100%,rgba(120,80,30,.35),transparent 55%),radial-gradient(ellipse at 0 0,rgba(120,80,30,.3),transparent 50%)!important;
+  border:2px solid #5a3e1c;box-shadow:inset 0 0 26px rgba(90,55,15,.55),0 3px 0 #000}
+#checkGroups .card h3{color:#3a2306;text-shadow:none}
+#checkGroups .card .tag{color:#7a3d12}
+#checkGroups label.chk input{accent-color:#3a5c16}
+#checkGroups label.chk.on span{color:#6d5a3d;text-decoration-color:#3a5c16}
+/* real spell icons: dark rim + bronze ring like action-bar buttons */
+.wi{width:26px;height:26px;flex:none;border-radius:4px;vertical-align:-7px;margin-right:8px;border:1px solid #000;box-shadow:0 0 0 1px var(--bronze),0 2px 4px rgba(0,0,0,.6)}
+label.chk .wi{width:22px;height:22px;margin:0 -2px 0 0}
+.crest{display:flex;gap:10px;margin-bottom:var(--s3)}
+.wi.big{width:52px;height:52px;margin:0;border-radius:6px;box-shadow:0 0 0 2px var(--bronze),0 0 18px rgba(155,212,74,.3)}
 .leaflet-tooltip.lt-minor{color:#d9cfbf;font-size:10.5px;font-style:italic;font-weight:400}
 .maplayout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:var(--s4)}
 @media (max-width:860px){.maplayout{grid-template-columns:1fr}}
@@ -332,6 +367,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
     <g><path d="M0 12q5-5 10 0q5-5 10 0"/></g>
   </svg>
   <div class="wrap">
+    <div class="crest"><img class="wi big" src="https://wow.zamimg.com/images/wow/icons/large/achievement_character_undead_male.jpg" alt=""><img class="wi big" src="https://wow.zamimg.com/images/wow/icons/large/classicon_warlock.jpg" alt=""><img class="wi big" src="https://wow.zamimg.com/images/wow/icons/large/spell_shadow_summonvoidwalker.jpg" alt=""></div>
     <p class="eyebrow">World of Warcraft: Forever · Undead Warlock · Demonology · Normal realm · 1 → 60</p>
     <h1>Rise, <em>Forsaken.</em><br>Your demons answer to you.</h1>
     <p class="lede">A personal field guide for one Undead Demonology Warlock: racials, demons, a drawn route map, a quest-and-dungeon route through every bracket, and a tracker that the GrimoireSync addon fills in from the game.</p>
@@ -872,12 +908,29 @@ function renderDungeons(){
   }).join("") || `<tr><td colspan="4" class="muted">No dungeons are within 2 levels of ${L}. Try "All".</td></tr>`;
 }
 
+// Real WoW spell icons, hotlinked from Wowhead's CDN (never stored in the repo). On claude.ai the
+// CSP blocks them; the capture-phase error listener below removes any icon that fails to load.
+const ICON_URL = n => "https://wow.zamimg.com/images/wow/icons/large/" + n + ".jpg";
+const wi = n => n ? `<img class="wi" src="${ICON_URL(n)}" alt="" loading="lazy">` : "";
+const ICON_BY_TEXT = {"Will of the Forsaken":"spell_shadow_raisedead","Touch of the Grave":"spell_shadow_detectlesserinvisibility",
+  "Cannibalize":"ability_racial_cannibalize","Imp":"spell_shadow_summonimp","Voidwalker":"spell_shadow_summonvoidwalker",
+  "Succubus":"spell_shadow_summonsuccubus","Felhunter":"spell_shadow_summonfelhunter","Demonic Pact":"ability_warlock_demonicpower"};
+const ICON_BY_CHECK = {"cq-imp":"spell_shadow_summonimp","cq-vw":"spell_shadow_summonvoidwalker","cq-succ":"spell_shadow_summonsuccubus",
+  "cq-fh":"spell_shadow_summonfelhunter","cq-felsteed":"spell_nature_swiftness","cq-inferno":"spell_shadow_summoninfernal","cq-dread":"ability_mount_dreadsteed"};
+document.addEventListener("error", e=>{ const t = e.target; if(t && t.classList && t.classList.contains("wi")) t.remove(); }, true);
+// Prefix the static kit headings and demon names with their in-game icon.
+function addKitIcons(){
+  document.querySelectorAll("#kit h3, #kit li > b:first-child").forEach(el=>{
+    const n = ICON_BY_TEXT[el.textContent.trim().replace(/:$/,"")];
+    if(n && !el.querySelector(".wi")) el.insertAdjacentHTML("afterbegin", wi(n));
+  });
+}
 function renderChecks(){
   $("#checkGroups").innerHTML = CHECKS.map(g=>`<article class="card"><span class="tag">${g.tag}</span><h3>${g.title}</h3>
     ${g.items.map(([id,t])=>{
       const on = !!state.checks[id];
       const txt = t.replace("⚑ verify",'<span class="badge unv">verify</span>');
-      return `<label class="chk${on?" on":""}"><input type="checkbox" data-id="${id}" ${on?"checked":""}><span>${txt}</span></label>`;
+      return `<label class="chk${on?" on":""}"><input type="checkbox" data-id="${id}" ${on?"checked":""}>${wi(ICON_BY_CHECK[id])}<span>${txt}</span></label>`;
     }).join("")}</article>`).join("");
 }
 
@@ -1268,7 +1321,7 @@ function tick(){
 }
 tick(); setInterval(tick,1000);
 
-loadLocal(); followLevel(); renderAll(); initRealMap(); initCloud(); autoFetchSV();
+loadLocal(); followLevel(); renderAll(); addKitIcons(); initRealMap(); initCloud(); autoFetchSV();
 </script>
 
 </body></html>
