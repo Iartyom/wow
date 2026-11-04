@@ -270,6 +270,18 @@ h3{font-family:var(--f-wow);font-weight:700;color:var(--wgold);font-size:1.02rem
 .wi{width:26px;height:26px;flex:none;border-radius:4px;vertical-align:-7px;margin-right:8px;border:1px solid #000;box-shadow:0 0 0 1px var(--bronze),0 2px 4px rgba(0,0,0,.6)}
 label.chk .wi{width:22px;height:22px;margin:0 -2px 0 0}
 .crest{display:flex;gap:10px;margin-bottom:var(--s3)}
+/* Accent = Warlock class colour (#8788EE), the purple Blizzard uses for warlocks; Forsaken livery is purple too.
+   --fel keeps its old name but is now purple. Plague green stays only in atmosphere (slime, fog, sewer,
+   windows, vial) and in the map's semantic "at your level" colour. */
+:root{--fel:#8788ee;--fel-dim:#4c4a8c}
+.hero h1 em{text-shadow:0 0 24px rgba(135,136,238,.6),0 2px 0 #000}
+.brand::before{filter:drop-shadow(0 0 4px rgba(135,136,238,.6))}
+.step.now{box-shadow:0 0 0 1px var(--fel-dim),0 0 28px -6px rgba(135,136,238,.5),inset 0 0 34px rgba(0,0,0,.5)}
+tr.inrange td{background:rgba(135,136,238,.08)}
+.btn:hover,.contabs button:hover,.filters button:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 0 12px -2px rgba(135,136,238,.6),0 2px 0 #000}
+.contabs button[aria-pressed=true],.filters button[aria-pressed=true]{background:linear-gradient(180deg,#2e2a5a,#15132b)}
+label.chk.on input{filter:drop-shadow(0 0 4px rgba(135,136,238,.8))}
+::selection{background:rgba(135,136,238,.4)}
 .wi.big{width:52px;height:52px;margin:0;border-radius:6px;box-shadow:0 0 0 2px var(--bronze),0 0 18px rgba(155,212,74,.3)}
 .leaflet-tooltip.lt-minor{color:#d9cfbf;font-size:10.5px;font-style:italic;font-weight:400}
 .maplayout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:var(--s4)}
