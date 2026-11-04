@@ -2,6 +2,8 @@
 
 A personal leveling guide for an **Undead Demonology Warlock** in *World of Warcraft: Forever*. It covers your racials, the class changes, a 1–60 quest-and-dungeon route, an interactive map, class quests, and a progress tracker. The **Grimoire Sync** addon fills the tracker in from the game.
 
+A second character, an **Undead Retribution Paladin** who levels alongside the warlock, has its own tab. Use the Warlock/Paladin switch in the top bar, or open `?char=pal`. Each character keeps separate progress, notes and game data, and the addon stores one snapshot per class.
+
 **Site:** https://iartyom.github.io/wow/
 
 ## Layout
