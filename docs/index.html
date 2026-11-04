@@ -296,6 +296,12 @@ body:not(.char-pal) [data-only="pal"], body.char-pal [data-only="wl"]{display:no
 .charsw button .wi{width:20px;height:20px;margin:0;vertical-align:0}
 .charsw button[aria-pressed=true]{color:var(--fg);border-color:var(--fel);box-shadow:0 0 10px -2px var(--fel),0 2px 0 #000}
 .card.duo{margin-top:var(--s4)}
+/* beginner card: key + icon rows read like an action bar */
+ul.keys{list-style:none;padding-left:0}
+/* inline, not flex: flex would split the bold name and the sentence into separate columns */
+ul.keys li kbd{display:inline-block;min-width:1.6em;text-align:center;margin-right:4px}
+ul.keys li .wi{margin-right:6px}
+.gloss dt{white-space:normal}
 /* "Forsaken Light" (Paladin): the same undead base, with pale holy gold replacing warlock purple.
    Green plague atmosphere stays; accents, banners, the moon and the ruin windows turn to light. */
 body.char-pal{--fel:#f0cf74;--fel-dim:#8a7034;--banner:#4a3714;--banner-2:#241a08}
@@ -391,7 +397,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
   </div>
   <div class="wrap">
     <nav class="toc" aria-label="Sections">
-      <a href="#game">From the game</a><a href="#kit">Your kit</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#rotation">Your spec</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
+      <a href="#newbie" data-only="pal">Start here</a><a href="#game">From the game</a><a href="#kit">Your kit</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#rotation">Your spec</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
     </nav>
   </div>
 </div>
@@ -429,6 +435,110 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
     <p class="notice"><b>Read this first.</b> Forever is brand new, and every guide out there today comes from the beta, which ended Oct 23. Forever adds more than 1,000 quests, so the zone order below is built from the Classic Horde route plus the new dungeons. Items marked <span class="badge unv">verify</span> are details from Classic that Forever may have changed.</p>
   </div>
 </header>
+
+<!-- Beginner guide, Paladin tab only: the paladin player is new to WoW. Plain language, no jargon
+     without an explanation; the advanced cards further down stay for later. -->
+<section id="newbie" data-only="pal">
+  <div class="wrap">
+    <header><p class="eyebrow">Start here</p><h2>New to WoW? Read this first</h2><p>Everything you need for your first evenings. You can skip the rest of the page until you're around level 20.</p></header>
+    <div class="grid">
+      <article class="card">
+        <span class="tag">1 · The basics</span>
+        <ul class="plain">
+          <li><b>Move</b> with <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>. Hold the <b>right mouse button</b> to steer the camera. <kbd>Space</kbd> jumps.</li>
+          <li>A <b style="color:#ffd100">yellow !</b> over someone's head means a quest to take. A <b style="color:#ffd100">yellow ?</b> means a quest to hand in. Right-click them.</li>
+          <li><kbd>L</kbd> opens your quest log, <kbd>M</kbd> the map, <kbd>B</kbd> your bags, <kbd>C</kbd> your character, <kbd>P</kbd> your spells, <kbd>N</kbd> your talents.</li>
+          <li><kbd>Tab</kbd> targets the nearest enemy. <b>Right-click</b> an enemy to start attacking, and right-click its body after it dies to loot it.</li>
+          <li><b>If you die:</b> click "Release Spirit", run back to your body as a ghost, and click "Resurrect". It costs nothing but time.</li>
+          <li><b>Hearthstone:</b> talk to the innkeeper in <b>Brill</b> and pick "Make this inn your home". Use the stone in your bags to teleport back there, once every 30 minutes.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <span class="tag">2 · Your buttons</span>
+        <p class="muted">Open your spellbook with <kbd>P</kbd> and drag spells onto your bar in this order, so your fingers learn one layout. A spell appears once you reach its level.</p>
+        <ul class="plain keys">
+          <li><kbd>1</kbd> <img class="wi" src="https://wow.zamimg.com/images/wow/icons/large/ability_thunderbolt.jpg" alt=""><b>Seal of Righteousness</b>: always keep it switched on.</li>
+          <li><kbd>2</kbd> <img class="wi" src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_righteousfury.jpg" alt=""><b>Judgement</b> (level 4): your opening hit. Press it again whenever it lights up.</li>
+          <li><kbd>3</kbd> <img class="wi" src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_holysmite.jpg" alt=""><b>Holy Strike</b> (level 6): press it whenever it lights up.</li>
+          <li><kbd>4</kbd> <img class="wi" src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_innerfire.jpg" alt=""><b>Consecration</b> (level 20): for 2 or more enemies at once.</li>
+          <li><kbd>5</kbd> <img class="wi" src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_sealofmight.jpg" alt=""><b>Hammer of Justice</b> (level 8): stuns an enemy, which is great for a spare enemy.</li>
+          <li><kbd>6</kbd> <img class="wi" src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_holybolt.jpg" alt=""><b>Holy Light</b>: heals yourself. It's slow, so cast it when nothing is hitting you.</li>
+          <li><kbd>7</kbd> <img class="wi" src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_restoration.jpg" alt=""><b>Divine Protection</b> (level 6): "oh no" button. It makes you hard to hurt so you can heal.</li>
+          <li><kbd>8</kbd> <img class="wi" src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_layonhands.jpg" alt=""><b>Lay on Hands</b> (level 10): "nearly dead" button. It heals you to full, about once an hour.</li>
+        </ul>
+        <p class="muted">Set and forget: <b>Blessing of Might</b> on yourself (it lasts an hour) and <b>Devotion Aura</b>, or <b>Retribution Aura</b> from 16.</p>
+      </article>
+      <article class="card">
+        <span class="tag">3 · A fight, step by step</span>
+        <ol class="rot">
+          <li>Before you start, check that the Seal (<kbd>1</kbd>) and Blessing of Might are on. Their icons show at the top right of your screen.</li>
+          <li>Target <b>one</b> enemy with <kbd>Tab</kbd>, then press <kbd>2</kbd> Judgement to start the fight.</li>
+          <li>Right-click it so you auto-attack. Press <kbd>3</kbd> whenever it lights up, and <kbd>2</kbd> again when it's back.</li>
+          <li>If a second enemy joins: press <kbd>5</kbd> to stun one, and from level 20 also <kbd>4</kbd>.</li>
+          <li>If your health bar (green, top left) drops below a third mid-fight: <kbd>7</kbd>, then <kbd>6</kbd>. If you're nearly dead: <kbd>8</kbd>.</li>
+          <li>After the fight: heal with <kbd>6</kbd>, or use <b>Cannibalize</b> on a human or undead body. Then pick the next enemy.</li>
+        </ol>
+      </article>
+      <article class="card">
+        <span class="tag">4 · Every time you level up</span>
+        <ul class="plain">
+          <li><b>Even levels (2, 4, 6…):</b> visit the paladin trainer (Shari Stilwell in Brill, or the Undercity) and buy everything. New spell ranks replace the old ones on your bar by themselves.</li>
+          <li><b>From level 10:</b> you get a talent point every level. Press <kbd>N</kbd>, open the <b>Retribution</b> tab, and follow the list in "Playing Retribution" further down.</li>
+          <li><b>Quest rewards:</b> when you can pick one, take the one with <b>Strength</b> or the bigger two-handed weapon.</li>
+          <li>Tick your new level on the slider at the top of this page, and the page shows where to go next.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <span class="tag">5 · Gear: what's better?</span>
+        <ul class="plain">
+          <li>The stats you want, in order: <b>Strength</b> first, then <b>Stamina</b> (more health), then <b>Intellect</b> (more mana).</li>
+          <li><b>Weapon:</b> a two-handed sword, axe or mace. Hover over it and compare the "damage per second" number; bigger is better.</li>
+          <li><b>Armor:</b> wear <b>mail</b> until 40, then <b>plate</b>.</li>
+          <li><b>Grey items</b> are junk, so sell them to any vendor. <b>Green</b> and better ones: equip them if they're better, sell them on the Auction House otherwise.</li>
+          <li>Install the <b>Pawn</b> addon: it shows a green arrow on items that are upgrades for you.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <span class="tag">6 · Rules that keep you alive</span>
+        <ul class="plain">
+          <li><b>One enemy at a time.</b> Fight at the edge of a group, not in the middle.</li>
+          <li>Look at the enemy's level next to its portrait. <b>Red</b>, or a <b>skull</b>, means too strong, so walk away.</li>
+          <li>A <b>gold dragon</b> around the portrait means an "elite". Only fight those with your friend.</li>
+          <li>Start each fight with full health and mana. Sit down and drink if you need to; patience beats running back as a ghost.</li>
+          <li>Running away rarely works. If a fight goes badly, use <kbd>7</kbd> and <kbd>8</kbd> and finish it.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <span class="tag">7 · Playing with your friend</span>
+        <ul class="plain">
+          <li><b>To group up,</b> right-click their portrait or name and choose "Invite". In a group you both get credit for kills and quest items.</li>
+          <li><b>To share a quest,</b> select it in your quest log (<kbd>L</kbd>) and click "Share Quest".</li>
+          <li><b>To follow them,</b> right-click their portrait and choose "Follow". This is handy for long runs.</li>
+          <li><b>Let the warlock's big blue demon (the Voidwalker) hit first.</b> Wait two seconds, then join in, so enemies stay on the demon instead of you.</li>
+          <li><b>Buff each other.</b> Give the warlock <b>Blessing of Wisdom</b>. They'll give you a Healthstone (use it when low) and a Soulstone (it lets you come back to life on the spot).</li>
+        </ul>
+      </article>
+      <article class="card">
+        <span class="tag">8 · Words people use</span>
+        <dl class="talents gloss">
+          <dt>Mob</dt><dd>Any enemy creature.</dd>
+          <dt>Pull</dt><dd>Starting a fight, or the group of enemies you fight.</dd>
+          <dt>Aggro</dt><dd>Who the enemy is attacking. "Pulled aggro" = it's attacking you now.</dd>
+          <dt>Add</dt><dd>An extra enemy that joins a fight.</dd>
+          <dt>Tank / Heal / DPS</dt><dd>The three group jobs: take hits, heal, deal damage. You're DPS.</dd>
+          <dt>Buff / Debuff</dt><dd>A good effect on you, or a bad effect on an enemy.</dd>
+          <dt>CD</dt><dd>Cooldown: the wait before a spell works again.</dd>
+          <dt>OOM</dt><dd>Out of mana.</dd>
+          <dt>AoE</dt><dd>Hits everything in an area, like Consecration.</dd>
+          <dt>Ding</dt><dd>"I just levelled up."</dd>
+          <dt>Rez</dt><dd>Bring a dead player back to life.</dd>
+          <dt>Wipe</dt><dd>The whole group died.</dd>
+          <dt>Instance / Dungeon</dt><dd>A private area for your group, with harder enemies and better loot.</dd>
+        </dl>
+      </article>
+    </div>
+  </div>
+</section>
 
 <section id="game">
   <div class="wrap">
@@ -550,10 +660,11 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
 <section id="rotation">
   <div class="wrap">
     <header data-only="wl"><p class="eyebrow">Chapter IV</p><h2>Playing Demonology</h2><p>Your demon tanks and you deal damage from behind it. Demonology is slower to kill than Affliction, but you will rarely die. At 40, dual spec lets you add a second build without giving this one up.</p></header>
-    <header data-only="pal"><p class="eyebrow">Chapter IV</p><h2>Playing Retribution</h2><p>Use a big two-hander and a Seal, judge on cooldown, and heal yourself between pulls. Current guides rate Retribution as the easiest paladin leveling spec. At 40, dual spec adds Protection for dungeons.</p></header>
+    <header data-only="pal"><p class="eyebrow">Chapter IV · advanced</p><h2>Playing Retribution</h2><p>Use a big two-hander and a Seal, judge on cooldown, and heal yourself between pulls. Current guides rate Retribution as the easiest paladin leveling spec. At 40, dual spec adds Protection for dungeons. <b>New player?</b> The buttons and the step-by-step fight in <a href="#newbie">Start here</a> are all you need. Use this section only for the talent list.</p></header>
     <div class="grid" data-only="pal">
       <article class="card">
         <span class="tag">Talent priority</span>
+        <p class="muted">Press <kbd>N</kbd>, open the Retribution tab, and spend each new point going down this list. You get one point per level from 10.</p>
         <dl class="talents">
           <dt>10–20</dt><dd><b>Seal of Command</b> (a Retribution talent in Forever), then crit chance and Parry. Skip the mana talents for now.</dd>
           <dt>20–30</dt><dd><b>Vindication</b> (an Attack Power buff) and <b>Two-Handed Weapon Specialization</b>.</dd>
