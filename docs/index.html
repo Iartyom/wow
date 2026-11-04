@@ -183,6 +183,60 @@ section::after{content:"";position:absolute;top:-11px;left:50%;width:22px;height
 .step.now{border-color:var(--fel);box-shadow:0 0 0 1px var(--fel-dim),0 0 28px -6px rgba(155,212,74,.45),inset 0 0 34px rgba(0,0,0,.5)}
 ::selection{background:rgba(155,212,74,.35);color:#fff}
 @media (prefers-reduced-motion: reduce){body::after{animation:none}}
+/* ---- Forsaken skin, part 2: ruined-Lordaeron hero, banners, bronze UI corners, plague vial ----
+   All original SVG/CSS drawings in a WoW-ish spirit; no Blizzard art is copied. */
+:root{--bronze:#8a6a3a;--bronze-hi:#c9a25e;--banner:#3a1f4a;--banner-2:#24122f}
+html{scrollbar-color:var(--fel-dim) var(--bg)}
+/* moon + ruins skyline sit behind the hero text */
+header.hero{background:radial-gradient(circle at 84% 22%, rgba(214,230,170,.22) 0 46px, rgba(155,212,74,.10) 47px, transparent 140px)}
+.ruins{position:absolute;inset:auto 0 0;height:170px;overflow:hidden;pointer-events:none;z-index:0}
+.ruins svg{position:absolute;inset:0;width:100%;height:100%}
+.ruins .win{fill:#9bd44a;animation:flick 3.2s steps(2,end) infinite}
+.ruins .win:nth-child(2n){animation-duration:4.7s;animation-delay:-1.3s}
+.ruins .win:nth-child(3n){animation-duration:2.6s;animation-delay:-.6s}
+@keyframes flick{0%,100%{opacity:.75}50%{opacity:.25}}
+.crows{position:absolute;top:18%;left:0;width:100%;height:60px;pointer-events:none;z-index:0}
+.crows g{animation:crow 46s linear infinite}
+.crows g:nth-child(2){animation-duration:61s;animation-delay:-20s}
+@keyframes crow{from{transform:translateX(-80px)}to{transform:translateX(1400px)}}
+header.hero .wrap{position:relative;z-index:1;padding-bottom:70px}
+/* section eyebrows become tattered Forsaken-purple banners */
+section > .wrap > header .eyebrow{align-self:flex-start;background:linear-gradient(180deg,var(--banner),var(--banner-2));color:var(--fg);
+  padding:6px 16px 14px;border-top:2px solid var(--bronze);clip-path:polygon(0 0,100% 0,100% 100%,88% 78%,76% 96%,62% 74%,50% 92%,38% 72%,24% 95%,12% 76%,0 100%);
+  text-shadow:0 1px 0 #000;box-shadow:inset 0 -10px 16px rgba(0,0,0,.4)}
+/* bronze L-brackets on panel corners (WoW-frame feel) */
+.card,.zinfo,.step,.gamecard,.facts,.links a{--c:linear-gradient(var(--bronze),var(--bronze));
+  background-image:var(--c),var(--c),var(--c),var(--c),var(--c),var(--c),var(--c),var(--c);
+  background-repeat:no-repeat;
+  background-size:14px 2px,2px 14px,14px 2px,2px 14px,14px 2px,2px 14px,14px 2px,2px 14px;
+  background-position:0 0,0 0,100% 0,100% 0,0 100%,0 100%,100% 100%,100% 100%}
+.card,.zinfo,.step,.links a{background-color:var(--surface)}
+.step.now{--c:linear-gradient(var(--fel),var(--fel))}
+h3{color:var(--bronze-hi)}
+/* beveled game-style buttons */
+.btn,.contabs button,.filters button{background:linear-gradient(180deg,#2c1d38,#150d1b);border:1px solid var(--bronze);color:var(--fg);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -2px 0 rgba(0,0,0,.5),0 2px 0 #000;text-shadow:0 1px 0 #000}
+.btn:hover,.contabs button:hover,.filters button:hover{border-color:var(--fel);color:var(--fel);box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 0 12px -2px rgba(155,212,74,.55),0 2px 0 #000}
+.contabs button[aria-pressed=true],.filters button[aria-pressed=true]{background:linear-gradient(180deg,#24361a,#101a0b);border-color:var(--fel)}
+/* level slider = glowing plague vial with a skull handle */
+.lvl input[type=range]{-webkit-appearance:none;appearance:none;height:9px;border-radius:5px;border:1px solid #000;
+  background:linear-gradient(90deg,#24361a,#58772c 50%,#9bd44a);box-shadow:0 0 0 1px var(--bronze),0 0 10px rgba(155,212,74,.35)}
+.lvl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border:0;border-radius:50%;cursor:pointer;
+  background:var(--skull) center/16px no-repeat,radial-gradient(circle,#2a2c22,#0d0e0a);box-shadow:0 0 0 2px var(--bronze),0 0 10px rgba(155,212,74,.6)}
+.lvl input[type=range]::-moz-range-thumb{width:22px;height:22px;border:0;border-radius:50%;cursor:pointer;
+  background:var(--skull) center/16px no-repeat,radial-gradient(circle,#2a2c22,#0d0e0a);box-shadow:0 0 0 2px var(--bronze),0 0 10px rgba(155,212,74,.6)}
+.meter{border:1px solid #000;box-shadow:0 0 0 1px var(--bronze)}
+.meter i{background:linear-gradient(90deg,#58772c,#9bd44a);box-shadow:0 0 8px rgba(155,212,74,.6)}
+/* checkboxes glow like plague runes when ticked */
+label.chk.on input{filter:drop-shadow(0 0 4px rgba(155,212,74,.8))}
+/* Undercity sewer canal flowing along the footer */
+footer{position:relative;border-top:0;padding-top:calc(var(--s6) + 18px)}
+footer::before{content:"";position:absolute;top:0;left:0;right:0;height:18px;
+  background:repeating-linear-gradient(90deg,rgba(155,212,74,.0) 0 30px,rgba(190,240,110,.35) 30px 34px,rgba(155,212,74,0) 34px 90px),
+             linear-gradient(180deg,#58772c,#2c4416 60%,#0a0c09);
+  background-size:180px 100%,100% 100%;box-shadow:0 0 24px rgba(155,212,74,.35);animation:sewer 6s linear infinite}
+@keyframes sewer{to{background-position:180px 0,0 0}}
+@media (prefers-reduced-motion: reduce){.ruins .win,.crows g,footer::before{animation:none}.crows{display:none}}
 .leaflet-tooltip.lt-minor{color:#d9cfbf;font-size:10.5px;font-style:italic;font-weight:400}
 .maplayout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:var(--s4)}
 @media (max-width:860px){.maplayout{grid-template-columns:1fr}}
@@ -265,6 +319,18 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
 </div>
 
 <header class="hero">
+  <!-- Original ruined-Lordaeron skyline: back layer is the same path shifted, flickering windows on top. -->
+  <div class="ruins" aria-hidden="true"><svg viewBox="0 0 1200 200" preserveAspectRatio="xMidYMax slice">
+    <defs><path id="ruin" d="M0 200V150h30v-30h8v-12l8 12h8v30h36V96l8-26 8 26v54h34v-20q20-30 40 0v20h30V60l12-40 12 40v22h12v68h54v-32h16v32h44v-50q25-38 50 0v50h30V78h8V46l8-16 8 16v32h8v72h48v-24l20-14 8 14v24h52V40l12-32 12 32v30h16V40l12-26 12 26v110h56v-40q25-30 50 0v40h30V88l12-28 6 14 8-22 8 36v62h46v-30h20v30h40V70l12-36 12 36v80h36v-22q20-24 40 0v22h40V92l10-28 10 28v58h40v-32l20-12 10 12v32h30v50z"/></defs>
+    <use href="#ruin" fill="#151a10" transform="translate(-130 -34) scale(1.12 1)"/>
+    <use href="#ruin" fill="#060705"/>
+    <g><rect class="win" x="216" y="70" width="4" height="9"/><rect class="win" x="452" y="60" width="4" height="8"/><rect class="win" x="606" y="50" width="4" height="10"/>
+      <rect class="win" x="646" y="52" width="4" height="9"/><rect class="win" x="948" y="84" width="4" height="9"/><rect class="win" x="1088" y="100" width="4" height="8"/><rect class="win" x="96" y="104" width="4" height="8"/></g>
+  </svg></div>
+  <svg class="crows" viewBox="0 0 1200 60" preserveAspectRatio="none" aria-hidden="true" fill="none" stroke="#050505" stroke-width="2.2" stroke-linecap="round">
+    <g><path d="M0 20q6-6 12 0q6-6 12 0"/><path d="M34 32q5-5 10 0q5-5 10 0"/></g>
+    <g><path d="M0 12q5-5 10 0q5-5 10 0"/></g>
+  </svg>
   <div class="wrap">
     <p class="eyebrow">World of Warcraft: Forever · Undead Warlock · Demonology · Normal realm · 1 → 60</p>
     <h1>Rise, <em>Forsaken.</em><br>Your demons answer to you.</h1>
