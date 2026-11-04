@@ -450,11 +450,12 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
           <li><kbd>Tab</kbd> targets the nearest enemy. <b>Right-click</b> an enemy to start attacking, and right-click its body after it dies to loot it.</li>
           <li><b>If you die:</b> click "Release Spirit", run back to your body as a ghost, and click "Resurrect". It costs nothing but time.</li>
           <li><b>Hearthstone:</b> talk to the innkeeper in <b>Brill</b> and pick "Make this inn your home". Use the stone in your bags to teleport back there, once every 30 minutes.</li>
+          <li><b>New bags don't equip themselves.</b> When you get one, open your bags and drag it onto an empty bag slot next to the backpack at the bottom right.</li>
         </ul>
       </article>
       <article class="card">
         <span class="tag">2 · Your buttons</span>
-        <p class="muted">Open your spellbook with <kbd>P</kbd> and drag spells onto your bar in this order, so your fingers learn one layout. A spell appears once you reach its level.</p>
+        <p class="muted">New spells <b>don't</b> appear on your bar by themselves. Open your spellbook with <kbd>P</kbd> and drag each one onto your bar in this order, so your fingers learn one layout. A spell shows up in the spellbook once you've trained it.</p>
         <ul class="plain keys">
           <li><kbd>1</kbd> <img class="wi" src="https://wow.zamimg.com/images/wow/icons/large/ability_thunderbolt.jpg" alt=""><b>Seal of Righteousness</b>: always keep it switched on.</li>
           <li><kbd>2</kbd> <img class="wi" src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_righteousfury.jpg" alt=""><b>Judgement</b> (level 4): your opening hit. Press it again whenever it lights up.</li>
@@ -481,7 +482,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
       <article class="card">
         <span class="tag">4 · Every time you level up</span>
         <ul class="plain">
-          <li><b>Even levels (2, 4, 6…):</b> visit the paladin trainer (Shari Stilwell in Brill, or the Undercity) and buy everything. New spell ranks replace the old ones on your bar by themselves.</li>
+          <li><b>Even levels (2, 4, 6…):</b> visit the paladin trainer (Shari Stilwell in Brill, or the Undercity) and buy everything. Then press <kbd>P</kbd> and drag any brand-new spell onto your bar; the game won't do it for you.</li>
           <li><b>From level 10:</b> you get a talent point every level. Press <kbd>N</kbd>, open the <b>Retribution</b> tab, and follow the list in "Playing Retribution" further down.</li>
           <li><b>Quest rewards:</b> when you can pick one, take the one with <b>Strength</b> or the bigger two-handed weapon.</li>
           <li>Tick your new level on the slider at the top of this page, and the page shows where to go next.</li>
@@ -505,6 +506,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
           <li>A <b>gold dragon</b> around the portrait means an "elite". Only fight those with your friend.</li>
           <li>Start each fight with full health and mana. Sit down and drink if you need to; patience beats running back as a ghost.</li>
           <li>Running away rarely works. If a fight goes badly, use <kbd>7</kbd> and <kbd>8</kbd> and finish it.</li>
+          <li><b>Leave Righteous Fury off.</b> You can train it at level 10, but it makes every enemy attack you, which is a tank's job. If you see its buff icon, right-click the icon to cancel it.</li>
         </ul>
       </article>
       <article class="card">
@@ -574,9 +576,11 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
           <li><b>Judgement</b> no longer uses up your Seal. Judge on cooldown and keep the Seal running.</li>
           <li><b>Holy Strike</b> (level 6): an instant Holy-damage weapon strike with a 10–12 s cooldown (sources differ). Use it between auto-attacks.</li>
           <li><b>Seal of Fury</b> (level 10): the new tanking Seal. With a shield it grants absorbs, and judging it taunts.</li>
+          <li><b>Righteous Fury</b> moved to level 10 (was 16): +33% threat, +90% on Holy damage. It's for tanking only, so keep it off as Retribution.</li>
           <li><b>Consecration</b> and <b>Blessing of Kings</b> are baseline at 20, with no talents needed.</li>
           <li><b>Blessings last 1 hour.</b> Blessing of Salvation and Blessing of Light are gone.</li>
-          <li><b>Unsealed Wrath</b> (Retribution talent) brings back Seal twisting: hits store your Seal, and swapping Seals procs them.</li>
+          <li><b>Unsealed Wrath</b> is the 31-point Retribution capstone and brings back Seal twisting: hits store up to 3 copies of your Seal for 15 s, and a hit with a different Seal procs them all.</li>
+          <li><b>Two-Handed Weapon Specialization</b> now boosts Holy and Physical damage and cuts your threat by up to 20% with a two-hander, so the Voidwalker keeps aggro more easily.</li>
           <li><b>Talent points:</b> 21 at 30 and 51 at 60, and each tree gains an extra milestone at 16 points.</li>
         </ul>
       </article>
@@ -594,14 +598,14 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
       <article class="card" data-only="wl">
         <span class="tag">Warlock changes in Forever</span>
         <ul class="plain">
-          <li><b>Demons scale with your stats.</b> This is the best change for Demonology: gear upgrades for you also upgrade your demon.</li>
+          <li><b>Demons scale with your stats.</b> This is the best change for Demonology: gear upgrades for you also upgrade your demon. Stamina counts less than it did in beta, though: each point gives your demon 2 health (was 7.5).</li>
           <li><b>Felguard and Metamorphosis are not in the game.</b> Demonology's capstone is <b>Demonic Pact</b>.</li>
           <li><b>DoTs and drains can crit.</b></li>
           <li><b>Life Tap scales with Spirit</b>, not spell damage.</li>
           <li><b>Banes:</b> Agony and Doom are Banes. You can keep <b>one Bane and one Curse</b> on the same target.</li>
           <li><b>Curse of the Elements</b> now raises damage taken from every magic school.</li>
-          <li><b>Firestone and Spellstone</b> are weapon imbues that stack with weapon oils.</li>
-          <li><b>Soul Shards:</b> Drain Soul ticks can grant a shard before the target dies. A Drain Soul killing blow always grants one.</li>
+          <li><b>Firestone and Spellstone</b> are weapon imbues that stack with weapon oils. Spellstone boosts only Shadow damage, which suits Shadow Bolt.</li>
+          <li><b>Soul Shards:</b> a Drain Soul killing blow always grants one. Shards from Drain Soul damage ticks were cut sharply at launch, so don't count on them.</li>
         </ul>
       </article>
       <article class="card" data-only="wl">
@@ -665,13 +669,13 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
         <span class="tag">Talent priority</span>
         <p class="muted">Press <kbd>N</kbd>, open the Retribution tab, and spend each new point going down this list. You get one point per level from 10.</p>
         <dl class="talents">
-          <dt>10–20</dt><dd><b>Seal of Command</b> (a Retribution talent in Forever), then crit chance and Parry. Skip the mana talents for now.</dd>
-          <dt>20–30</dt><dd><b>Vindication</b> (an Attack Power buff) and <b>Two-Handed Weapon Specialization</b>.</dd>
-          <dt>~30</dt><dd><b>Crusade</b>, and <b>Reckoning</b> over Templar's Bulwark.</dd>
-          <dt>30–40</dt><dd><b>Champion of the Light</b> (Spell Power from Intellect) and <b>Unsealed Wrath</b> for Seal twisting.</dd>
-          <dt>40+</dt><dd>The capstone, <b>Twist of Light</b>. Check what it does before your level 40 respec.</dd>
+          <dt>10–20</dt><dd><b>Seal of Command</b> (a Retribution talent in Forever), then <b>Conviction</b> (+6% crit on everything) and <b>Sanctified Judgement</b>.</dd>
+          <dt>20–30</dt><dd><b>Unyielding Faith</b>, <b>Two-Handed Weapon Specialization</b> (more damage, less threat) and <b>Vengeance</b> (needs Seal of Command, stacks 5 times).</dd>
+          <dt>30–39</dt><dd><b>Champion of the Light</b> (spell damage from Intellect, faster Hammer of Wrath), and <b>Repentance</b>, which the capstone requires.</dd>
+          <dt>40</dt><dd><b>Unsealed Wrath</b>, the 31-point capstone, for Seal twisting.</dd>
+          <dt>Skip</dt><dd><b>Vindication</b> no longer gives Attack Power. Take <b>Turn Evil</b> only if you run Scarlet and Scholomance a lot.</dd>
         </dl>
-        <p class="muted"><span class="badge unv">verify</span> These are beta talent names from pre-launch guides. Check a Forever talent calculator before you spend points.</p>
+        <p class="muted"><span class="badge unv">verify</span> Updated from Blizzard's Nov 2 notes (Twist of Light and Instrument of Law were removed). The order of talents those notes don't mention is still from beta, so check a Forever talent calculator.</p>
       </article>
       <article class="card">
         <span class="tag">Solo pull</span>
@@ -699,7 +703,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
       <article class="card">
         <span class="tag">Talent priority</span>
         <dl class="talents">
-          <dt>10–20</dt><dd><b>Demonic Embrace</b> and <b>Improved Voidwalker</b>: more Stamina for you and a sturdier Voidwalker.</dd>
+          <dt>10–20</dt><dd><b>Demonic Embrace</b> and <b>Improved Voidwalker</b>: more Stamina for you and a sturdier Voidwalker. Your Stamina now adds little to the demon's health, so Improved Voidwalker matters more.</dd>
           <dt>20–30</dt><dd><b>Fel Domination</b>: an instant demon summon when your demon dies, which saves pulls that go wrong. Then <b>Fel Stamina</b> and <b>Fel Intellect</b>.</dd>
           <dt>30–40</dt><dd><b>Unholy Power</b> and <b>Master Summoner</b>, then <b>Master Demonologist</b> (bonus effect based on which demon is out).</dd>
           <dt>40+</dt><dd><b>Soul Link</b>, if Forever's tree still has it (it shares damage with your demon). Then <b>Demonic Sacrifice</b>, then the <b>Demonic Pact</b> capstone.</dd>
@@ -778,7 +782,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
         <ul class="plain">
           <li>The level 40 <b>Warhorse</b> and <b>dual spec</b> (10g) come due at the same time, so start saving in your 30s.</li>
           <li>Sell ore and bars on the Auction House; they sell steadily all through leveling.</li>
-          <li>Paladins train many spell ranks. Skip the ranks of spells you don't use, like the resistance auras.</li>
+          <li>Training every spell from 1 to 60 costs about <b>206g</b> in total, the same for every class. Skip the ranks of spells you don't use, like the resistance auras.</li>
           <li>Cannibalize and self-heals mean you rarely buy food.</li>
         </ul>
       </article>
@@ -791,7 +795,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
         <span class="tag">Gold plan</span>
         <ul class="plain">
           <li>Forever has no WoW Token and no paid boosts, so all gold comes from playing.</li>
-          <li><b>Savings targets:</b> 10g for dual spec at 40, plus training costs at every even level.</li>
+          <li><b>Savings targets:</b> 10g for dual spec at 40, plus training at every even level. Training from 1 to 60 costs about <b>206g</b> in total. Warlock training is cheaper by what the demon Grimoires cost, so you still need gold for those.</li>
           <li>Sell cloth stacks and leather on the Auction House. Disenchant the green items you don't need.</li>
           <li>Skip vendor food: Cannibalize and Life Tap cover most of your downtime.</li>
           <li>Look into the new systems: Waylaid Crates, Merchant's Favor and the Azeroth Commerce Authority recipes.</li>
@@ -877,8 +881,8 @@ const ROUTE = [
    tip:"Start with the Imp and Shadow Bolt. Finish the starting-zone quest that unlocks Camping (around level 5)."},
   {id:"r2", lo:6, hi:11, zones:["Tirisfal Glades"], hub:"Brill · Undercity", dun:"—",
    tip:"Train in Brill. At 10, do the Voidwalker quest; the Voidwalker is now your main demon. Pick up Tailoring and Enchanting in the Undercity."},
-  {id:"r3", lo:11, hi:15, zones:["Silverpine Forest","Tirisfal Glades"], hub:"The Sepulcher", dun:"Ruins of Lordaeron (new, ~13–15)",
-   tip:"Ruins of Lordaeron is the new dungeon right under the Undercity. Gather its quests in Tirisfal before you go in."},
+  {id:"r3", lo:11, hi:15, zones:["Silverpine Forest","Tirisfal Glades"], hub:"The Sepulcher", dun:"Ruins of Lordaeron (new; quests need level 15)",
+   tip:"Ruins of Lordaeron is the new dungeon right under the Undercity. Its quests need level 15, so run it at the end of this bracket, after gathering the quests in Tirisfal."},
   {id:"r4", lo:15, hi:20, zones:["The Barrens","Silverpine Forest"], hub:"Crossroads (zeppelin to Orgrimmar)", dun:"Wailing Caverns (~17) · Shadowfang Keep (~18) · Ragefire (optional)",
    tip:"Take the zeppelin from Tirisfal to Durotar. The Barrens is the Horde's big questing zone. Go back to Silverpine for Shadowfang Keep."},
   {id:"r5", lo:20, hi:25, zones:["Stonetalon Mountains","Ashenvale","Hillsbrad Foothills"], hub:"Sun Rock · Splintertree · Tarren Mill", dun:"Blackfathom Deeps (~22) · Razorfen Kraul (~24)",
@@ -989,12 +993,12 @@ const DUNGEONS = [
 // Beta-era guides; Forsaken paladin quest names come from ForeverWisp / Conquest Capped / forg.gg.
 const PTIP = {
   r1:"Do the Deathknell paladin chain: A Difficult Path, Rediscovering the Light, Coming to Terms. Use Seal of Righteousness and Judgement. In Forever, Judgement no longer uses up your Seal. Holy Strike arrives at 6.",
-  r2:"Continue Your Training sends you to Shari Stilwell in Brill, then A Second Home leads to Bandarion Keep (Tyr's Watch) for its chain at 7–9. At 10, train Seal of Fury and Lay on Hands. Pick up Mining and Blacksmithing in the Undercity.",
+  r2:"Continue Your Training sends you to Shari Stilwell in Brill, then A Second Home leads to Bandarion Keep (Tyr's Watch) for its chain at 7–9. At 10, train Seal of Fury, Lay on Hands and Righteous Fury, but leave Righteous Fury switched off; it's for tanking. Pick up Mining and Blacksmithing in the Undercity.",
   r3:"Redemption comes at 12 from A Lesson in Divinity (bring 10 Linen Cloth). In Ruins of Lordaeron, either tank with Seal of Fury or hit hard behind the Voidwalker.",
   r4:"Around 18, Danitha Morr starts Diplomatic Incident, the Wolfsbane chain. It runs through Silverpine and three dungeons and ends at Old Fire-Eye, south of the Sepulcher. Shadowfang Keep is on the way.",
   r5:"At 20, every paladin trains Consecration and Blessing of Kings, and blessings now last 1 hour. Equip Wolfsbane. Exorcism (20) hits undead and demons hard.",
-  r6:"Retribution points: Seal of Command and crit first, then work toward Vindication and Two-Handed Weapon Specialization. Scarlet Monastery drops strong two-handers.",
-  r7:"Seal of Light at 30 means less drinking. Around 30, take Crusade and Reckoning. Open with Hammer of Justice, then judge Seal of Command for burst.",
+  r6:"Retribution points: Seal of Command and Conviction first, then Two-Handed Weapon Specialization and Vengeance. Scarlet Monastery drops strong two-handers.",
+  r7:"Seal of Light at 30 means less drinking. Around 30, take Champion of the Light, then Repentance on the way to Unsealed Wrath at 40. Open with Hammer of Justice, then judge Seal of Command for burst.",
   r8:"Divine Shield at 34. Save gold: the level 40 Warhorse and dual spec both come due at once.",
   r9:"At 40: train the Warhorse mount and buy dual spec (10g). A Protection second spec gets you into dungeon groups instantly. Riverglades quests suit melee well.",
   r10:"Hammer of Wrath at 44 finishes off fleeing mobs. Blackrock Depths drops great Retribution gear.",
