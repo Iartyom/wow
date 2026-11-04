@@ -5,9 +5,12 @@
 
 GrimoireSyncDB = GrimoireSyncDB or {}
 
--- Spellbook names that mean a class-quest demon/mount is done. Keys match the page's checklist ids.
--- English client only; other locales simply won't auto-tick these.
+-- Spellbook names that mean a class quest / milestone is done. Values match the page's checklist ids
+-- (each class has its own checklist, so ids only need to be unique within a class).
+-- English client only; other locales simply won't auto-tick these. The field is still called
+-- `demons` in the snapshot so older page versions keep reading it.
 local DEMON_SPELLS = {
+  -- Warlock
   ["Summon Imp"] = "cq-imp",
   ["Summon Voidwalker"] = "cq-vw",
   ["Summon Succubus"] = "cq-succ",
@@ -16,6 +19,14 @@ local DEMON_SPELLS = {
   ["Summon Felsteed"] = "cq-felsteed",
   ["Summon Dreadsteed"] = "cq-dread",
   ["Inferno"] = "cq-inferno",
+  -- Paladin (Forsaken mount names are from beta guides; both spellings are listed)
+  ["Holy Strike"] = "pm-hs",
+  ["Consecration"] = "pm-cons",
+  ["Redemption"] = "pq-redemp",
+  ["Summon Warhorse"] = "pq-warhorse",
+  ["Summon Forsaken Warhorse"] = "pq-warhorse",
+  ["Summon Charger"] = "pq-charger",
+  ["Summon Forsaken Charger"] = "pq-charger",
 }
 
 local function safe(fn, ...)
@@ -83,6 +94,12 @@ local function snapshot()
     profs = scanProfessions(),
     time = time(),
   }
+  -- SavedVariables are account-wide, so `last` gets overwritten by whichever character logged in last.
+  -- Keep a copy per class too, so the Warlock and the Paladin each keep their own snapshot on the page.
+  if classFile then
+    GrimoireSyncDB.byClass = GrimoireSyncDB.byClass or {}
+    GrimoireSyncDB.byClass[classFile] = GrimoireSyncDB.last
+  end
 end
 
 local f = CreateFrame("Frame")
@@ -99,6 +116,6 @@ SLASH_GRIMOIRESYNC1 = "/grimoire"
 SlashCmdList.GRIMOIRESYNC = function()
   snapshot()
   local s = GrimoireSyncDB.last
-  print(("|cff8fdc5aGrimoire Sync|r level %s in %s, %d demon(s). Type /reload to write the file now.")
-    :format(tostring(s.level), tostring(s.zone), #s.demons))
+  print(("|cff8fdc5aGrimoire Sync|r %s level %s in %s, %d class milestone(s). Type /reload to write the file now.")
+    :format(tostring(s.class), tostring(s.level), tostring(s.zone), #s.demons))
 end

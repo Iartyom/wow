@@ -287,6 +287,27 @@ tr.inrange td{background:rgba(135,136,238,.08)}
 .contabs button[aria-pressed=true],.filters button[aria-pressed=true]{background:linear-gradient(180deg,#2e2a5a,#15132b)}
 label.chk.on input{filter:drop-shadow(0 0 4px rgba(135,136,238,.8))}
 ::selection{background:rgba(135,136,238,.4)}
+/* ---- Character switch + per-class blocks ---- */
+body:not(.char-pal) [data-only="pal"], body.char-pal [data-only="wl"]{display:none!important}
+.charsw{display:flex;gap:4px}
+.charsw button{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:.85rem;cursor:pointer;color:var(--muted);
+  background:linear-gradient(180deg,#221a2a,#120d17);border:1px solid var(--line);padding:3px 10px 3px 4px;box-shadow:0 2px 0 #000}
+.charsw button .wi{width:20px;height:20px;margin:0;vertical-align:0}
+.charsw button[aria-pressed=true]{color:var(--fg);border-color:var(--fel);box-shadow:0 0 10px -2px var(--fel),0 2px 0 #000}
+.card.duo{margin-top:var(--s4)}
+/* "Forsaken Light" (Paladin): the same undead base, with pale holy gold replacing warlock purple.
+   Green plague atmosphere stays; accents, banners, the moon and the ruin windows turn to light. */
+body.char-pal{--fel:#f0cf74;--fel-dim:#8a7034;--banner:#4a3714;--banner-2:#241a08}
+body.char-pal header.hero{background:radial-gradient(circle at 84% 22%, rgba(255,244,210,.34) 0 46px, rgba(240,207,116,.16) 47px, transparent 160px)}
+body.char-pal .hero h1 em{text-shadow:0 0 26px rgba(240,207,116,.65),0 2px 0 #000}
+body.char-pal .ruins .win{fill:#f0cf74}
+body.char-pal .brand::before{filter:drop-shadow(0 0 4px rgba(240,207,116,.6))}
+body.char-pal .step.now{box-shadow:0 0 0 1px var(--fel-dim),0 0 28px -6px rgba(240,207,116,.5),inset 0 0 34px rgba(0,0,0,.5)}
+body.char-pal tr.inrange td{background:rgba(240,207,116,.07)}
+body.char-pal .card .tag{color:#e6c67c}
+body.char-pal .contabs button[aria-pressed=true],body.char-pal .filters button[aria-pressed=true]{background:linear-gradient(180deg,#3a2e12,#1a1407)}
+body.char-pal label.chk.on input{filter:drop-shadow(0 0 4px rgba(240,207,116,.8))}
+body.char-pal ::selection{background:rgba(240,207,116,.35)}
 .wi.big{width:52px;height:52px;margin:0;border-radius:6px;box-shadow:0 0 0 2px var(--bronze),0 0 18px rgba(155,212,74,.3)}
 .leaflet-tooltip.lt-minor{color:#d9cfbf;font-size:10.5px;font-style:italic;font-weight:400}
 .maplayout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:var(--s4)}
@@ -354,6 +375,11 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
 <div class="bar">
   <div class="wrap">
     <span class="brand">Forsaken Grimoire</span>
+    <!-- Character switch: each character has its own progress, notes and game snapshot. -->
+    <div class="charsw" role="group" aria-label="Character">
+      <button type="button" data-char="wl" aria-pressed="true"><img class="wi" src="https://wow.zamimg.com/images/wow/icons/large/classicon_warlock.jpg" alt="">Warlock</button>
+      <button type="button" data-char="pal" aria-pressed="false"><img class="wi" src="https://wow.zamimg.com/images/wow/icons/large/classicon_paladin.jpg" alt="">Paladin</button>
+    </div>
     <div class="lvl">
       <label for="level" class="eyebrow">Level</label>
       <input type="range" id="level" min="1" max="60" value="1">
@@ -364,7 +390,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
   </div>
   <div class="wrap">
     <nav class="toc" aria-label="Sections">
-      <a href="#game">From the game</a><a href="#kit">Your kit</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#rotation">Demonology</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
+      <a href="#game">From the game</a><a href="#kit">Your kit</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#rotation">Your spec</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
     </nav>
   </div>
 </div>
@@ -383,14 +409,19 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
     <g><path d="M0 12q5-5 10 0q5-5 10 0"/></g>
   </svg>
   <div class="wrap">
-    <div class="crest"><img class="wi big" src="https://wow.zamimg.com/images/wow/icons/large/achievement_character_undead_male.jpg" alt=""><img class="wi big" src="https://wow.zamimg.com/images/wow/icons/large/classicon_warlock.jpg" alt=""><img class="wi big" src="https://wow.zamimg.com/images/wow/icons/large/spell_shadow_summonvoidwalker.jpg" alt=""></div>
-    <p class="eyebrow">World of Warcraft: Forever · Undead Warlock · Demonology · Normal realm · 1 → 60</p>
-    <h1>Rise, <em>Forsaken.</em><br>Your demons answer to you.</h1>
-    <p class="lede">A personal field guide for one Undead Demonology Warlock: racials, demons, a drawn route map, a quest-and-dungeon route through every bracket, and a tracker that the GrimoireSync addon fills in from the game.</p>
+    <div class="crest" data-only="wl"><img class="wi big" src="https://wow.zamimg.com/images/wow/icons/large/achievement_character_undead_male.jpg" alt=""><img class="wi big" src="https://wow.zamimg.com/images/wow/icons/large/classicon_warlock.jpg" alt=""><img class="wi big" src="https://wow.zamimg.com/images/wow/icons/large/spell_shadow_summonvoidwalker.jpg" alt=""></div>
+    <div class="crest" data-only="pal"><img class="wi big" src="https://wow.zamimg.com/images/wow/icons/large/achievement_character_undead_male.jpg" alt=""><img class="wi big" src="https://wow.zamimg.com/images/wow/icons/large/classicon_paladin.jpg" alt=""><img class="wi big" src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_auraoflight.jpg" alt=""></div>
+    <p class="eyebrow" data-only="wl">World of Warcraft: Forever · Undead Warlock · Demonology · Normal realm · 1 → 60</p>
+    <p class="eyebrow" data-only="pal">World of Warcraft: Forever · Undead Paladin · Retribution · Normal realm · 1 → 60</p>
+    <h1 data-only="wl">Rise, <em>Forsaken.</em><br>Your demons answer to you.</h1>
+    <h1 data-only="pal">Rise, <em>Forsaken.</em><br>The Light still answers.</h1>
+    <p class="lede" data-only="wl">A personal field guide for one Undead Demonology Warlock: racials, demons, a drawn route map, a quest-and-dungeon route through every bracket, and a tracker that the GrimoireSync addon fills in from the game.</p>
+    <p class="lede" data-only="pal">A field guide for an Undead Retribution Paladin, a Horde combination that's new in Forever: the Bandarion Keep paladin story, seals and Judgement as they work now, the Wolfsbane quest, and the same route as the Warlock so the two of you can level as a pair.</p>
     <div class="facts">
       <div id="countdown"><b>—</b><span>Global launch · Nov 4, 3:00 pm PST</span></div>
       <div><b>60</b><span>Level cap, permanent</span></div>
-      <div><b>Demonology</b><span>Your leveling spec</span></div>
+      <div data-only="wl"><b>Demonology</b><span>Your leveling spec</span></div>
+      <div data-only="pal"><b>Retribution</b><span>Your leveling spec</span></div>
       <div><b>Lv 40 · 10g</b><span>Dual spec at class trainer</span></div>
       <div><b>Dec 9</b><span>Barrow Deeps, Hyjal, Onyxia open</span></div>
     </div>
@@ -415,7 +446,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
 
 <section id="kit">
   <div class="wrap">
-    <header><p class="eyebrow">Chapter I</p><h2>Your kit</h2><p>What makes an Undead Warlock in Forever different from the one you may remember.</p></header>
+    <header><p class="eyebrow">Chapter I</p><h2>Your kit</h2><p data-only="wl">What makes an Undead Warlock in Forever different from the one you may remember.</p><p data-only="pal">Forsaken paladins are new in Forever, and the paladin class itself was reworked.</p></header>
     <div class="grid">
       <article class="card">
         <span class="tag">Undead racials</span>
@@ -427,7 +458,30 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
         <p>Restores 7% health and mana every 2 s for 10 s from a Humanoid or Undead corpse within 5 yards. Use it after every pull of humanoids to skip eating.</p>
         <p class="muted">Underwater Breathing: breath lasts 300% longer.</p>
       </article>
-      <article class="card">
+      <article class="card" data-only="pal">
+        <span class="tag">Paladin changes in Forever</span>
+        <ul class="plain">
+          <li><b>Judgement</b> no longer uses up your Seal. Judge on cooldown and keep the Seal running.</li>
+          <li><b>Holy Strike</b> (level 6): an instant Holy-damage weapon strike with a 10–12 s cooldown (sources differ). Use it between auto-attacks.</li>
+          <li><b>Seal of Fury</b> (level 10): the new tanking Seal. With a shield it grants absorbs, and judging it taunts.</li>
+          <li><b>Consecration</b> and <b>Blessing of Kings</b> are baseline at 20, with no talents needed.</li>
+          <li><b>Blessings last 1 hour.</b> Blessing of Salvation and Blessing of Light are gone.</li>
+          <li><b>Unsealed Wrath</b> (Retribution talent) brings back Seal twisting: hits store your Seal, and swapping Seals procs them.</li>
+          <li><b>Talent points:</b> 21 at 30 and 51 at 60, and each tree gains an extra milestone at 16 points.</li>
+        </ul>
+      </article>
+      <article class="card" data-only="pal">
+        <span class="tag">Seals, blessings, auras</span>
+        <ul class="plain">
+          <li><b>Seal of Righteousness</b>: use it with fast weapons and early on.</li>
+          <li><b>Seal of Command</b>: a Retribution talent here, not baseline. Best with a slow two-hander like Wolfsbane.</li>
+          <li><b>Blessing of Might</b> on yourself. Give the warlock <b>Blessing of Wisdom</b>, and from 20, <b>Blessing of Kings</b>.</li>
+          <li><b>Retribution Aura</b> (16) while questing, <b>Devotion Aura</b> when things get hairy.</li>
+          <li><b>Exorcism</b> (20) and <b>Holy Wrath</b> (50) hit the undead and demons hard. Use them in the Plaguelands and Scholomance.</li>
+          <li><b>Lay on Hands</b> (10) and <b>Divine Shield</b> (34) are your emergency buttons.</li>
+        </ul>
+      </article>
+      <article class="card" data-only="wl">
         <span class="tag">Warlock changes in Forever</span>
         <ul class="plain">
           <li><b>Demons scale with your stats.</b> This is the best change for Demonology: gear upgrades for you also upgrade your demon.</li>
@@ -440,7 +494,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
           <li><b>Soul Shards:</b> Drain Soul ticks can grant a shard before the target dies. A Drain Soul killing blow always grants one.</li>
         </ul>
       </article>
-      <article class="card">
+      <article class="card" data-only="wl">
         <span class="tag">Which demon, when</span>
         <ul class="plain">
           <li><b>Imp</b> (1–10): ranged fire damage and the Blood Pact stamina buff.</li>
@@ -494,8 +548,43 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
 
 <section id="rotation">
   <div class="wrap">
-    <header><p class="eyebrow">Chapter IV</p><h2>Playing Demonology</h2><p>Your demon tanks and you deal damage from behind it. Demonology is slower to kill than Affliction, but you will rarely die. At 40, dual spec lets you add a second build without giving this one up.</p></header>
-    <div class="grid">
+    <header data-only="wl"><p class="eyebrow">Chapter IV</p><h2>Playing Demonology</h2><p>Your demon tanks and you deal damage from behind it. Demonology is slower to kill than Affliction, but you will rarely die. At 40, dual spec lets you add a second build without giving this one up.</p></header>
+    <header data-only="pal"><p class="eyebrow">Chapter IV</p><h2>Playing Retribution</h2><p>Use a big two-hander and a Seal, judge on cooldown, and heal yourself between pulls. Current guides rate Retribution as the easiest paladin leveling spec. At 40, dual spec adds Protection for dungeons.</p></header>
+    <div class="grid" data-only="pal">
+      <article class="card">
+        <span class="tag">Talent priority</span>
+        <dl class="talents">
+          <dt>10–20</dt><dd><b>Seal of Command</b> (a Retribution talent in Forever), then crit chance and Parry. Skip the mana talents for now.</dd>
+          <dt>20–30</dt><dd><b>Vindication</b> (an Attack Power buff) and <b>Two-Handed Weapon Specialization</b>.</dd>
+          <dt>~30</dt><dd><b>Crusade</b>, and <b>Reckoning</b> over Templar's Bulwark.</dd>
+          <dt>30–40</dt><dd><b>Champion of the Light</b> (Spell Power from Intellect) and <b>Unsealed Wrath</b> for Seal twisting.</dd>
+          <dt>40+</dt><dd>The capstone, <b>Twist of Light</b>. Check what it does before your level 40 respec.</dd>
+        </dl>
+        <p class="muted"><span class="badge unv">verify</span> These are beta talent names from pre-launch guides. Check a Forever talent calculator before you spend points.</p>
+      </article>
+      <article class="card">
+        <span class="tag">Solo pull</span>
+        <ol class="rot">
+          <li>Seal up: <b>Seal of Command</b> with a slow two-hander, <b>Seal of Righteousness</b> otherwise.</li>
+          <li>Open with <b>Judgement</b>. Your Seal stays up.</li>
+          <li><b>Holy Strike</b> on cooldown, between swings.</li>
+          <li>On 2+ mobs, from 20: drop <b>Consecration</b> under them.</li>
+          <li>For burst, <b>Hammer of Justice</b>, then judge on the stunned target.</li>
+          <li>Between pulls: <b>Cannibalize</b> on humanoid or undead corpses, then <b>Flash of Light</b> if you need more.</li>
+        </ol>
+      </article>
+      <article class="card">
+        <span class="tag">Trouble &amp; dungeons</span>
+        <ul class="plain">
+          <li>On a bad pull: <b>Divine Protection</b> (6), then <b>Divine Shield</b> (34) and a <b>Hearthstone</b> or a heal. <b>Lay on Hands</b> when you're nearly dead.</li>
+          <li>Stop runners with <b>Seal of Justice</b> (22) or <b>Hammer of Wrath</b> (44).</li>
+          <li>Put <b>Blessing of Protection</b> on a party member who pulls aggro. <b>Blessing of Freedom</b> breaks roots and slows.</li>
+          <li>In dungeons, use <b>Seal of Fury</b> to taunt if the tank dies, <b>Turn Undead</b> (24) in Scarlet and Scholomance, and <b>Redemption</b> after a wipe.</li>
+          <li>Blessings: Might on melee, Wisdom on casters and healers, Kings on everyone.</li>
+        </ul>
+      </article>
+    </div>
+    <div class="grid" data-only="wl">
       <article class="card">
         <span class="tag">Talent priority</span>
         <dl class="talents">
@@ -529,6 +618,18 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
         </ul>
       </article>
     </div>
+    <!-- Shared by both characters: they level mostly together. -->
+    <article class="card duo">
+      <span class="tag">Playing as a pair · Warlock + Paladin</span>
+      <ul class="plain">
+        <li><b>Pulls:</b> the Voidwalker opens, the paladin drops <b>Consecration</b> on the pack, and the warlock spreads <b>Corruption</b> and Banes. Let the Voidwalker hold threat for a couple of seconds first.</li>
+        <li><b>Buffs:</b> <b>Blessing of Wisdom</b> or <b>Kings</b> on the warlock, <b>Might</b> on the paladin. The Imp's <b>Blood Pact</b> raises both of your Stamina early on.</li>
+        <li><b>Safety:</b> the warlock <b>Soulstones</b> the paladin, the paladin <b>Redemptions</b> the warlock, and Healthstones go to both. <b>Blessing of Protection</b> saves the warlock if something breaks through.</li>
+        <li><b>Downtime:</b> you both have <b>Cannibalize</b>, so split the corpses. The warlock <b>Life Taps</b> while the paladin heals them back up.</li>
+        <li><b>Professions:</b> Tailoring and Enchanting on the warlock, Mining and Blacksmithing on the paladin. The enchanter enchants the paladin's two-hander. Swap materials instead of selling them.</li>
+        <li><b>Dungeons:</b> run the Wolfsbane dungeons together. After 40, a Protection paladin and a Demonology warlock can build a group around themselves.</li>
+      </ul>
+    </article>
   </div>
 </section>
 
@@ -547,7 +648,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
 
 <section id="quests">
   <div class="wrap">
-    <header><p class="eyebrow">Chapter VI</p><h2>Class quests &amp; milestones</h2><p>Your demons and mounts come from class quests. Ask your warlock trainer in Brill or the Undercity Magic Quarter when you reach each level. With the addon, finished demons tick themselves.</p></header>
+    <header><p class="eyebrow">Chapter VI</p><h2>Class quests &amp; milestones</h2><p data-only="wl">Your demons and mounts come from class quests. Ask your warlock trainer in Brill or the Undercity Magic Quarter when you reach each level. With the addon, finished demons tick themselves.</p><p data-only="pal">The Forsaken paladin story starts with Aramis Hammerhand in Deathknell, continues with Shari Stilwell in Brill, and centres on Bandarion Keep (Tyr's Watch). With the addon, Holy Strike, Consecration, Redemption and your mounts tick themselves.</p></header>
     <div class="grid" id="checkGroups"></div>
   </div>
 </section>
@@ -556,12 +657,26 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
   <div class="wrap">
     <header><p class="eyebrow">Chapter VII</p><h2>Professions, gold &amp; addons</h2></header>
     <div class="grid">
-      <article class="card">
+      <article class="card" data-only="pal">
+        <span class="tag">Professions</span>
+        <p><b>Mining and Blacksmithing</b> fits a two-hander paladin: Blacksmithing makes your weapons and plate, and Mining supplies the ore. It also complements the warlock's Tailoring and Enchanting.</p>
+        <p class="muted">For more gold, run <b>Mining and Herbalism</b> to 40, then swap Herbalism for Blacksmithing. Minor Healing Potions are now a First Aid recipe.</p>
+      </article>
+      <article class="card" data-only="pal">
+        <span class="tag">Gold plan</span>
+        <ul class="plain">
+          <li>The level 40 <b>Warhorse</b> and <b>dual spec</b> (10g) come due at the same time, so start saving in your 30s.</li>
+          <li>Sell ore and bars on the Auction House; they sell steadily all through leveling.</li>
+          <li>Paladins train many spell ranks. Skip the ranks of spells you don't use, like the resistance auras.</li>
+          <li>Cannibalize and self-heals mean you rarely buy food.</li>
+        </ul>
+      </article>
+      <article class="card" data-only="wl">
         <span class="tag">Professions</span>
         <p><b>Tailoring and Enchanting</b> is the classic warlock pairing. Tailoring turns the cloth you loot into your own gear and bags. Enchanting turns the gear you don't need into enchanting materials, and early on it makes <b>wands</b>, which are a big upgrade at levels 10–20.</p>
         <p class="muted">For more gold early, take <b>Herbalism and Skinning</b> or <b>Mining</b> to 40, then switch. Minor Healing Potions are now a First Aid recipe. Leveling crafting professions also earns Legacy Points.</p>
       </article>
-      <article class="card">
+      <article class="card" data-only="wl">
         <span class="tag">Gold plan</span>
         <ul class="plain">
           <li>Forever has no WoW Token and no paid boosts, so all gold comes from playing.</li>
@@ -759,7 +874,33 @@ const DUNGEONS = [
   [null,58,"Shaper's Terrace","Un'Goro Crater",1,""]
 ];
 
+// Paladin tips per route bracket (same zones as the warlock: the two level mostly together).
+// Beta-era guides; Forsaken paladin quest names come from ForeverWisp / Conquest Capped / forg.gg.
+const PTIP = {
+  r1:"Do the Deathknell paladin chain: A Difficult Path, Rediscovering the Light, Coming to Terms. Use Seal of Righteousness and Judgement. In Forever, Judgement no longer uses up your Seal. Holy Strike arrives at 6.",
+  r2:"Continue Your Training sends you to Shari Stilwell in Brill, then A Second Home leads to Bandarion Keep (Tyr's Watch) for its chain at 7–9. At 10, train Seal of Fury and Lay on Hands. Pick up Mining and Blacksmithing in the Undercity.",
+  r3:"Redemption comes at 12 from A Lesson in Divinity (bring 10 Linen Cloth). In Ruins of Lordaeron, either tank with Seal of Fury or hit hard behind the Voidwalker.",
+  r4:"Around 18, Danitha Morr starts Diplomatic Incident, the Wolfsbane chain. It runs through Silverpine and three dungeons and ends at Old Fire-Eye, south of the Sepulcher. Shadowfang Keep is on the way.",
+  r5:"At 20, every paladin trains Consecration and Blessing of Kings, and blessings now last 1 hour. Equip Wolfsbane. Exorcism (20) hits undead and demons hard.",
+  r6:"Retribution points: Seal of Command and crit first, then work toward Vindication and Two-Handed Weapon Specialization. Scarlet Monastery drops strong two-handers.",
+  r7:"Seal of Light at 30 means less drinking. Around 30, take Crusade and Reckoning. Open with Hammer of Justice, then judge Seal of Command for burst.",
+  r8:"Divine Shield at 34. Save gold: the level 40 Warhorse and dual spec both come due at once.",
+  r9:"At 40: train the Warhorse mount and buy dual spec (10g). A Protection second spec gets you into dungeon groups instantly. Riverglades quests suit melee well.",
+  r10:"Hammer of Wrath at 44 finishes off fleeing mobs. Blackrock Depths drops great Retribution gear.",
+  r11:"Holy Wrath at 50 helps against the undead and demons in Felwood and Burning Steppes.",
+  r12:"The Plaguelands are full of undead: Exorcism and Holy Wrath shine there. At 60, do the Forsaken Charger epic mount quest."
+};
+// Duo notes per bracket: shown on both characters' routes.
+const DUO = {
+  r1:"Group up as soon as both of you reach Deathknell. Kill credit is shared, so the pair levels about as fast as solo with half the risk.",
+  r2:"From here on, the Voidwalker tanks and the paladin uses Consecration and Holy Strike. Blessing of Wisdom goes on the warlock, Might on the paladin.",
+  r4:"Wolfsbane's dungeons (Shadowfang Keep and others) are the ones the warlock wants too, so run them together.",
+  r9:"Both of you get dual spec at 40. Protection paladin plus Demonology warlock is a two-player dungeon core.",
+  r12:"Soulstone the paladin before risky pulls. The paladin can Redemption the warlock."
+};
+
 // Checklist groups. Ids are stable keys in saved state AND in the addon (DEMON_SPELLS); don't rename them.
+// Each character has its own state, so the paladin list can reuse milestone ids like ms-60.
 const CHECKS = [
   {title:"Demons & mounts", tag:"Class quests", items:[
     ["cq-imp","Imp (level 1, you start with it)"],
@@ -793,14 +934,56 @@ const CHECKS = [
 ];
 const PROF_CHECKS = [["Tailoring",150,"pf-tail150"],["Tailoring",300,"pf-tail300"],["Enchanting",150,"pf-ench150"],["Enchanting",300,"pf-ench300"]];
 
-// ---------- state ----------
-let state = {level:1, checks:{}, notes:"", game:null};
-let docRef = null, saveTimer = null, saving = Promise.resolve(), mode = "connecting";
-const LS_KEY = "forsaken-grimoire-v1";
+const CHECKS_PAL = [
+  {title:"Class quests & mounts", tag:"Class quests", items:[
+    ["pq-path","Deathknell chain: A Difficult Path → Continue Your Training (levels 1–4)"],
+    ["pq-keep","Bandarion Keep chain: Murlocs at the Gates → A Token of Good Faith (levels 7–9)"],
+    ["pq-redemp","Redemption: A Lesson in Divinity (level 12, 10 Linen Cloth)"],
+    ["pq-wolfsbane","Wolfsbane two-hander: Diplomatic Incident chain (starts ~18) ⚑ verify"],
+    ["pq-warhorse","Forsaken Warhorse mount (level 40) ⚑ verify"],
+    ["pq-charger","Forsaken Charger epic mount (level 60) ⚑ verify"]
+  ]},
+  {title:"Milestones", tag:"Progress", items:[
+    ["ms-camp","Unlock Camping (starting-zone quest)"],
+    ["pm-hs","Learn Holy Strike (level 6)"],
+    ["pm-cons","Consecration + Blessing of Kings (level 20)"],
+    ["ms-ruins","Clear Ruins of Lordaeron"],
+    ["ms-zep","Take the zeppelin to Kalimdor"],
+    ["ms-dual","Buy dual spec (level 40, 10g)"],
+    ["ms-river","Reach Riverglades"],
+    ["ms-60","Reach level 60"]
+  ]},
+  {title:"Legacy & professions", tag:"Account", items:[
+    ["lg-15","Legacy: 15 points (toy)"],
+    ["lg-25","Legacy: 25 points (companion)"],
+    ["lg-40","Legacy: 40 points (tabard)"],
+    ["lg-55","Legacy: 55 points (mount)"],
+    ["pf-mine150","Mining 150"],
+    ["pf-mine300","Mining 300"],
+    ["pf-bs150","Blacksmithing 150"],
+    ["pf-bs300","Blacksmithing 300"]
+  ]}
+];
+const PROF_CHECKS_PAL = [["Mining",150,"pf-mine150"],["Mining",300,"pf-mine300"],["Blacksmithing",150,"pf-bs150"],["Blacksmithing",300,"pf-bs300"]];
+
+// ---------- characters ----------
+// Two characters share one page: the Warlock keeps the original storage key / db doc (so existing
+// progress survives), the Paladin gets its own. `cls` is the WoW class token the addon writes.
+const CHARS = {
+  wl:{cls:"WARLOCK", label:"Warlock", lsKey:"forsaken-grimoire-v1", doc:"progress", checks:CHECKS, prof:PROF_CHECKS},
+  pal:{cls:"PALADIN", label:"Paladin", lsKey:"forsaken-grimoire-pal-v1", doc:"progress-pal", checks:CHECKS_PAL, prof:PROF_CHECKS_PAL}
+};
+const blankState = ()=>({level:1, checks:{}, notes:"", game:null});
+const states = {wl:blankState(), pal:blankState()};
+let CHAR = (()=>{ const q = new URLSearchParams(location.search).get("char");
+  if(CHARS[q]) return q; try{ const v = localStorage.getItem("fg-char"); if(CHARS[v]) return v; }catch(e){} return "wl"; })();
+let state = states[CHAR];   // always the active character's state object
+let mode = "connecting";
+const docRefs = {}, saveTimers = {}, savings = {wl:Promise.resolve(), pal:Promise.resolve()};
 const $ = s => document.querySelector(s);
 const esc = s => String(s??"").replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
-function allCheckIds(){ return [...ROUTE.map(r=>r.id), ...CHECKS.flatMap(g=>g.items.map(i=>i[0]))]; }
+function allCheckIds(){ return [...ROUTE.map(r=>r.id), ...CHARS[CHAR].checks.flatMap(g=>g.items.map(i=>i[0]))]; }
 
 // ---------- from the game ----------
 // Minimal parser for WoW SavedVariables (Lua table literals). Handles ["k"]=v, k=v, positional
@@ -851,23 +1034,40 @@ function parseLuaSV(s){
   return out;
 }
 
-// Merge an addon snapshot into state. Returns a message for the import line.
+// Merge an addon file into the matching characters' states. The addon keeps one snapshot per class
+// (GrimoireSyncDB.byClass) plus `last`; older files only have `last` (no class = the warlock).
+// Returns a message for the import line.
 function applyGame(sv, source){
-  const s = sv && sv.GrimoireSyncDB && sv.GrimoireSyncDB.last;
-  if(!s || !s.level) throw new Error("This file has no character snapshot yet. Log in with the addon enabled, then log out or /reload.");
-  if(state.game && (s.time||0) <= (state.game.time||0)) return source==="auto" ? "" : "This snapshot is not newer than the one already loaded.";
+  const db = sv && sv.GrimoireSyncDB;
+  const snaps = {...((db && db.byClass) || {})};
+  const last = db && db.last;
+  if(last && last.level){ const k = last.class || "WARLOCK"; if(!snaps[k] || (+last.time||0) > (+snaps[k].time||0)) snaps[k] = last; }
+  const msgs = []; let matched = 0;
+  for(const [c,def] of Object.entries(CHARS)){
+    const s = snaps[def.cls]; if(!s || !s.level) continue;
+    matched++; const m = applySnap(c, s, source); if(m) msgs.push(`${def.label}: ${m}`);
+  }
+  if(!matched) throw new Error("This file has no Warlock or Paladin snapshot yet. Log in with the addon enabled, then log out or /reload.");
+  return msgs.join(" ");
+}
+function applySnap(c, s, source){
+  const st = states[c], def = CHARS[c];
+  if(st.game && (s.time||0) <= (st.game.time||0)) return source==="auto" ? "" : "not newer than the one already loaded.";
   const demons = (Array.isArray(s.demons) ? s.demons : Object.values(s.demons||{})).filter(x=>typeof x==="string");
   const profs = (s.profs && typeof s.profs==="object" && !Array.isArray(s.profs)) ? s.profs : {};
-  state.game = {level:s.level, cls:s.class||"", race:s.race||"", zone:s.zone||"", subzone:s.subzone||"",
+  st.game = {level:s.level, cls:s.class||"", race:s.race||"", zone:s.zone||"", subzone:s.subzone||"",
     money:+s.money||0, quests:(s.quests??null), xp:+s.xp||0, xpMax:+s.xpMax||0, time:+s.time||0, demons, profs};
-  state.level = Math.max(1, Math.min(60, Math.round(s.level)));
-  demons.forEach(id=>{ state.checks[id]=true; });
-  PROF_CHECKS.forEach(([p,r,id])=>{ if((+profs[p]||0) >= r) state.checks[id]=true; });
-  if(s.level >= 60) state.checks["ms-60"] = true;
-  // Prefer the zone you actually logged out in, if the map knows it; else follow the level.
-  if(ZONES[s.zone]) selZone = s.zone; else followLevel();
-  renderAll(); scheduleSave();
-  return `Loaded level ${state.level} in ${s.zone||"an unknown zone"}. ${demons.length} demon quest(s) ticked.`;
+  st.level = Math.max(1, Math.min(60, Math.round(s.level)));
+  demons.forEach(id=>{ st.checks[id]=true; });
+  def.prof.forEach(([p,r,id])=>{ if((+profs[p]||0) >= r) st.checks[id]=true; });
+  if(s.level >= 60) st.checks["ms-60"] = true;
+  if(c === CHAR){
+    // Prefer the zone you actually logged out in, if the map knows it; else follow the level.
+    if(ZONES[s.zone]) selZone = s.zone; else followLevel();
+    renderAll();
+  }
+  scheduleSave(c);
+  return `level ${st.level} in ${s.zone||"an unknown zone"}, ${demons.length} class milestone(s) ticked.`;
 }
 
 function fmtMoney(c){ const g=Math.floor(c/10000), s=Math.floor(c%10000/100), cc=c%100; return `${g}g ${s}s ${cc}c`; }
@@ -883,7 +1083,7 @@ function renderGame(){
     <div><b>${esc(g.zone||"—")}</b><span>${esc(g.subzone||"Zone")}</span></div>
     <div><b>${fmtMoney(g.money)}</b><span>Gold on hand</span></div>
     <div><b>${g.quests??"—"}</b><span>Quests completed</span></div>
-    <div><b>${g.demons.length}</b><span>Demons and mounts learned</span></div>
+    <div><b>${g.demons.length}</b><span>${CHAR==="pal" ? "Class milestones learned" : "Demons and mounts learned"}</span></div>
     <div><b>${esc(ago(g.time))}</b><span>Last logout or reload</span></div>
     <div style="grid-column:1/-1"><span>Skills: ${esc(profs)}</span></div>`;
 }
@@ -907,7 +1107,7 @@ function renderRoute(){
       <div class="range">${r.lo}–${r.hi}<small>${now?"you are here":"levels"}</small></div>
       <div class="body">
         <div class="zones">${r.zones.map(z=>ZONES[z]&&ZONES[z].isNew?`${z} <span class="badge new">new</span>`:z).join(" · ")}</div>
-        <dl><dt>Hub</dt><dd>${r.hub}</dd><dt>Dungeons</dt><dd>${r.dun}</dd><dt>Tip</dt><dd>${r.tip}</dd></dl>
+        <dl><dt>Hub</dt><dd>${r.hub}</dd><dt>Dungeons</dt><dd>${r.dun}</dd><dt>Tip</dt><dd>${CHAR==="pal" ? (PTIP[r.id]||"") : r.tip}</dd>${DUO[r.id] ? `<dt>Duo</dt><dd>${DUO[r.id]}</dd>` : ""}</dl>
         <label class="chk${done?" on":""}"><input type="checkbox" data-id="${r.id}" ${done?"checked":""}><span>Bracket finished</span></label>
       </div></li>`;
   }).join("");
@@ -935,9 +1135,18 @@ const ICON_URL = n => "https://wow.zamimg.com/images/wow/icons/large/" + n + ".j
 const wi = n => n ? `<img class="wi" src="${ICON_URL(n)}" alt="" loading="lazy">` : "";
 const ICON_BY_TEXT = {"Will of the Forsaken":"spell_shadow_raisedead","Touch of the Grave":"spell_shadow_detectlesserinvisibility",
   "Cannibalize":"ability_racial_cannibalize","Imp":"spell_shadow_summonimp","Voidwalker":"spell_shadow_summonvoidwalker",
-  "Succubus":"spell_shadow_summonsuccubus","Felhunter":"spell_shadow_summonfelhunter","Demonic Pact":"ability_warlock_demonicpower"};
+  "Succubus":"spell_shadow_summonsuccubus","Felhunter":"spell_shadow_summonfelhunter","Demonic Pact":"ability_warlock_demonicpower",
+  // paladin kit
+  "Seal of Righteousness":"ability_thunderbolt","Seal of Command":"ability_warrior_innerrage","Seal of Fury":"spell_holy_sealofwrath",
+  "Judgement":"spell_holy_righteousfury","Holy Strike":"spell_holy_holysmite","Consecration":"spell_holy_innerfire",
+  "Blessing of Might":"spell_holy_fistofjustice","Blessing of Kings":"spell_magic_magearmor","Blessing of Wisdom":"spell_holy_sealofwisdom",
+  "Devotion Aura":"spell_holy_devotionaura","Retribution Aura":"spell_holy_auraoflight","Exorcism":"spell_holy_excorcism_02",
+  "Hammer of Justice":"spell_holy_sealofmight","Lay on Hands":"spell_holy_layonhands"};
+// Checklist icons; ids differ between the two characters' lists except shared milestones (no icon).
 const ICON_BY_CHECK = {"cq-imp":"spell_shadow_summonimp","cq-vw":"spell_shadow_summonvoidwalker","cq-succ":"spell_shadow_summonsuccubus",
-  "cq-fh":"spell_shadow_summonfelhunter","cq-felsteed":"spell_nature_swiftness","cq-inferno":"spell_shadow_summoninfernal","cq-dread":"ability_mount_dreadsteed"};
+  "cq-fh":"spell_shadow_summonfelhunter","cq-felsteed":"spell_nature_swiftness","cq-inferno":"spell_shadow_summoninfernal","cq-dread":"ability_mount_dreadsteed",
+  "pq-path":"spell_holy_holybolt","pq-keep":"spell_holy_sealofrighteousness","pq-redemp":"spell_holy_resurrection","pq-wolfsbane":"inv_sword_34",
+  "pq-warhorse":"ability_mount_undeadhorse","pq-charger":"ability_mount_charger","pm-hs":"spell_holy_holysmite","pm-cons":"spell_holy_innerfire"};
 document.addEventListener("error", e=>{ const t = e.target; if(t && t.classList && t.classList.contains("wi")) t.remove(); }, true);
 // Prefix the static kit headings and demon names with their in-game icon.
 function addKitIcons(){
@@ -947,7 +1156,7 @@ function addKitIcons(){
   });
 }
 function renderChecks(){
-  $("#checkGroups").innerHTML = CHECKS.map(g=>`<article class="card"><span class="tag">${g.tag}</span><h3>${g.title}</h3>
+  $("#checkGroups").innerHTML = CHARS[CHAR].checks.map(g=>`<article class="card"><span class="tag">${g.tag}</span><h3>${g.title}</h3>
     ${g.items.map(([id,t])=>{
       const on = !!state.checks[id];
       const txt = t.replace("⚑ verify",'<span class="badge unv">verify</span>');
@@ -1266,19 +1475,26 @@ function renderAll(){ renderBar(); renderGame(); renderRoute(); renderDungeons()
   const nb=$("#notesBox"); if(document.activeElement!==nb) nb.value = state.notes||""; }
 
 // ---------- persistence ----------
-function saveLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){} }
-function loadLocal(){ try{ const v=JSON.parse(localStorage.getItem(LS_KEY)||"null"); if(v) state={...state,...v}; }catch(e){} }
+// Per character: localStorage key and db doc come from CHARS[c].
+function saveLocal(c){ try{ localStorage.setItem(CHARS[c].lsKey, JSON.stringify(states[c])); }catch(e){} }
+function loadLocal(){
+  for(const c of Object.keys(CHARS)){
+    try{ const v=JSON.parse(localStorage.getItem(CHARS[c].lsKey)||"null"); if(v) states[c]={...blankState(),...v}; }catch(e){}
+  }
+  state = states[CHAR];
+}
 
 // Debounced, serialized cloud write: one in-flight write per doc, as the db contract asks.
-function scheduleSave(){
-  saveLocal();
-  if(!docRef) return;
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(()=>{
-    const body = {level:state.level, checks:{...state.checks}, notes:state.notes, game:state.game||null, updated:Date.now()};
+function scheduleSave(c = CHAR){
+  saveLocal(c);
+  const ref = docRefs[c]; if(!ref) return;
+  clearTimeout(saveTimers[c]);
+  saveTimers[c] = setTimeout(()=>{
+    const st = states[c];
+    const body = {level:st.level, checks:{...st.checks}, notes:st.notes, game:st.game||null, updated:Date.now()};
     mode="saving"; renderBar();
-    saving = saving.then(()=>docRef.set(body)).then(()=>{ mode="cloud"; renderBar(); })
-      .catch(e=>{ console.warn("save failed",e); if(e&&e.code==="invalid_argument"){ docRef=null; mode="local"; } else mode="offline"; renderBar(); });
+    savings[c] = savings[c].then(()=>ref.set(body)).then(()=>{ mode="cloud"; renderBar(); })
+      .catch(e=>{ console.warn("save failed",e); if(e&&e.code==="invalid_argument"){ delete docRefs[c]; mode="local"; } else mode="offline"; renderBar(); });
   }, 700);
 }
 
@@ -1287,23 +1503,39 @@ async function initCloud(){
   const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
   const uid = user ? await user.id() : null;
   if(!db || !uid){ mode="local"; renderBar(); return; }
-  docRef = db.doc("data/users/"+uid+"/progress");
   let answered = false;
   const t = setTimeout(()=>{ if(!answered){ mode="offline"; renderBar(); } }, 10000);
-  docRef.onSnapshot(snap=>{
-    if(snap.metadata.hasPendingWrites) return;      // our own echo; local state is already ahead
-    if(!snap.metadata.fromCache){ answered=true; clearTimeout(t); }
-    if(snap.exists){
-      const d = snap.data();
-      state = {level:d.level||1, checks:{...(d.checks||{})}, notes:d.notes||"", game:d.game||null};
-      saveLocal(); renderAll();
-    } else if(!snap.metadata.fromCache){
-      // First visit on this account: push whatever this browser already had up once.
-      if(state.level>1 || Object.keys(state.checks).length || state.notes || state.game) scheduleSave();
-    }
-    if(mode!=="saving"){ mode="cloud"; renderBar(); }
-  }, err=>{ clearTimeout(t); console.warn("db",err); mode="local"; docRef=null; renderBar(); });
+  for(const c of Object.keys(CHARS)){
+    const ref = docRefs[c] = db.doc("data/users/"+uid+"/"+CHARS[c].doc);
+    ref.onSnapshot(snap=>{
+      if(snap.metadata.hasPendingWrites) return;      // our own echo; local state is already ahead
+      if(!snap.metadata.fromCache){ answered=true; clearTimeout(t); }
+      if(snap.exists){
+        const d = snap.data();
+        states[c] = {level:d.level||1, checks:{...(d.checks||{})}, notes:d.notes||"", game:d.game||null};
+        if(c===CHAR) state = states[c];
+        saveLocal(c); if(c===CHAR) renderAll();
+      } else if(!snap.metadata.fromCache){
+        // First visit on this account: push whatever this browser already had up once.
+        const st = states[c];
+        if(st.level>1 || Object.keys(st.checks).length || st.notes || st.game) scheduleSave(c);
+      }
+      if(mode!=="saving"){ mode="cloud"; renderBar(); }
+    }, err=>{ clearTimeout(t); console.warn("db",err); mode="local"; delete docRefs[c]; renderBar(); });
+  }
 }
+
+// Switch the whole page to another character: theme (body class), class-only blocks, state.
+function setChar(c){
+  if(!CHARS[c]) return;
+  CHAR = c; state = states[c];
+  document.body.classList.toggle("char-pal", c==="pal");
+  document.querySelectorAll(".charsw button").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.char===c)));
+  try{ localStorage.setItem("fg-char", c); }catch(e){}
+  setImportMsg("");
+  followLevel(); renderAll();
+}
+document.querySelectorAll(".charsw button").forEach(b=>b.addEventListener("click", ()=>setChar(b.dataset.char)));
 
 // ---------- events ----------
 $("#level").addEventListener("input", e=>{ state.level=+e.target.value; followLevel(); renderBar(); renderRoute(); renderDungeons(); renderMap(); scheduleSave(); });
@@ -1342,5 +1574,5 @@ function tick(){
 }
 tick(); setInterval(tick,1000);
 
-loadLocal(); followLevel(); renderAll(); addKitIcons(); initRealMap(); initCloud(); autoFetchSV();
+loadLocal(); setChar(CHAR); addKitIcons(); initRealMap(); initCloud(); autoFetchSV();
 </script>
