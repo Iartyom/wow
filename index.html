@@ -372,7 +372,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 /* talent plan: full-width card; each row = one talent, pips show ranks you should own at your level */
 .tplan-card{grid-column:1/-1}
 .tplan{list-style:none;margin:var(--s3) 0;padding:0;display:grid;gap:4px}
-.tplan li{display:grid;grid-template-columns:4.6rem minmax(0,1fr) auto;gap:var(--s3);align-items:baseline;padding:6px 10px;border-left:3px solid transparent;border-radius:3px;opacity:.55}
+.tplan li{display:grid;grid-template-columns:4.6rem minmax(0,1fr) auto;gap:var(--s3);align-items:baseline;padding:6px 10px;border-left:3px solid transparent;border-radius:3px;opacity:.72}
 .tplan li.done{opacity:.8}
 .tplan li.done .tname::after{content:" ✓";color:var(--fel)}
 .tplan li.now{opacity:1;background:rgba(135,136,238,.12);border-left-color:var(--fel)}
@@ -761,7 +761,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
   <div class="wrap">
     <header><p class="eyebrow">Your build</p><h2>Talents &amp; trainer</h2><p>Where every talent point goes, and what to buy at each trainer visit. Both lists follow your level: past steps dim, the current one glows, and the box on top tells you what's next.</p></header>
     <div class="grid">
-      <article class="card">
+      <article class="card tplan-card">
         <span class="tag">Trainer rules of thumb</span>
         <ul class="plain">
           <li><b>Always buy:</b> Shadow Bolt, Corruption, Bane of Agony, Immolate, <b>Searing Pain</b> (your Demonic Brand talent runs on it), Life Tap, Drain Life, Drain Soul, Health Funnel, Demon Skin/Armor, Healthstone, Soulstone and Spellstone ranks, Fear, Death Coil, Banish, Curse of the Elements.</li>
