@@ -369,6 +369,21 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 .talents{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s2) var(--s4);font-size:.93rem}
 .talents dt{font-family:var(--f-mono);color:var(--void);font-size:.8rem;padding-top:2px;white-space:nowrap}
 .talents dd{margin:0}
+/* talent plan: full-width card; each row = one talent, pips show ranks you should own at your level */
+.tplan-card{grid-column:1/-1}
+.tplan{list-style:none;margin:var(--s3) 0;padding:0;display:grid;gap:4px}
+.tplan li{display:grid;grid-template-columns:4.6rem minmax(0,1fr) auto;gap:var(--s3);align-items:baseline;padding:6px 10px;border-left:3px solid transparent;border-radius:3px;opacity:.55}
+.tplan li.done{opacity:.8}
+.tplan li.done .tname::after{content:" ✓";color:var(--fel)}
+.tplan li.now{opacity:1;background:rgba(135,136,238,.12);border-left-color:var(--fel)}
+.tplan li.soon{opacity:1;border-left-color:var(--fel-dim);background:rgba(135,136,238,.06)}
+.tplan .tlv{font-family:var(--f-mono);font-size:.8rem;color:var(--void);white-space:nowrap}
+.tplan .tname{font-weight:700}
+.tplan .ttree{font-family:var(--f-mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted,#9a93a8);margin-left:6px}
+.tplan .tdesc{display:block;font-size:.88rem;color:var(--muted,#b9b2c6)}
+.tplan .pips{font-family:var(--f-mono);letter-spacing:2px;white-space:nowrap;color:var(--fel)}
+.tnext{margin:var(--s3) 0 0;padding:8px 12px;border:1px solid var(--fel-dim);border-radius:4px;background:rgba(135,136,238,.08)}
+@media (max-width:560px){.tplan li{grid-template-columns:3.6rem minmax(0,1fr)}.tplan .pips{grid-column:2}}
 
 textarea{width:100%;min-height:140px;background:var(--surface);color:var(--fg);border:1px solid var(--line);padding:var(--s3);font:inherit;resize:vertical}
 footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1px solid var(--line)}
@@ -700,16 +715,13 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
       </article>
     </div>
     <div class="grid" data-only="wl">
-      <article class="card">
-        <span class="tag">Talent priority</span>
-        <dl class="talents">
-          <dt>10–20</dt><dd><b>Demonic Embrace</b> and <b>Improved Voidwalker</b>: more Stamina for you and a sturdier Voidwalker. Your Stamina now adds little to the demon's health, so Improved Voidwalker matters more.</dd>
-          <dt>20–30</dt><dd><b>Fel Domination</b>: an instant demon summon when your demon dies, which saves pulls that go wrong. Then <b>Fel Stamina</b> and <b>Fel Intellect</b>.</dd>
-          <dt>30–40</dt><dd><b>Unholy Power</b> and <b>Master Summoner</b>, then <b>Master Demonologist</b> (bonus effect based on which demon is out).</dd>
-          <dt>40+</dt><dd><b>Soul Link</b>, if Forever's tree still has it (it shares damage with your demon). Then <b>Demonic Sacrifice</b>, then the <b>Demonic Pact</b> capstone.</dd>
-          <dt>Spare points</dt><dd><b>Improved Corruption</b> in Affliction, for faster kills.</dd>
-        </dl>
-        <p class="muted"><span class="badge unv">verify</span> These are the Classic talent names, and Forever rebalanced every tree. Check the Zockify talent calculator before spending points; the goal is the same either way: survival first, then demon damage.</p>
+      <!-- Talent plan: rows rendered by renderTalents() from TALENTS_WL, coloured by the level slider. -->
+      <article class="card tplan-card">
+        <span class="tag">Talent plan · one point per level from 10</span>
+        <p class="muted"><b>How to spend a point:</b> press <kbd>N</kbd>, open the <b>Demonology</b> tab, and left-click the talent named below; each click adds one point. A row of the tree unlocks after every 5 points you spend in that tree. Points can't be refunded one at a time; a full reset at your class trainer costs gold, starting at 1g.</p>
+        <p class="tnext" id="talentNext"></p>
+        <ol class="tplan" id="talentPlan"></ol>
+        <p class="muted">Order: Demonology from level 10 is the most common warlock leveling build on <a href="https://talentsforever.com/warlock/leveling" target="_blank" rel="noopener">Talents Forever</a> (about 44% of 103k builds). Its levels 10–39 are used as listed; 40–60 (Demonic Pact, then Affliction) follows <a href="https://www.warcrafttavern.com/forever/guides/warlock-leveling/" target="_blank" rel="noopener">Warcraft Tavern</a>'s 31/20 split. <span class="badge unv">verify</span> Descriptions marked "read the tooltip" aren't documented yet. Faster alternative: Affliction until 27, then respec to Demonology.</p>
       </article>
       <article class="card">
         <span class="tag">Solo pull</span>
@@ -806,7 +818,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
         <p>Install the <b>Forever</b> file of each addon: Classic Era and Retail files won't load. Launch-day status comes from a pre-launch guide, so <span class="badge unv">verify</span> each one.</p>
         <ul class="plain">
           <li><b>Grimoire Sync</b>: the addon that feeds this page.</li>
-          <li><b>Questie</b>: quest givers and objectives on the map. Use the <b>official</b> project only. The "Questie Forever" upload isn't from the Questie team. Expect gaps for brand-new quests at first.</li>
+          <li><b>Questie</b>: quest givers, objectives and mob spawns on your map and minimap. The official project supports Forever from <b>v12.6.0</b> (released Nov 4): get it from <a href="https://github.com/Questie/Questie/releases/latest" target="_blank" rel="noopener">Questie's GitHub releases</a> or CurseForge. Skip "Questie (Forever Edition)" mirror sites, which aren't from the Questie team. Expect gaps for brand-new Forever quests at first.</li>
           <li><b>RestedXP</b>: step-by-step route, free to about level 22 for Horde.</li>
           <li><b>Leatrix Plus + Leatrix Maps</b>: quality-of-life toggles and better maps.</li>
           <li><b>ThreatClassic2</b>: threat meter. Useful when the Voidwalker tanks and in dungeons.</li>
@@ -1586,7 +1598,55 @@ function renderBar(){
   sy.className = "sync" + (mode==="cloud"?" ok":mode==="local"||mode==="offline"?" warn":"");
   sy.textContent = mode==="cloud"?"synced":mode==="saving"?"saving…":mode==="local"?"this browser only":mode==="offline"?"can't reach sync":"connecting…";
 }
-function renderAll(){ renderBar(); renderGame(); renderRoute(); renderDungeons(); renderChecks(); renderMap();
+// Warlock talent plan, one row per talent: [first level, last level, name, max rank, tree, what it does, first rank gained].
+// Points are 1 per level from 10, so a row's level span = ranks gained there (Master Demonologist is split around Demonic Pact).
+const TALENTS_WL = [
+  [10,14,"Unholy Power",5,"Demonology","Your demons deal more damage (+10% at 5/5)."],
+  [15,16,"Demonic Energies",2,"Demonology","Your spell damage heals your demon, and your Life Tap mana is shared with it."],
+  [17,19,"Fel Vitality",3,"Demonology","+15% max health and mana for your demon, +15% max mana for you."],
+  [20,22,"Improved Sayaad",3,"Demonology","Improves the Succubus/Incubus you unlock at 20. Read the tooltip."],
+  [23,24,"Master Summoner",2,"Demonology","Faster, cheaper demon summons."],
+  [25,25,"Demonic Sacrifice",1,"Demonology","Sacrifice your demon for a long buff (the Imp gives Burning Shadow)."],
+  [26,28,"Demonic Brand",3,"Demonology","Searing Pain brands the target: your demon's next attacks hit harder and hold threat better."],
+  [29,29,"Fel Domination",1,"Demonology","Makes your next summon near-instant. Use it when your demon dies mid-fight."],
+  [30,31,"Decimation",2,"Demonology","Read the tooltip."],
+  [32,32,"Soul Link",1,"Demonology","30% of the damage you take goes to your demon instead."],
+  [33,35,"Demonic Knowledge",3,"Demonology","Your spell damage grows with your demon's stats. Read the tooltip."],
+  [36,39,"Master Demonologist",5,"Demonology","A bonus that depends on which demon is out.",1],
+  [40,40,"Demonic Pact",1,"Demonology · capstone","Summoning another demon no longer cancels your Demonic Sacrifice buff, so you keep both."],
+  [41,41,"Master Demonologist",5,"Demonology","Fifth and last rank.",5],
+  [42,46,"Improved Corruption",5,"Affliction","Corruption becomes instant."],
+  [47,48,"Improved Life Tap",2,"Affliction","More mana from each Life Tap."],
+  [49,53,"Suppression",5,"Affliction","Your DoTs and Fear get resisted less."],
+  [54,56,"Improved Drains",3,"Affliction","Improves Drain Mana."],
+  [57,59,"Pandemic",3,"Affliction","Read the tooltip."],
+  [60,60,"Malevolence",5,"Affliction","Read the tooltip."]
+];
+
+/* Paints the talent plan for the active level: done / now (the point you'd spend at this level) / next up. */
+function renderTalents(){
+  const ol=$("#talentPlan"), nx=$("#talentNext"); if(!ol) return;
+  const L=state.level|0;
+  const ownIn = (a,b)=>Math.max(0,Math.min(b-a+1, L-a+1));
+  // Rank is summed over every row of the same talent, so a split talent (Master Demonologist) shows its true total.
+  const rankOf = name=>TALENTS_WL.filter(t=>t[2]===name).reduce((s,t)=>s+ownIn(t[0],t[1]),0);
+  ol.innerHTML = TALENTS_WL.map(([a,b,name,max,tree,desc])=>{
+    const n=b-a+1, own=ownIn(a,b), rank=rankOf(name);
+    const cls = own===n ? "done" : own>0 ? "now" : (L+1>=a && L+1<=b ? "soon" : "");
+    const pips = "●".repeat(rank) + "○".repeat(Math.max(0,max-rank));
+    return `<li class="${cls}"><span class="tlv">${a===b?a:a+"–"+b}</span>`+
+      `<span><span class="tname">${name}</span><span class="ttree">${tree}</span><span class="tdesc">${desc}</span></span>`+
+      `<span class="pips" title="${rank}/${max}">${pips} ${rank}/${max}</span></li>`;
+  }).join("");
+  // The row containing level L+1 is where the next point goes; at 60 every point is spent.
+  const next = TALENTS_WL.find(t=>L+1>=t[0] && L+1<=t[1]);
+  const spent = Math.max(0, Math.min(51, L-9));
+  nx.innerHTML = L<10 ? `Talents start at level 10. Your first point goes into <b>Unholy Power</b>.`
+    : next ? `Level ${L}: you should have <b>${spent}</b> point${spent===1?"":"s"} spent. At level ${L+1}, put the next one into <b>${next[2]}</b>.`
+    : `Level 60: all 51 points spent (32 Demonology, 19 Affliction).`;
+}
+
+function renderAll(){ renderBar(); renderGame(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents();
   const nb=$("#notesBox"); if(document.activeElement!==nb) nb.value = state.notes||""; }
 
 // ---------- persistence ----------
