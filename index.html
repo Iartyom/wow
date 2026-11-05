@@ -383,6 +383,9 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 .tplan .tdesc{display:block;font-size:.88rem;color:var(--muted,#b9b2c6)}
 .tplan .pips{font-family:var(--f-mono);letter-spacing:2px;white-space:nowrap;color:var(--fel)}
 .tnext{margin:var(--s3) 0 0;padding:8px 12px;border:1px solid var(--fel-dim);border-radius:4px;background:rgba(135,136,238,.08)}
+.tplan.train li{grid-template-columns:4.6rem minmax(0,1fr)}
+.tplan .sp{display:inline-block;margin:0 10px 2px 0}
+.tplan .sp.skip{text-decoration:line-through;opacity:.55;cursor:help}
 @media (max-width:560px){.tplan li{grid-template-columns:3.6rem minmax(0,1fr)}.tplan .pips{grid-column:2}}
 
 textarea{width:100%;min-height:140px;background:var(--surface);color:var(--fg);border:1px solid var(--line);padding:var(--s3);font:inherit;resize:vertical}
@@ -722,6 +725,14 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
         <p class="tnext" id="talentNext"></p>
         <ol class="tplan" id="talentPlan"></ol>
         <p class="muted">Order: Demonology from level 10 is the most common warlock leveling build on <a href="https://talentsforever.com/warlock/leveling" target="_blank" rel="noopener">Talents Forever</a> (about 44% of 103k builds). Its levels 10–39 are used as listed; 40–60 (Demonic Pact, then Affliction) follows <a href="https://www.warcrafttavern.com/forever/guides/warlock-leveling/" target="_blank" rel="noopener">Warcraft Tavern</a>'s 31/20 split. <span class="badge unv">verify</span> Descriptions marked "read the tooltip" aren't documented yet. Faster alternative: Affliction until 27, then respec to Demonology.</p>
+      </article>
+      <!-- Trainer list: rows rendered by renderTraining() from TRAIN_WL; struck-through spells are safe to skip for this build. -->
+      <article class="card tplan-card">
+        <span class="tag">What to buy at the trainer</span>
+        <p class="muted">Visit your trainer at every even level (Brill, or the Undercity Magic Quarter). Buy the normal entries. <s>Struck-through</s> ones are safe to skip for a Demonology duo; hover or tap one for the reason. Training 1–60 costs about 206g if you buy everything, so skipping saves real gold. Demons come from class quests and Grimoires, not from this list.</p>
+        <p class="tnext" id="trainNext"></p>
+        <ol class="tplan train" id="trainPlan"></ol>
+        <p class="muted">Spell list from <a href="https://wowforever.wclbox.com/en/fashu/warlock/levels" target="_blank" rel="noopener">WCLBox</a>. <span class="badge unv">verify</span> The skip advice is my call for this build, not from a guide; if the trainer shows a spell that isn't here, buy it.</p>
       </article>
       <article class="card">
         <span class="tag">Solo pull</span>
@@ -1618,7 +1629,7 @@ const TALENTS_WL = [
   [42,46,"Improved Corruption",5,"Affliction","Corruption becomes instant."],
   [47,48,"Improved Life Tap",2,"Affliction","More mana from each Life Tap."],
   [49,53,"Suppression",5,"Affliction","Your DoTs and Fear get resisted less."],
-  [54,56,"Improved Drains",3,"Affliction","Improves Drain Mana."],
+  [54,56,"Improved Drains",3,"Affliction","Since the Nov 2 patch it only improves Drain Mana. If the tooltip says just that, put these 3 points into Malevolence instead."],
   [57,59,"Pandemic",3,"Affliction","Read the tooltip."],
   [60,60,"Malevolence",5,"Affliction","Read the tooltip."]
 ];
@@ -1646,7 +1657,62 @@ function renderTalents(){
     : `Level 60: all 51 points spent (32 Demonology, 19 Affliction).`;
 }
 
-function renderAll(){ renderBar(); renderGame(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents();
+// Warlock trainer, level → spells taught (WCLBox). "Name N" = rank N.
+const TRAIN_WL = {
+  4:"Corruption 1|Curse of Weakness 1", 6:"Life Tap 1|Shadow Bolt 2", 8:"Bane of Agony 1|Fear 1",
+  10:"Drain Soul 1|Create Healthstone 1|Demon Skin 2|Immolate 2", 12:"Health Funnel 1|Curse of Weakness 2|Shadow Bolt 3",
+  14:"Curse of Recklessness 1|Drain Life 1|Corruption 2", 16:"Unending Breath 1|Life Tap 2",
+  18:"Create Soulstone 1|Searing Pain 1|Bane of Agony 2",
+  20:"Curse of the Elements 1|Demon Armor 1|Ritual of Summoning 1|Rain of Fire 1|Health Funnel 2|Immolate 3|Shadow Bolt 4",
+  22:"Eye of Kilrogg 1|Curse of Weakness 3|Drain Life 2|Create Healthstone 2",
+  24:"Drain Mana 1|Sense Demons 1|Corruption 3|Drain Soul 2|Shadowburn 2",
+  26:"Curse of Tongues 1|Detect Invisibility 1|Life Tap 3|Searing Pain 2",
+  28:"Banish 1|Create Firestone 1|Bane of Agony 3|Curse of Recklessness 2|Health Funnel 3|Shadow Bolt 5",
+  30:"Subjugate Demon 1|Hellfire 1|Drain Life 3|Curse of the Elements 2|Create Soulstone 2|Demon Armor 2|Immolate 4",
+  32:"Shadow Ward 1|Curse of Weakness 4|Fear 2|Shadowburn 3|Conflagrate 2",
+  34:"Corruption 4|Drain Mana 2|Create Healthstone 3|Searing Pain 3|Rain of Fire 2",
+  36:"Create Spellstone 1|Life Tap 4|Health Funnel 4|Create Firestone 2|Shadow Bolt 6",
+  38:"Bane of Agony 4|Drain Soul 3|Drain Life 4|Siphon Life 2|Detect Invisibility 2",
+  40:"Howl of Terror 1|Curse of the Elements 3|Create Soulstone 3|Demon Armor 3|Immolate 5|Shadowburn 4|Conflagrate 3",
+  42:"Death Coil 1|Curse of Weakness 5|Curse of Recklessness 3|Shadow Ward 2|Searing Pain 4|Hellfire 2",
+  44:"Corruption 5|Drain Mana 3|Health Funnel 5|Subjugate Demon 2|Shadow Bolt 7",
+  46:"Life Tap 5|Drain Life 5|Create Healthstone 4|Create Firestone 3|Rain of Fire 3",
+  48:"Soul Fire 1|Bane of Agony 5|Siphon Life 3|Banish 2|Create Spellstone 2|Shadowburn 5|Conflagrate 4",
+  50:"Curse of the Elements 4|Curse of Tongues 2|Death Coil 2|Create Soulstone 4|Demon Armor 4|Detect Invisibility 3|Immolate 6|Searing Pain 5|Incinerate 2",
+  52:"Curse of Weakness 6|Drain Soul 4|Health Funnel 6|Shadow Ward 3|Shadow Bolt 8",
+  54:"Corruption 6|Drain Life 6|Drain Mana 4|Howl of Terror 2|Conflagrate 5|Hellfire 3",
+  56:"Life Tap 6|Fear 3|Curse of Recklessness 4|Create Firestone 4|Shadowburn 6|Soul Fire 2",
+  58:"Bane of Agony 6|Siphon Life 4|Death Coil 3|Create Healthstone 5|Subjugate Demon 3|Searing Pain 6|Rain of Fire 4",
+  60:"Bane of Doom 1|Summoning Portal 1|Ritual of Doom 1|Corruption 7|Health Funnel 7|Create Soulstone 5|Demon Armor 5|Shadow Ward 4|Create Spellstone 3|Immolate 7|Immolate 8|Shadow Bolt 9|Shadow Bolt 10|Conflagrate 6|Incinerate 3"
+};
+// Why a spell is skippable for a Demonology duo; null = buy it. Rank 1 of cheap utility spells is kept.
+function trainSkip(spell){
+  const m=spell.match(/^(.*) (\d+)$/), name=m[1], rank=+m[2];
+  if(/^(Shadowburn|Conflagrate|Siphon Life|Incinerate)$/.test(name)) return "Higher rank of a talent spell your build doesn't take; you can't use it.";
+  if(/^Create Firestone$/.test(name)) return "Spellstone is the better imbue for Shadow Bolt.";
+  if(/^(Rain of Fire|Hellfire)$/.test(name)) return "AoE you won't use while questing; the paladin's Consecration covers packs.";
+  if(/^(Eye of Kilrogg|Sense Demons)$/.test(name)) return "Novelty; you'll never miss it.";
+  if(rank>1 && /^(Curse of Weakness|Curse of Recklessness|Curse of Tongues|Drain Mana|Detect Invisibility|Subjugate Demon|Shadow Ward)$/.test(name)) return "Rarely used; rank 1 is enough.";
+  return null;
+}
+/* Paints the trainer list: past visits dimmed, the latest visit at your level highlighted, the next one marked. */
+function renderTraining(){
+  const ol=$("#trainPlan"), nx=$("#trainNext"); if(!ol) return;
+  const L=state.level|0, lvls=Object.keys(TRAIN_WL).map(Number);
+  const cur=[...lvls].reverse().find(v=>v<=L), nxt=lvls.find(v=>v>L);
+  ol.innerHTML = lvls.map(v=>{
+    const cls = v===cur ? "now" : v===nxt ? "soon" : v<L ? "done" : "";
+    const sp = TRAIN_WL[v].split("|").map(s=>{ const why=trainSkip(s);
+      return why ? `<span class="sp skip" title="${why}">${s.replace(/ 1$/,"").replace(/ (\d+)$/," (rank $1)")}</span>`
+                 : `<span class="sp">${s.replace(/ 1$/,"").replace(/ (\d+)$/," (rank $1)")}</span>`; }).join("");
+    return `<li class="${cls}"><span class="tlv">Lv ${v}</span><span>${sp}</span></li>`;
+  }).join("");
+  const buys = v=>TRAIN_WL[v].split("|").filter(s=>!trainSkip(s)).length;
+  nx.innerHTML = nxt ? `Next trainer visit: <b>level ${nxt}</b>, ${buys(nxt)} spell${buys(nxt)===1?"":"s"} to buy.`
+    : `You've trained everything. At 60, also look for the Dreadsteed and Inferno class quests.`;
+}
+
+function renderAll(){ renderBar(); renderGame(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents(); renderTraining();
   const nb=$("#notesBox"); if(document.activeElement!==nb) nb.value = state.notes||""; }
 
 // ---------- persistence ----------
