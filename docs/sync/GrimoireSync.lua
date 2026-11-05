@@ -2,7 +2,7 @@
 GrimoireSyncDB = {
 ["byClass"] = {
 ["WARLOCK"] = {
-["time"] = 1793892474,
+["time"] = 1793892480,
 ["demons"] = {
 },
 ["zone"] = "Tirisfal Glades",
@@ -20,7 +20,7 @@ GrimoireSyncDB = {
 },
 },
 ["last"] = {
-["time"] = 1793892474,
+["time"] = 1793892480,
 ["demons"] = {
 },
 ["zone"] = "Tirisfal Glades",
