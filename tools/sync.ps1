@@ -5,10 +5,18 @@
 #   .\tools\sync.ps1 -Watch     keep running; syncs each time WoW writes the file (logout or /reload)
 #   .\tools\sync.ps1 -NoPush    update docs/ locally only
 param(
-  [string]$WowRoot = "C:\Program Files (x86)\World of Warcraft",
+  [string]$WowRoot,
   [switch]$Watch,
   [switch]$NoPush
 )
+# WoW root: -WowRoot wins, else Battle.net's DefaultInstallPath (this PC: D:\Games) + "World of Warcraft",
+# else the stock C: path. Battle.net writes the path with "\/" separators, hence the replace.
+if (-not $WowRoot) {
+  $WowRoot = 'C:\Program Files (x86)\World of Warcraft'
+  $cfg = Join-Path $env:APPDATA 'Battle.net\Battle.net.config'
+  $m = if (Test-Path $cfg) { Select-String -Path $cfg -Pattern '"DefaultInstallPath":\s*"([^"]+)"' | Select-Object -First 1 }
+  if ($m) { $p = Join-Path ($m.Matches[0].Groups[1].Value -replace '\\/', '\') 'World of Warcraft'; if (Test-Path $p) { $WowRoot = $p } }
+}
 $repo   = Split-Path $PSScriptRoot -Parent
 $target = Join-Path $repo 'docs\sync\GrimoireSync.lua'
 
