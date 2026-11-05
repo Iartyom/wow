@@ -731,6 +731,20 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
         </ol>
       </article>
       <article class="card">
+        <span class="tag">Controlling your demon</span>
+        <ul class="plain">
+          <li><b>Pet bar:</b> the small row above your main bar. <b>Attack</b> (default <kbd>Ctrl</kbd>+<kbd>1</kbd>) sends it at your target; <b>Follow</b> / <b>Stay</b> / <b>Move To</b> position it.</li>
+          <li><b>Stance:</b> keep it on <b>Defensive</b>. Aggressive pulls extra mobs; Passive is for sneaking past packs.</li>
+          <li><b>Autocast:</b> right-click an ability to toggle it (gold moving border = on).</li>
+          <li><b>Imp:</b> Firebolt and Blood Pact on, Phase Shift <b>off</b>. Cast Fire Shield on the paladin.</li>
+          <li><b>Voidwalker:</b> Torment on (its taunt). Suffering by hand when adds show up. Sacrifice only when you're about to die, then heal it back with Consume Shadows.</li>
+          <li><b>Succubus:</b> Seduction autocast off. Seduce first, DoT later: damage breaks it.</li>
+          <li><b>Felhunter:</b> Spell Lock by hand to interrupt casters.</li>
+          <li><b>Grimoires</b> teach the demon that's out right now, so summon the right one before you use one.</li>
+          <li>Every demon except the Imp costs a <b>Soul Shard</b> to summon.</li>
+        </ul>
+      </article>
+      <article class="card">
         <span class="tag">Trouble &amp; dungeons</span>
         <ul class="plain">
           <li>On an extra mob: <b>Fear</b> it, or let the Voidwalker taunt it with Suffering.</li>
@@ -806,6 +820,50 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
   <div class="wrap">
     <header><p class="eyebrow">Chapter VI</p><h2>Class quests &amp; milestones</h2><p data-only="wl">Your demons and mounts come from class quests. Ask your warlock trainer in Brill or the Undercity Magic Quarter when you reach each level. With the addon, finished demons tick themselves.</p><p data-only="pal">The Forsaken paladin story starts with Aramis Hammerhand in Deathknell, continues with Shari Stilwell in Brill, and centres on Bandarion Keep (Tyr's Watch). With the addon, Holy Strike, Consecration, Redemption and your mounts tick themselves.</p></header>
     <div class="grid" id="checkGroups"></div>
+    <!-- Undead route walkthroughs (beta-era guides; 40+ chains weren't playable in beta). Coordinates are /way-style x,y. -->
+    <div class="grid demonq" data-only="wl" style="margin-top:var(--s4)">
+      <article class="card">
+        <span class="tag">Voidwalker · level 10</span>
+        <ol class="rot">
+          <li><b>Halgar's Summons:</b> Ageron Kargal in <b>Brill</b> (61.6, 52.6) sends you to Carendin Halgar, Undercity Magic Quarter (85.0, 25.6).</li>
+          <li><b>Creature of the Void:</b> grab <b>Egalin's Grimoire</b> from Perrine's Chest under the stairs of the Scarlet tower in Tirisfal (51.1, 67.6).</li>
+          <li><b>The Binding:</b> use the Runes of Summoning at the circle below Carendin (86.4, 27.3) and kill the Voidwalker. Easy, about 15 seconds.</li>
+        </ol>
+        <p class="muted">The Undercity version is the easy one; skip the Orgrimmar route.</p>
+      </article>
+      <article class="card">
+        <span class="tag">Succubus or Incubus · level 20</span>
+        <ol class="rot">
+          <li><b>Devourer of Souls:</b> Carendin Halgar sends you to Godrick Farsan, Undercity (85.0, 14.8).</li>
+          <li><b>Succubus, Hearts of the Pure:</b> Dalin Forgewright at the Greymane Wall, Silverpine (46.0, 83.4), and Corma Villard at the north entrance of the Wetlands (50.0, 12.0).</li>
+          <li><b>Incubus, Hearts of the Lovers:</b> Avelina Lilly in Ambermill, Silverpine (63.4, 65.4), and Isaac Pearson in Ratchet (61.8, 38.4). Both are level 22; bring the paladin.</li>
+          <li><b>The Binding:</b> use the hearts at the circle below Carendin.</li>
+        </ol>
+        <p class="muted">Pick one and stick with it: their Grimoires don't transfer. Either one gives a <b>Small Soul Pouch</b> (14 slots).</p>
+      </article>
+      <article class="card">
+        <span class="tag">Felhunter · level 30</span>
+        <ol class="rot">
+          <li><b>Seeking Strahad:</b> from Carendin Halgar to Strahad Farsan's tower in <b>Ratchet</b> (62.6, 35.4).</li>
+          <li><b>Tome of the Cabal:</b> Jorah Annison, Undercity (76.0, 37.6). Collect three pieces:
+            Moldy Tome at the Hillsbrad coast murloc camp (27.7, 72.8);
+            Tattered Manuscript in a chest at Splithoof Hold, Thousand Needles (43.4, 32.7);
+            3 Rods of Channeling from Dragonmaw <b>casters</b> at Angerfang Encampment, Wetlands.</li>
+          <li>Jorah rebuilds the tome, then <b>The Binding</b> at Strahad's tower circle (62.6, 35.2). If the summon bugs out, abandon and retake the quest.</li>
+        </ol>
+        <p class="muted">Reward also includes the <b>Box of Souls</b> (16 slots). Do the pieces while questing in those zones anyway.</p>
+      </article>
+      <article class="card">
+        <span class="tag">Mounts &amp; late demons · 40–60</span>
+        <ul class="plain">
+          <li><b>Felsteed (40):</b> Kaal Soulreaper in the Undercity, then Strahad Farsan in Ratchet teaches it. The mount is free; keep ~100g in case Riding isn't.</li>
+          <li><b>Inferno (50–55):</b> Niby the Almighty, Felwood (41.4, 44.9); ends with Kroshius, a level 55 elite. Bring the paladin.</li>
+          <li><b>Ritual of Doom (60):</b> Daio the Decrepit, Blasted Lands (34.1, 50.1).</li>
+          <li><b>Dreadsteed (60):</b> Martha Strain, Undercity; long chain through Scholomance ending in a 5-player ritual in Dire Maul West. Stock 25+ Soul Shards.</li>
+        </ul>
+        <p class="muted"><span class="badge unv">verify</span> The beta stopped at 30, so these chains are from guides, not testing.</p>
+      </article>
+    </div>
   </div>
 </section>
 
@@ -1061,7 +1119,7 @@ const DUO = {
 // Each character has its own state, so the paladin list can reuse milestone ids like ms-60.
 const CHECKS = [
   {title:"Demons & mounts", tag:"Class quests", items:[
-    ["cq-imp","Imp (level 1, you start with it)"],
+    ["cq-imp","Imp (level 1–4, Deathknell: Piercing the Veil)"],
     ["cq-vw","Voidwalker (level 10)"],
     ["cq-succ","Succubus (level 20)"],
     ["cq-fh","Felhunter (level 30)"],
