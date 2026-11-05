@@ -63,7 +63,11 @@ local function scanProfessions()
 end
 
 local function countCompletedQuests()
+  -- Forever may only ship the modern API; try the old global first, then C_QuestLog.
   local t = safe(GetQuestsCompleted)
+  if type(t) ~= "table" and C_QuestLog and C_QuestLog.GetAllCompletedQuestIDs then
+    t = safe(C_QuestLog.GetAllCompletedQuestIDs)
+  end
   if type(t) ~= "table" then return nil end
   local c = 0
   for _ in pairs(t) do c = c + 1 end
@@ -72,10 +76,14 @@ end
 
 local pendingLevel -- PLAYER_LEVEL_UP passes the new level before UnitLevel updates
 
-local function snapshot()
+local function snapshot(event)
   local _, classFile = safe(UnitClass, "player")
   local _, raceFile = safe(UnitRace, "player")
   local level = pendingLevel or safe(UnitLevel, "player")
+  -- During logout (and sometimes very early at login) unit data reads as 0/empty. A snapshot taken then
+  -- would overwrite good values with zeros, so skip it: the file still gets the last good snapshot.
+  local xpMax = safe(UnitXPMax, "player")
+  if (not xpMax or xpMax == 0) and (level or 0) < 60 then return end
   GrimoireSyncDB.last = {
     v = 1,
     -- name/realm are stripped by tools/sync.ps1 before anything is pushed to the public repo
@@ -85,7 +93,7 @@ local function snapshot()
     race = raceFile,
     level = level,
     xp = safe(UnitXP, "player"),
-    xpMax = safe(UnitXPMax, "player"),
+    xpMax = xpMax,
     zone = safe(GetRealZoneText),
     subzone = safe(GetSubZoneText),
     money = safe(GetMoney),
@@ -103,19 +111,22 @@ local function snapshot()
 end
 
 local f = CreateFrame("Frame")
-for _, e in ipairs({ "PLAYER_LOGIN", "PLAYER_LEVEL_UP", "PLAYER_LOGOUT", "ZONE_CHANGED_NEW_AREA",
-                     "SKILL_LINES_CHANGED", "LEARNED_SPELL_IN_TAB", "QUEST_TURNED_IN" }) do
+-- PLAYER_ENTERING_WORLD instead of LOGIN: unit data is ready by then. XP/money events keep the
+-- snapshot current, so nothing needs to be read at logout (when the values are already gone).
+for _, e in ipairs({ "PLAYER_ENTERING_WORLD", "PLAYER_LEVEL_UP", "ZONE_CHANGED_NEW_AREA", "PLAYER_XP_UPDATE",
+                     "PLAYER_MONEY", "SKILL_LINES_CHANGED", "LEARNED_SPELL_IN_TAB", "QUEST_TURNED_IN" }) do
   pcall(f.RegisterEvent, f, e)
 end
 f:SetScript("OnEvent", function(_, event, arg1)
   if event == "PLAYER_LEVEL_UP" then pendingLevel = arg1 else pendingLevel = nil end
-  snapshot()
+  snapshot(event)
 end)
 
 SLASH_GRIMOIRESYNC1 = "/grimoire"
 SlashCmdList.GRIMOIRESYNC = function()
   snapshot()
   local s = GrimoireSyncDB.last
+  if not s then print("|cff8fdc5aGrimoire Sync|r no data yet, try again in a few seconds.") return end
   print(("|cff8fdc5aGrimoire Sync|r %s level %s in %s, %d class milestone(s). Type /reload to write the file now.")
     :format(tostring(s.class), tostring(s.level), tostring(s.zone), #s.demons))
 end
