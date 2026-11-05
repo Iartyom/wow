@@ -415,7 +415,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
   </div>
   <div class="wrap">
     <nav class="toc" aria-label="Sections">
-      <a href="#newbie" data-only="pal">Start here</a><a href="#game">From the game</a><a href="#kit">Your kit</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#rotation">Your spec</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
+      <a href="#newbie" data-only="pal">Start here</a><a href="#game">From the game</a><a href="#kit">Your kit</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#rotation">Your spec</a><a href="#training" data-only="wl">Talents &amp; trainer</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
     </nav>
   </div>
 </div>
@@ -719,26 +719,11 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
       </article>
     </div>
     <div class="grid" data-only="wl">
-      <!-- Talent plan: rows rendered by renderTalents() from TALENTS_WL, coloured by the level slider. -->
-      <article class="card tplan-card">
-        <span class="tag">Talent plan · one point per level from 10</span>
-        <p class="muted"><b>How to spend a point:</b> press <kbd>N</kbd>, open the <b>Demonology</b> tab, and left-click the talent named below; each click adds one point. A row of the tree unlocks after every 5 points you spend in that tree. Points can't be refunded one at a time; a full reset at your class trainer costs gold, starting at 1g.</p>
-        <p class="tnext" id="talentNext"></p>
-        <ol class="tplan" id="talentPlan"></ol>
-        <p class="muted">Order: Demonology from level 10 is the most common warlock leveling build on <a href="https://talentsforever.com/warlock/leveling" target="_blank" rel="noopener">Talents Forever</a> (about 44% of 103k builds). Its levels 10–39 are used as listed; 40–60 (Demonic Pact, then Affliction) follows <a href="https://www.warcrafttavern.com/forever/guides/warlock-leveling/" target="_blank" rel="noopener">Warcraft Tavern</a>'s 31/20 split. <span class="badge unv">verify</span> Descriptions marked "read the tooltip" aren't documented yet. Faster alternative: Affliction until 27, then respec to Demonology.</p>
-      </article>
-      <!-- Trainer list: rows rendered by renderTraining() from TRAIN_WL; struck-through spells are safe to skip for this build. -->
-      <article class="card tplan-card">
-        <span class="tag">What to buy at the trainer</span>
-        <p class="muted">Visit your trainer at every even level (Brill, or the Undercity Magic Quarter). Buy the normal entries. <s>Struck-through</s> ones are safe to skip for a Demonology duo; hover or tap one for the reason. Training 1–60 costs about 206g if you buy everything, so skipping saves real gold. Demons come from class quests and Grimoires, not from this list.</p>
-        <p class="tnext" id="trainNext"></p>
-        <ol class="tplan train" id="trainPlan"></ol>
-        <p class="muted">Spell list from <a href="https://wowforever.wclbox.com/en/fashu/warlock/levels" target="_blank" rel="noopener">WCLBox</a>. <span class="badge unv">verify</span> The skip advice is my call for this build, not from a guide; if the trainer shows a spell that isn't here, buy it.</p>
-      </article>
       <article class="card">
         <span class="tag">Solo pull</span>
         <ol class="rot">
           <li>Send the <b>Voidwalker</b> in. Wait for one Torment or a couple of hits so it has threat.</li>
+          <li>From 26 (Demonic Brand): cast <b>Searing Pain</b> first so the demon's hits are branded.</li>
           <li>Cast <b>Corruption</b>, then <b>Bane of Agony</b>, then a <b>Curse</b>.</li>
           <li><b>Shadow Bolt</b> or wand until the mob is low.</li>
           <li>If the Voidwalker drops low, use <b>Health Funnel</b>. Don't let it die mid-pull.</li>
@@ -772,6 +757,39 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
   </div>
 </section>
 
+<!-- Warlock-only: talent plan + trainer list, both follow the level slider (renderTalents / renderTraining). -->
+<section id="training" data-only="wl">
+  <div class="wrap">
+    <header><p class="eyebrow">Your build</p><h2>Talents &amp; trainer</h2><p>Where every talent point goes, and what to buy at each trainer visit. Both lists follow your level: past steps dim, the current one glows, and the box on top tells you what's next.</p></header>
+    <div class="grid">
+      <article class="card">
+        <span class="tag">Trainer rules of thumb</span>
+        <ul class="plain">
+          <li><b>Always buy:</b> Shadow Bolt, Corruption, Bane of Agony, Immolate, <b>Searing Pain</b> (your Demonic Brand talent runs on it), Life Tap, Drain Life, Drain Soul, Health Funnel, Demon Skin/Armor, Healthstone, Soulstone and Spellstone ranks, Fear, Death Coil, Banish, Curse of the Elements.</li>
+          <li><b>Skip:</b> Shadowburn, Conflagrate, Siphon Life and Incinerate ranks (talents you don't take), Firestone, Rain of Fire and Hellfire, Eye of Kilrogg, Sense Demons.</li>
+          <li><b>Rank 1 is enough:</b> Curse of Weakness, Recklessness and Tongues, Drain Mana, Detect Invisibility, Subjugate Demon, Shadow Ward.</li>
+          <li><b>After training:</b> new spells don't go on your bars by themselves. Press <kbd>P</kbd> and drag them on.</li>
+        </ul>
+      </article>
+      <!-- Talent plan: rows rendered by renderTalents() from TALENTS_WL, coloured by the level slider. -->
+      <article class="card tplan-card">
+        <span class="tag">Talent plan · one point per level from 10</span>
+        <p class="muted"><b>How to spend a point:</b> press <kbd>N</kbd>, open the <b>Demonology</b> tab, and left-click the talent named below; each click adds one point. A row of the tree unlocks after every 5 points you spend in that tree. Points can't be refunded one at a time; a full reset at your class trainer costs gold, starting at 1g.</p>
+        <p class="tnext" id="talentNext"></p>
+        <ol class="tplan" id="talentPlan"></ol>
+        <p class="muted">Order: Demonology from level 10 is the most common warlock leveling build on <a href="https://talentsforever.com/warlock/leveling" target="_blank" rel="noopener">Talents Forever</a> (about 44% of 103k builds). Its levels 10–39 are used as listed; 40–60 (Demonic Pact, then Affliction) follows <a href="https://www.warcrafttavern.com/forever/guides/warlock-leveling/" target="_blank" rel="noopener">Warcraft Tavern</a>'s 31/20 split. <span class="badge unv">verify</span> Descriptions marked "read the tooltip" aren't documented yet. Faster alternative: Affliction until 27, then respec to Demonology.</p>
+      </article>
+      <!-- Trainer list: rows rendered by renderTraining() from TRAIN_WL; struck-through spells are safe to skip for this build. -->
+      <article class="card tplan-card">
+        <span class="tag">What to buy at the trainer</span>
+        <p class="muted">Visit your trainer at every even level (Brill, or the Undercity Magic Quarter). Buy the normal entries. <s>Struck-through</s> ones are safe to skip for a Demonology duo; hover or tap one for the reason. Training 1–60 costs about 206g if you buy everything, so skipping saves real gold. Demons come from class quests and Grimoires, not from this list.</p>
+        <p class="tnext" id="trainNext"></p>
+        <ol class="tplan train" id="trainPlan"></ol>
+        <p class="muted">Spell list from <a href="https://wowforever.wclbox.com/en/fashu/warlock/levels" target="_blank" rel="noopener">WCLBox</a>. <span class="badge unv">verify</span> The skip advice is my call for this build, not from a guide; if the trainer shows a spell that isn't here, buy it.</p>
+      </article>
+    </div>
+  </div>
+</section>
 <section id="dungeons">
   <div class="wrap">
     <header><p class="eyebrow">Chapter V</p><h2>Every dungeon, by level</h2><p>Rows in your level range are highlighted. Levels are the minimum and recommended ranges from beta data. <span class="badge new">new</span> marks a dungeon added in Forever.</p></header>
