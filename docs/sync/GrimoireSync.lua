@@ -2,36 +2,38 @@
 GrimoireSyncDB = {
 ["byClass"] = {
 ["WARLOCK"] = {
+["time"] = 1793892474,
 ["demons"] = {
 },
 ["zone"] = "Tirisfal Glades",
 ["subzone"] = "",
 ["class"] = "WARLOCK",
-["xp"] = 0,
+["xp"] = 127,
 ["v"] = 1,
-["xpMax"] = 0,
+["xpMax"] = 4500,
 ["race"] = "Scourge",
-["time"] = 1793891270,
-["money"] = 0,
-["level"] = 5,
 ["profs"] = {
 },
+["money"] = 933,
+["level"] = 7,
+["quests"] = 33,
 },
 },
 ["last"] = {
+["time"] = 1793892474,
 ["demons"] = {
 },
 ["zone"] = "Tirisfal Glades",
 ["subzone"] = "",
 ["class"] = "WARLOCK",
-["xp"] = 0,
+["xp"] = 127,
 ["v"] = 1,
-["xpMax"] = 0,
+["xpMax"] = 4500,
 ["race"] = "Scourge",
-["time"] = 1793891270,
-["money"] = 0,
-["level"] = 5,
 ["profs"] = {
 },
+["money"] = 933,
+["level"] = 7,
+["quests"] = 33,
 },
 }
