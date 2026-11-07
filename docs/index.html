@@ -452,6 +452,13 @@ section:not(.fold) .foldwhy{display:none}
 .ahcheck a{text-decoration:none}
 .ahcheck .ah-min{color:var(--fg);font-size:.8rem;margin-left:6px}
 .ahcheck .isub{display:block;color:var(--muted);font-size:.8rem}
+.itt{position:fixed;z-index:1000;max-width:300px;pointer-events:none;padding:8px 10px;font:13px/1.45 system-ui,sans-serif;color:#fff;
+  background:rgba(8,10,28,.96);border:1px solid #9a9a9a;border-radius:5px;box-shadow:0 0 0 1px #000,0 6px 18px rgba(0,0,0,.6)}
+.itt-n{font-size:14px;font-weight:600;margin-bottom:2px}
+.itt-row{display:flex;justify-content:space-between;gap:16px}
+.itt-g{color:#1eff00}
+.itt-dim{color:#c8c8c8}
+.itt-ours{margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.18);color:#f0cf74;font-size:12px}
 .foldall{display:flex;gap:var(--s2);flex-wrap:wrap;margin-top:var(--s2)}
 </style>
 
@@ -1634,6 +1641,73 @@ document.addEventListener("click", e=>{
   const inp = document.querySelector(`.ahin[data-ah="${a.dataset.ahgo}"]`);
   if(inp){ inp.scrollIntoView({block:"center", behavior:"smooth"}); inp.focus({preventScroll:true}); }
 });
+
+
+/* Item hover card: a WoW-style tooltip built from what the addon read in game (Forever's real stats),
+   plus this page's verdict and the comparison with what you wear. Works on claude.ai too (no fetch).
+   Any link to a Wowhead item inside #items is a trigger; the id is parsed from its href. */
+function itemById(id){
+  const g = state.game; if(!g) return null;
+  const pools = [Object.values(g.gear||{}), g.bags||[], (g.bank && g.bank.items)||[]];
+  for(const pool of pools){ const it = pool.find(x=>x && x.id===id); if(it) return it; }
+  return null;
+}
+const STAT_NAME = Object.fromEntries(STAT_DEFS);
+function itemCardHTML(it){
+  const lvl = (state.game && state.game.level) || state.level, slot = (LOC_SLOTS[it.loc]||[])[0];
+  const equipped = Object.values((state.game && state.game.gear)||{}).some(x=>x===it);
+  const lines = [`<div class="itt-n" style="color:${QCOL[it.q]||"#fff"}">${esc(it.name)}</div>`];
+  if(it.bound) lines.push(`<div>Soulbound</div>`); else if(it.bop) lines.push(`<div>Binds when picked up</div>`);
+  if(it.quest || it.type==="Quest") lines.push(`<div>Quest Item</div>`);
+  const kind = [slot ? SLOT_NAMES[slot] : "", it.sub && it.sub!==it.type ? it.sub : it.type].filter(Boolean);
+  if(kind.length) lines.push(`<div class="itt-row"><span>${esc(kind[0])}</span>${kind[1]?`<span>${esc(kind[1])}</span>`:""}</div>`);
+  const st = it.st || {};
+  if(st.armor) lines.push(`<div>${st.armor} Armor</div>`);
+  if(st.dps) lines.push(`<div>(${st.dps} damage per second)</div>`);
+  for(const [k,v] of Object.entries(st)){
+    if(k==="armor" || k==="dps") continue;
+    const nm = STAT_NAME[k] || k, pct = /%/.test(nm);
+    lines.push(`<div class="itt-g">${/Spell|Shadow|Fire|Holy|Heal|Attack|Mana|Health|Crit|Hit/.test(nm) ? "Equip: " : ""}+${v}${pct?"%":""} ${esc(nm.replace(/ %$/,""))}</div>`);
+  }
+  if(it.cls) lines.push(`<div>Classes: ${esc(Array.isArray(it.cls)?it.cls.join(", "):String(it.cls))}</div>`);
+  if(it.req > 1) lines.push(`<div style="${it.req>lvl?"color:#ff2020":""}">Requires Level ${it.req}</div>`);
+  if(it.un) lines.push(`<div style="color:#ff2020">You can't use this yet (red text in the game tooltip)</div>`);
+  if(it.ilvl) lines.push(`<div class="itt-dim">Item Level ${it.ilvl}</div>`);
+  const per = it.sell ? fmtCoin(it.sell) : "no sell price";
+  lines.push(`<div class="itt-dim">Vendor: ${per}${it.n>1 && it.sell?` each · ${fmtCoin(it.sell*it.n)} for ${it.n}`:""}</div>`);
+  const ah = (state.ah && state.ah[it.id]) || it.ah;
+  if(ah) lines.push(`<div class="itt-dim">AH: ${fmtCoin(ah)} each</div>`);
+  // Page's own read on it.
+  const sc = itemScore(it, CHAR), me = equipped ? null : upgradeFor(it, CHAR);
+  const extra = [];
+  if(slot) extra.push(`Points for you: <b>${sc}</b>` + (me!==null ? ` (${me>0?"+":""}${me} vs what you wear)` : equipped ? " (equipped)" : ""));
+  if(!equipped){ const v = verdict(it); extra.push(`<b>${esc(v.label)}</b>: ${esc(v.why)}`); }
+  if(extra.length) lines.push(`<div class="itt-ours">${extra.join("<br>")}</div>`);
+  return lines.join("");
+}
+(function initItemCard(){
+  const card = document.createElement("div"); card.className = "itt"; card.hidden = true; card.setAttribute("role","tooltip");
+  document.body.appendChild(card);
+  const idOf = a => { const m = /item=(\d+)/.exec(a.getAttribute("href")||"") ; return m ? +m[1] : +(a.dataset.ahgo||0); };
+  const trigger = t => t && t.closest && t.closest('#items a[href*="item="], #items a[data-ahgo]');
+  function place(x, y){
+    const w = card.offsetWidth, h = card.offsetHeight, vw = innerWidth, vh = innerHeight;
+    let left = x + 16, top = y + 14;
+    if(left + w > vw - 8) left = Math.max(8, x - w - 16);
+    if(top + h > vh - 8) top = Math.max(8, vh - h - 8);
+    card.style.left = left + "px"; card.style.top = top + "px";
+  }
+  function show(a, x, y){
+    const it = itemById(idOf(a)); if(!it){ card.hidden = true; return; }
+    card.innerHTML = itemCardHTML(it); card.hidden = false; place(x, y);
+  }
+  document.addEventListener("mouseover", e=>{ const a = trigger(e.target); if(a) show(a, e.clientX, e.clientY); });
+  document.addEventListener("mousemove", e=>{ if(!card.hidden && trigger(e.target)) place(e.clientX, e.clientY); });
+  document.addEventListener("mouseout", e=>{ const a = trigger(e.target); if(a && !a.contains(e.relatedTarget)) card.hidden = true; });
+  // Keyboard: focusing a link shows the card next to it.
+  document.addEventListener("focusin", e=>{ const a = trigger(e.target); if(a){ const r = a.getBoundingClientRect(); show(a, r.right, r.top); } else card.hidden = true; });
+  window.addEventListener && window.addEventListener("scroll", ()=>{ card.hidden = true; }, {passive:true});
+})();
 
 let iFilter = "bags";
 /* Paints the Item worth section: equipped gear (with empty slots), the item list with verdicts, weights. */
