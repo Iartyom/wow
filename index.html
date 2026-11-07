@@ -764,6 +764,7 @@ section:not(.fold) .foldwhy{display:none}
   <div class="wrap">
     <header><p class="eyebrow">Chapter III</p><h2>Leveling route, 1 → 60</h2><p>A mix of questing and dungeons. The bracket that matches your level is highlighted. Tick a bracket when you finish it.</p></header>
     <ol class="route" id="routeList"></ol>
+    <p><button type="button" class="foldbtn" id="routeMore"></button></p>
   </div>
 </section>
 
@@ -897,9 +898,9 @@ section:not(.fold) .foldwhy{display:none}
   <div class="wrap">
     <header><p class="eyebrow">Chapter V</p><h2>Every dungeon, by level</h2><p>Rows in your level range are highlighted. Levels are the minimum and recommended ranges from beta data. <span class="badge new">new</span> marks a dungeon added in Forever.</p></header>
     <div class="filters" role="group" aria-label="Filter dungeons">
-      <button type="button" data-f="all" aria-pressed="true">All</button>
+      <button type="button" data-f="all" aria-pressed="false">All</button>
       <button type="button" data-f="new" aria-pressed="false">New only</button>
-      <button type="button" data-f="near" aria-pressed="false">Near my level</button>
+      <button type="button" data-f="near" aria-pressed="true">Near my level</button>
     </div>
     <div class="tablebox"><table><thead><tr><th>Level</th><th>Dungeon</th><th>Zone</th><th>Horde notes</th></tr></thead><tbody id="dungeonBody"></tbody></table></div>
     <p class="muted" style="margin-top:var(--s3)">Raids open Dec 9: <b>Barrow Deeps</b> (10-player, Mount Hyjal), <b>Hyjal Summit</b> (20-player) and <b>Onyxia's Lair</b> (40-player, Dustwallow).</p>
@@ -1385,6 +1386,8 @@ function applySnap(c, s, source){
   demons.forEach(id=>{ st.checks[id]=true; });
   def.prof.forEach(([p,r,id])=>{ if((+profs[p]||0) >= r) st.checks[id]=true; });
   if(s.level >= 60) st.checks["ms-60"] = true;
+  const tr = s.talents && s.talents.ranks;
+  if(c === "wl" && tr && (+tr["Improved Corruption"] || 0) >= 5) st.checks["ms-impcorr"] = true;
   if(c === CHAR){
     // Prefer the zone you actually logged out in, if the map knows it; else follow the level.
     if(ZONES[s.zone]) selZone = s.zone; else followLevel();
@@ -1674,9 +1677,18 @@ function initItems(){
 }
 
 // ---------- rendering ----------
+let routeAll = false;
+// Near = the bracket containing your level plus the next one (or the first bracket below 1).
+function routeNear(L){
+  const i = ROUTE.findIndex(r=>L>=r.lo && L<=r.hi), j = i < 0 ? ROUTE.findIndex(r=>r.lo > L) : i;
+  return new Set(ROUTE.slice(Math.max(0,j), j + 2).map(r=>r.id));
+}
 function renderRoute(){
-  const L = state.level;
-  $("#routeList").innerHTML = ROUTE.map(r=>{
+  const L = state.level, near = routeNear(L);
+  const shown = routeAll ? ROUTE : ROUTE.filter(r=>near.has(r.id));
+  const mb = $("#routeMore");
+  if(mb) mb.textContent = routeAll ? "Show only my brackets" : `Show all ${ROUTE.length} brackets`;
+  $("#routeList").innerHTML = shown.map(r=>{
     const now = L>=r.lo && L<=r.hi, done = !!state.checks[r.id];
     return `<li class="step${now?" now":""}${done?" done":""}">
       <div class="range">${r.lo}–${r.hi}<small>${now?"you are here":"levels"}</small></div>
@@ -1688,7 +1700,7 @@ function renderRoute(){
   }).join("");
 }
 
-let dFilter = "all";
+let dFilter = "near";   // start on dungeons around your level; "All" is one click away
 function renderDungeons(){
   const L = state.level;
   $("#dungeonBody").innerHTML = DUNGEONS.filter(d=>{
@@ -2383,6 +2395,7 @@ document.addEventListener("change", e=>{
   renderAll(); scheduleSave();
 });
 $("#notesBox").addEventListener("input", e=>{ state.notes=e.target.value; scheduleSave(); });
+$("#routeMore").addEventListener("click", ()=>{ routeAll = !routeAll; renderRoute(); });
 document.querySelectorAll(".filters:not(.ifilters) button").forEach(b=>b.addEventListener("click",()=>{
   dFilter=b.dataset.f; document.querySelectorAll(".filters:not(.ifilters) button").forEach(x=>x.setAttribute("aria-pressed",x===b)); renderDungeons();
 }));
