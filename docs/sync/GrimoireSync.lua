@@ -21,7 +21,7 @@ GrimoireSyncDB = {
 ["subzone"] = "The Sepulcher",
 ["class"] = "WARLOCK",
 ["race"] = "Scourge",
-["time"] = 1794049975,
+["time"] = 1794051003,
 ["level"] = 14,
 ["profs"] = {
 ["Herbalism"] = 13,
@@ -246,7 +246,6 @@ GrimoireSyncDB = {
 ["tip"] = {
 "Binds when picked up",
 "Unique",
-"Use: Returns you to The Sepulcher.  Speak to an Innkeeper in a different place to change your home location. (1 Hr Cooldown)",
 },
 ["bound"] = true,
 ["name"] = "Hearthstone",
@@ -263,7 +262,6 @@ GrimoireSyncDB = {
 ["id"] = 1251,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Heals 66 damage over 6 sec.",
 "Requires First Aid (1)",
 "Sell Price: 10|A:coin-copper:14:14:2:0|a",
 },
@@ -281,7 +279,6 @@ GrimoireSyncDB = {
 ["id"] = 247754,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Increases spell damage by up to 5 for 30 min.",
 "Sell Price: 25|A:coin-copper:14:14:2:0|a",
 },
 ["name"] = "Minor Arcane Elixir",
@@ -332,7 +329,6 @@ GrimoireSyncDB = {
 ["id"] = 118,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Restores 70 to 90 health.",
 "Sell Price: 5|A:coin-copper:14:14:2:0|a",
 },
 ["name"] = "Minor Healing Potion",
@@ -386,7 +382,6 @@ GrimoireSyncDB = {
 ["id"] = 4596,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Restores 150 to 170 health instantly; however you also suffer 75% of that amount over time.\r\n\r\nThe symptoms of this effect can manifest as either a 6 sec poison or a 12 sec disease.",
 "Requires Level 5",
 "Sell Price: 25|A:coin-copper:14:14:2:0|a",
 },
@@ -404,7 +399,6 @@ GrimoireSyncDB = {
 ["id"] = 5997,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Increases armor by 50 for 1 hour.",
 "Sell Price: 5|A:coin-copper:14:14:2:0|a",
 },
 ["name"] = "Elixir of Minor Defense",
@@ -538,7 +532,7 @@ GrimoireSyncDB = {
 ["n"] = 2,
 },
 },
-["time"] = 1794049975,
+["time"] = 1794051003,
 },
 },
 ["byClass"] = {
@@ -563,7 +557,7 @@ GrimoireSyncDB = {
 ["subzone"] = "The Sepulcher",
 ["class"] = "WARLOCK",
 ["race"] = "Scourge",
-["time"] = 1794049975,
+["time"] = 1794051003,
 ["level"] = 14,
 ["profs"] = {
 ["Herbalism"] = 13,
@@ -788,7 +782,6 @@ GrimoireSyncDB = {
 ["tip"] = {
 "Binds when picked up",
 "Unique",
-"Use: Returns you to The Sepulcher.  Speak to an Innkeeper in a different place to change your home location. (1 Hr Cooldown)",
 },
 ["bound"] = true,
 ["name"] = "Hearthstone",
@@ -805,7 +798,6 @@ GrimoireSyncDB = {
 ["id"] = 1251,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Heals 66 damage over 6 sec.",
 "Requires First Aid (1)",
 "Sell Price: 10|A:coin-copper:14:14:2:0|a",
 },
@@ -823,7 +815,6 @@ GrimoireSyncDB = {
 ["id"] = 247754,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Increases spell damage by up to 5 for 30 min.",
 "Sell Price: 25|A:coin-copper:14:14:2:0|a",
 },
 ["name"] = "Minor Arcane Elixir",
@@ -874,7 +865,6 @@ GrimoireSyncDB = {
 ["id"] = 118,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Restores 70 to 90 health.",
 "Sell Price: 5|A:coin-copper:14:14:2:0|a",
 },
 ["name"] = "Minor Healing Potion",
@@ -928,7 +918,6 @@ GrimoireSyncDB = {
 ["id"] = 4596,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Restores 150 to 170 health instantly; however you also suffer 75% of that amount over time.\r\n\r\nThe symptoms of this effect can manifest as either a 6 sec poison or a 12 sec disease.",
 "Requires Level 5",
 "Sell Price: 25|A:coin-copper:14:14:2:0|a",
 },
@@ -946,7 +935,6 @@ GrimoireSyncDB = {
 ["id"] = 5997,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Increases armor by 50 for 1 hour.",
 "Sell Price: 5|A:coin-copper:14:14:2:0|a",
 },
 ["name"] = "Elixir of Minor Defense",
@@ -1080,7 +1068,7 @@ GrimoireSyncDB = {
 ["n"] = 2,
 },
 },
-["time"] = 1794049975,
+["time"] = 1794051003,
 },
 },
 },
