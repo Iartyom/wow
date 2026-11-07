@@ -459,6 +459,7 @@ section:not(.fold) .foldwhy{display:none}
 .itt-g{color:#1eff00}
 .itt-dim{color:#c8c8c8}
 .itt-ours{margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.18);color:#f0cf74;font-size:12px}
+.upd-site{margin:0 0 var(--s2)}
 .foldall{display:flex;gap:var(--s2);flex-wrap:wrap;margin-top:var(--s2)}
 </style>
 
@@ -477,6 +478,7 @@ section:not(.fold) .foldwhy{display:none}
     </div>
     <div class="prog"><span id="progTxt">0/0</span><span class="meter"><i id="progBar"></i></span></div>
     <span class="sync" id="sync">connecting…</span>
+    <span class="sync upd" id="updated" title="">game data —</span>
   </div>
   <div class="wrap">
     <nav class="toc" aria-label="Sections">
@@ -1083,7 +1085,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap">Built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-07T11:26:29Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -2216,7 +2218,20 @@ function renderBar(){
   const sy = $("#sync");
   sy.className = "sync" + (mode==="cloud"?" ok":mode==="local"||mode==="offline"?" warn":"");
   sy.textContent = mode==="cloud"?"synced":mode==="saving"?"saving…":mode==="local"?"this browser only":mode==="offline"?"can't reach sync":"connecting…";
+  renderUpdated();
 }
+// "Last updated": game data = the addon snapshot time (unix s); site = build stamp in #siteBuilt[data-t].
+const fmtWhen = d => d.toLocaleString(undefined, {month:"short", day:"numeric", hour:"2-digit", minute:"2-digit"});
+function renderUpdated(){
+  const g = state.game, t = g && Math.max(+g.time||0, +g.invTime||0), el = $("#updated"), gu = $("#gameUpd");
+  const txt = t ? ago(t) : "none yet", full = t ? fmtWhen(new Date(t*1000)) : "no addon data loaded";
+  if(el){ el.textContent = "game data " + txt; el.title = "Last addon snapshot: " + full;
+    // Older than a day: nudge to log in / reload so the page isn't advising on stale bags.
+    el.classList.toggle("warn", !!t && Date.now()/1000 - t > 86400); }
+  if(gu){ gu.textContent = t ? `${full} (${txt})` : "none yet"; }
+  const sb = $("#siteBuilt"); if(sb && sb.dataset.t){ const d = new Date(sb.dataset.t); if(!isNaN(d)) sb.textContent = fmtWhen(d); }
+}
+setInterval(renderUpdated, 60000);
 // Warlock talent plan (Affliction leveling), one row per talent: [first level, last level, name, max rank, tree, what it does, first rank gained].
 // Points are 1 per level from 10, so a row's level span = ranks gained there. Order = Talents Forever's most common Affliction
 // path, with Warcraft Tavern's early Demonology pet talents at 20-26. Improved Drains (Drain Mana only since Nov 2) is cut to the
