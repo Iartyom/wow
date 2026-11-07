@@ -432,6 +432,19 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
 .links a{display:block;background:var(--surface);border:1px solid var(--line);padding:var(--s3);text-decoration:none;color:var(--fg)}
 .links a span{display:block;font-size:.8rem;color:var(--muted)}
 .links a:hover{border-color:var(--fel)}
+/* Section folding: a folded section keeps only its header; see applyFolds(). */
+section.fold{padding-block:var(--s4) var(--s3)}
+section.fold > .wrap > :not(header){display:none}
+section.fold > .wrap > header{margin-bottom:0}
+section.fold > .wrap > header > p:not(.eyebrow){display:none}
+section > .wrap > header h2{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap}
+.foldbtn{font:600 12px/1 var(--f-mono);letter-spacing:.04em;color:var(--muted);background:transparent;border:1px solid var(--line);
+  border-radius:999px;padding:6px 10px;cursor:pointer;min-height:28px}
+.foldbtn:hover{color:var(--fg);border-color:var(--fel)}
+.foldwhy{font:400 12px/1.3 var(--f-mono);color:var(--muted)}
+section:not(.fold) .foldwhy{display:none}
+.toc a.folded{opacity:.5}
+.foldall{display:flex;gap:var(--s2);flex-wrap:wrap;margin-top:var(--s2)}
 </style>
 
 <div class="bar">
@@ -454,6 +467,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
     <nav class="toc" aria-label="Sections">
       <a href="#newbie" data-only="pal">Start here</a><a href="#game">From the game</a><a href="#items">Item worth</a><a href="#kit">Your kit</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#rotation">Your spec</a><a href="#training" data-only="wl">Talents &amp; trainer</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
     </nav>
+    <div class="foldall"><button type="button" class="foldbtn" data-foldall="auto">Show only what matters now</button><button type="button" class="foldbtn" data-foldall="open">Open everything</button></div>
   </div>
 </div>
 
@@ -2214,8 +2228,85 @@ function renderGates(){
   });
 }
 
+
+// ---------- section folding ----------
+// Each section is open or folded by how relevant it is at your level right now (FOLD_RULES).
+// Clicking a header overrides that, and the override sticks only while the automatic answer is the
+// same: when your level moves a section in or out of relevance, the page decides again.
+const FOLD_KEY = "fg-fold";
+function foldOverrides(){ try{ return JSON.parse(localStorage.getItem(FOLD_KEY)||"{}")||{}; }catch(e){ return {}; } }
+function saveFoldOverrides(o){ try{ localStorage.setItem(FOLD_KEY, JSON.stringify(o)); }catch(e){} }
+const lvlOf = label => { const m = /level (\d+)/i.exec(label); return m ? +m[1] : null; };
+// Returns [open?, reason shown when folded].
+const FOLD_RULES = {
+  newbie:  L => [L < 20, "for your first levels"],
+  game:    () => [true, ""],
+  items:   () => [true, ""],
+  kit:     L => [L < 10, "class basics, you're past them"],
+  map:     () => [true, ""],
+  route:   () => [true, ""],
+  rotation:() => [true, ""],
+  training:() => [true, ""],
+  dungeons:L => [DUNGEONS.some(d => (d[0] ?? d[1]) <= L + 2 && d[1] + 5 >= L), "no dungeon at your level"],
+  quests:  L => {
+    // Open when a class quest or milestone is due within NEAR levels (or overdue) and not ticked yet.
+    const due = CHARS[CHAR].checks.flatMap(g => g.items).find(([id, label]) => {
+      const lv = lvlOf(label); return lv != null && lv <= L + NEAR && !state.checks[id];
+    });
+    return [!!due, "next class quest is more than " + NEAR + " levels away"];
+  },
+  extras:  () => [false, "reference, open when you train or sell"],
+  notes:   () => [!!(state.notes || "").trim(), "empty"],
+  setup:   () => [!state.game, "addon already connected"],
+  sources: () => [false, "reference"]
+};
+function applyFolds(force){
+  const L = state.level | 0, o = foldOverrides();
+  let dirty = false;
+  for(const sec of document.querySelectorAll("main section[id], body > section[id]")){
+    const rule = FOLD_RULES[sec.id]; if(!rule) continue;
+    const [auto, why] = rule(L), key = CHAR + ":" + sec.id;
+    let open = auto;
+    if(force === "auto"){ if(o[key]){ delete o[key]; dirty = true; } }
+    else if(force === "open"){ o[key] = {a:auto, o:true}; dirty = true; }
+    else if(o[key]){ if(o[key].a === auto) open = o[key].o; else { delete o[key]; dirty = true; } }
+    if(force === "open") open = true;
+    sec.classList.toggle("fold", !open);
+    const h2 = sec.querySelector(":scope > .wrap > header h2"); if(!h2) continue;
+    let btn = h2.querySelector(".foldbtn");
+    if(!btn){
+      btn = document.createElement("button"); btn.type = "button"; btn.className = "foldbtn"; btn.dataset.fold = sec.id;
+      const w = document.createElement("span"); w.className = "foldwhy";
+      h2.append(btn, w);
+    }
+    btn.textContent = open ? "Fold" : "Show"; btn.setAttribute("aria-expanded", String(open));
+    h2.querySelector(".foldwhy").textContent = why ? "· " + why : "";
+    const a = document.querySelector('.toc a[href="#' + sec.id + '"]'); if(a) a.classList.toggle("folded", !open);
+  }
+  if(dirty) saveFoldOverrides(o);
+}
+function setFold(id, open){
+  const sec = document.getElementById(id), rule = FOLD_RULES[id]; if(!sec || !rule) return;
+  const o = foldOverrides(); o[CHAR + ":" + id] = {a: rule(state.level | 0)[0], o: open}; saveFoldOverrides(o);
+  applyFolds();
+  // Leaflet measured a hidden box; re-measure once the map is visible again.
+  if(open && id === "map" && leaf) setTimeout(() => leaf.invalidateSize(), 0);
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-fold],[data-foldall]");
+  if(b){
+    if(b.dataset.foldall){ applyFolds(b.dataset.foldall); if(b.dataset.foldall === "open" && leaf) setTimeout(() => leaf.invalidateSize(), 0); return; }
+    const sec = document.getElementById(b.dataset.fold); setFold(b.dataset.fold, sec.classList.contains("fold")); return;
+  }
+  // Jumping to a folded section from the contents bar (or any in-page link) opens it.
+  const a = e.target.closest && e.target.closest('a[href^="#"]'); if(!a) return;
+  const id = a.getAttribute("href").slice(1), sec = document.getElementById(id);
+  if(sec && sec.classList.contains("fold")) setFold(id, true);
+});
+
 function renderAll(){ renderBar(); renderGame(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderItems();
-  const nb=$("#notesBox"); if(document.activeElement!==nb) nb.value = state.notes||""; }
+  const nb=$("#notesBox"); if(document.activeElement!==nb) nb.value = state.notes||"";
+  applyFolds(); }
 
 // ---------- persistence ----------
 // Per character: localStorage key and db doc come from CHARS[c].
@@ -2285,7 +2376,7 @@ function setChar(c){
 document.querySelectorAll(".charsw button").forEach(b=>b.addEventListener("click", ()=>setChar(b.dataset.char)));
 
 // ---------- events ----------
-$("#level").addEventListener("input", e=>{ state.level=+e.target.value; followLevel(); renderBar(); renderRoute(); renderDungeons(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderItems(); scheduleSave(); });
+$("#level").addEventListener("input", e=>{ state.level=+e.target.value; followLevel(); renderBar(); renderRoute(); renderDungeons(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderItems(); applyFolds(); scheduleSave(); });
 document.addEventListener("change", e=>{
   if(e.target.id==="svFile"){ const f=e.target.files[0]; if(f) importFile(f); e.target.value=""; return; }
   const id = e.target && e.target.dataset && e.target.dataset.id; if(!id) return;
