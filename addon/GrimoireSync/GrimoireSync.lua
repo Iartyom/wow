@@ -145,6 +145,9 @@ local function scanTraits()
   local cfg = configID and safe(C_Traits.GetConfigInfo, configID)
   if not cfg or not cfg.treeIDs then return end
   local out, groups, order, sample = { tabs = {}, ranks = {}, free = 0 }, {}, {}, nil
+  -- Full tree as the client has it (every talent, not just spent ones), so the page's talent plan can be
+  -- checked against Forever's real names, max ranks, positions and tooltips instead of Classic memory.
+  local tree = {}
   for _, treeID in ipairs(cfg.treeIDs) do
     for _, nodeID in ipairs(safe(C_Traits.GetTreeNodes, treeID) or {}) do
       local node = safe(C_Traits.GetNodeInfo, configID, nodeID)
@@ -155,6 +158,19 @@ local function scanTraits()
       end
       local rank = node and (node.activeRank or node.currentRank or 0) or 0
       local entryID = node and ((node.activeEntry and node.activeEntry.entryID) or (node.entryIDs and node.entryIDs[1]))
+      if node and node.isVisible ~= false and entryID then
+        local e = safe(C_Traits.GetEntryInfo, configID, entryID)
+        local d = e and e.definitionID and safe(C_Traits.GetDefinitionInfo, e.definitionID)
+        local sid = d and (d.spellID or d.overriddenSpellID)
+        local nm = d and (d.overrideName or spellName(sid))
+        if nm then
+          local req = {}
+          for _, edge in ipairs(node.visibleEdges or {}) do req[#req + 1] = edge.targetNode end
+          local desc = C_Traits.GetTraitDescription and safe(C_Traits.GetTraitDescription, entryID, math.max(1, rank))
+          tree[#tree + 1] = { id = nodeID, name = nm, spell = sid, max = node.maxRanks, rank = rank,
+                              x = node.posX, y = node.posY, to = req, desc = desc }
+        end
+      end
       if rank > 0 and entryID then
         local entry = safe(C_Traits.GetEntryInfo, configID, entryID)
         local def = entry and entry.definitionID and safe(C_Traits.GetDefinitionInfo, entry.definitionID)
@@ -178,6 +194,11 @@ local function scanTraits()
     out.tabs[#out.tabs + 1] = { name = nm, spent = groups[g] }
   end
   if #out.tabs == 0 then out.tabs[1] = { name = "Talents", spent = 0 } end
+  local _, cls = safe(UnitClass, "player")
+  if cls and #tree > 0 then
+    GrimoireSyncDB.tree = GrimoireSyncDB.tree or {}
+    GrimoireSyncDB.tree[cls] = { time = time(), nodes = tree }
+  end
   GrimoireSyncDB.probe = GrimoireSyncDB.probe or {}
   GrimoireSyncDB.probe.traitNodeFields = sample
   GrimoireSyncDB.probe.traitTrees = #cfg.treeIDs
