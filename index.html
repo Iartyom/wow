@@ -1368,7 +1368,10 @@ function applyGame(sv, source){
 }
 function applySnap(c, s, source){
   const st = states[c], def = CHARS[c];
-  if(st.game && (s.time||0) <= (st.game.time||0)) return source==="auto" ? "" : "not newer than the one already loaded.";
+  // Same-time snapshot still applies when it carries data this state never stored (gear/bags/talents
+  // added in 0.2: a browser that loaded the file under the old page would otherwise never pick them up).
+  const adds = (s.inv && !st.game?.gear) || (s.talents && !st.game?.talents);
+  if(st.game && !adds && (s.time||0) <= (st.game.time||0)) return source==="auto" ? "" : "not newer than the one already loaded.";
   const demons = (Array.isArray(s.demons) ? s.demons : Object.values(s.demons||{})).filter(x=>typeof x==="string");
   const profs = (s.profs && typeof s.profs==="object" && !Array.isArray(s.profs)) ? s.profs : {};
   const objOrNull = v => (v && typeof v==="object" && !Array.isArray(v)) ? v : null;

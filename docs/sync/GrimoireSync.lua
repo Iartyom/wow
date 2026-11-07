@@ -21,7 +21,7 @@ GrimoireSyncDB = {
 ["subzone"] = "The Sepulcher",
 ["class"] = "WARLOCK",
 ["race"] = "Scourge",
-["time"] = 1794045447,
+["time"] = 1794046065,
 ["level"] = 14,
 ["profs"] = {
 ["Herbalism"] = 11,
@@ -663,7 +663,7 @@ GrimoireSyncDB = {
 ["n"] = 1,
 },
 },
-["time"] = 1794045447,
+["time"] = 1794046065,
 },
 },
 ["byClass"] = {
@@ -688,7 +688,7 @@ GrimoireSyncDB = {
 ["subzone"] = "The Sepulcher",
 ["class"] = "WARLOCK",
 ["race"] = "Scourge",
-["time"] = 1794045447,
+["time"] = 1794046065,
 ["level"] = 14,
 ["profs"] = {
 ["Herbalism"] = 11,
@@ -1330,7 +1330,7 @@ GrimoireSyncDB = {
 ["n"] = 1,
 },
 },
-["time"] = 1794045447,
+["time"] = 1794046065,
 },
 },
 },
