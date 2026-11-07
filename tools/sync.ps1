@@ -29,7 +29,12 @@ function Find-SV {
 function Sync-Once {
   $sv = Find-SV
   if (-not $sv) { Write-Host "GrimoireSync.lua not found yet. Log in with the addon enabled, then log out or /reload." -ForegroundColor Yellow; return }
-  $clean = (Get-Content $sv.FullName -Encoding UTF8) | Where-Object { $_ -notmatch '^\s*\["(name|realm)"\]\s*=' }
+  # The character name is stored as `who` (0.2+); items use `name`, so `name` lines are only stripped
+  # from pre-0.2 files, which had no items and kept the character name there.
+  $raw   = Get-Content $sv.FullName -Encoding UTF8
+  $hasWho = [bool]($raw -match '^\s*\["who"\]')
+  $clean = $raw | Where-Object { $_ -notmatch '^\s*\["(who|realm)"\]\s*=' }
+  if (-not $hasWho) { $clean = $clean | Where-Object { $_ -notmatch '^\s*\["name"\]\s*=' } }
   $text  = ($clean -join "`n") + "`n"
   New-Item -ItemType Directory -Force (Split-Path $target) | Out-Null
   if ((Test-Path $target) -and ((Get-Content $target -Raw -Encoding UTF8) -eq $text)) { Write-Host "No changes."; return }

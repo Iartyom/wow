@@ -383,10 +383,47 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 .tplan .tdesc{display:block;font-size:.88rem;color:var(--muted,#b9b2c6)}
 .tplan .pips{font-family:var(--f-mono);letter-spacing:2px;white-space:nowrap;color:var(--fel)}
 .tnext{margin:var(--s3) 0 0;padding:8px 12px;border:1px solid var(--fel-dim);border-radius:4px;background:rgba(135,136,238,.08)}
-.tplan.train li{grid-template-columns:4.6rem minmax(0,1fr)}
+.train .tplan li{grid-template-columns:4.6rem minmax(0,1fr)}
 .tplan .sp{display:inline-block;margin:0 10px 2px 0}
 .tplan .sp.skip{text-decoration:line-through;opacity:.55;cursor:help}
 @media (max-width:560px){.tplan li{grid-template-columns:3.6rem minmax(0,1fr)}.tplan .pips{grid-column:2}}
+
+/* ---- item worth ---- */
+.namein{display:flex;align-items:center;gap:var(--s2);font-size:.85rem;color:var(--muted)}
+.namein input,.statgrid input,.calcslot select,.ahin{font:inherit;font-size:.9rem;background:var(--surface-2);color:var(--fg);border:1px solid var(--line);padding:4px 8px;min-width:0}
+.namein input{width:12rem}
+.gearlist{list-style:none;margin:0;padding:0;display:grid;gap:2px;font-size:.9rem}
+.gearlist li{display:grid;grid-template-columns:6.5rem minmax(0,1fr) auto;gap:var(--s2);padding:2px 0;border-bottom:1px dotted var(--line)}
+.gearlist .gs{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);padding-top:3px}
+.gearlist .pts{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.gearlist li.miss span:nth-child(2){color:var(--warn)}
+.gearlist a,.itable a{text-decoration:none;overflow-wrap:anywhere}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:var(--s2)}
+.statgrid label,.calcslot{display:flex;flex-direction:column;gap:2px;font-size:.78rem;color:var(--muted)}
+.calcslot{max-width:16rem}
+.tnext b.up{color:var(--fel)} .tnext b.down{color:var(--warn)}
+.itable td{vertical-align:top}
+.itable .isub{display:block;font-size:.78rem;color:var(--muted)}
+.itable .vd{font-weight:700}
+.ahin{width:7.5rem}
+tr.v-equip .vd{color:var(--fel)} tr.v-give .vd{color:var(--gold)} tr.v-later .vd{color:var(--void)}
+tr.v-ah .vd{color:var(--gold)} tr.v-junk td{opacity:.6}
+tr.v-equip td:first-child{box-shadow:inset 3px 0 0 var(--fel)}
+.weights summary{cursor:pointer;font-family:var(--f-mono);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+/* level gates on the spec cards: future lines dim with their level, reached-but-unlearned lines get a warning */
+li[data-lv].lk,li[data-lvmax].lk{opacity:.42}
+li .lvtag{font-family:var(--f-mono);font-size:.68rem;margin-left:6px;padding:0 5px;border:1px solid var(--line);border-radius:99px;color:var(--muted);white-space:nowrap}
+li .lvtag.miss{border-color:var(--warn);color:var(--warn)}
+li .lvtag.have{border-color:var(--fel-dim);color:var(--fel)}
+/* talent / trainer plans: rows far from your level fold away */
+.tplan li.miss-row{border-left-color:var(--warn);background:rgba(224,136,79,.08);opacity:1}
+.tplan li.miss-row .tname::after{content:" — behind plan";color:var(--warn);font-weight:400;font-size:.8rem}
+.tplan .sp.have::after{content:" ✓";color:var(--fel)}
+.tplan .sp.miss{color:var(--warn)}
+.tplan .sp.miss::after{content:" — not learned";font-size:.78rem}
+details.fold{margin:4px 0}
+details.fold > summary{cursor:pointer;font-family:var(--f-mono);font-size:.78rem;color:var(--muted);padding:4px 10px;list-style-position:inside}
+details.fold > ol{margin-top:4px}
 
 textarea{width:100%;min-height:140px;background:var(--surface);color:var(--fg);border:1px solid var(--line);padding:var(--s3);font:inherit;resize:vertical}
 footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1px solid var(--line)}
@@ -401,8 +438,8 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
     <span class="brand">Forsaken Grimoire</span>
     <!-- Character switch: each character has its own progress, notes and game snapshot. -->
     <div class="charsw" role="group" aria-label="Character">
-      <button type="button" data-char="wl" aria-pressed="true"><img class="wi" src="https://wow.zamimg.com/images/wow/icons/large/classicon_warlock.jpg" alt="">Warlock</button>
-      <button type="button" data-char="pal" aria-pressed="false"><img class="wi" src="https://wow.zamimg.com/images/wow/icons/large/classicon_paladin.jpg" alt="">Paladin</button>
+      <button type="button" data-char="wl" aria-pressed="true"><img class="wi" src="https://wow.zamimg.com/images/wow/icons/large/classicon_warlock.jpg" alt=""><span class="cname" data-c="wl">Warlock</span></button>
+      <button type="button" data-char="pal" aria-pressed="false"><img class="wi" src="https://wow.zamimg.com/images/wow/icons/large/classicon_paladin.jpg" alt=""><span class="cname" data-c="pal">Paladin</span></button>
     </div>
     <div class="lvl">
       <label for="level" class="eyebrow">Level</label>
@@ -414,7 +451,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
   </div>
   <div class="wrap">
     <nav class="toc" aria-label="Sections">
-      <a href="#newbie" data-only="pal">Start here</a><a href="#game">From the game</a><a href="#kit">Your kit</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#rotation">Your spec</a><a href="#training" data-only="wl">Talents &amp; trainer</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
+      <a href="#newbie" data-only="pal">Start here</a><a href="#game">From the game</a><a href="#items">Item worth</a><a href="#kit">Your kit</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#rotation">Your spec</a><a href="#training" data-only="wl">Talents &amp; trainer</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
     </nav>
   </div>
 </div>
@@ -435,8 +472,8 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
   <div class="wrap">
     <div class="crest" data-only="wl"><img class="wi big" src="https://wow.zamimg.com/images/wow/icons/large/achievement_character_undead_male.jpg" alt=""><img class="wi big" src="https://wow.zamimg.com/images/wow/icons/large/classicon_warlock.jpg" alt=""><img class="wi big" src="https://wow.zamimg.com/images/wow/icons/large/spell_shadow_summonvoidwalker.jpg" alt=""></div>
     <div class="crest" data-only="pal"><img class="wi big" src="https://wow.zamimg.com/images/wow/icons/large/achievement_character_undead_male.jpg" alt=""><img class="wi big" src="https://wow.zamimg.com/images/wow/icons/large/classicon_paladin.jpg" alt=""><img class="wi big" src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_auraoflight.jpg" alt=""></div>
-    <p class="eyebrow" data-only="wl">World of Warcraft: Forever · Undead Warlock · Affliction · Normal realm · 1 → 60</p>
-    <p class="eyebrow" data-only="pal">World of Warcraft: Forever · Undead Paladin · Retribution · Normal realm · 1 → 60</p>
+    <p class="eyebrow" data-only="wl"><span class="who" data-c="wl"></span>World of Warcraft: Forever · Undead Warlock · Affliction · Normal realm · 1 → 60</p>
+    <p class="eyebrow" data-only="pal"><span class="who" data-c="pal"></span>World of Warcraft: Forever · Undead Paladin · Retribution · Normal realm · 1 → 60</p>
     <h1 data-only="wl">Rise, <em>Forsaken.</em><br>Your demons answer to you.</h1>
     <h1 data-only="pal">Rise, <em>Forsaken.</em><br>The Light still answers.</h1>
     <p class="lede" data-only="wl">A personal field guide for one Undead Affliction Warlock: racials, demons, a drawn route map, a quest-and-dungeon route through every bracket, and a tracker that the GrimoireSync addon fills in from the game.</p>
@@ -562,15 +599,53 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
 <section id="game">
   <div class="wrap">
     <header><p class="eyebrow">Live from Azeroth</p><h2>From the game</h2>
-      <p>The GrimoireSync addon records your level, zone, gold, demons and professions every time you log out or type <kbd>/reload</kbd>. Importing that file updates your level and ticks the matching class quests and profession goals below.</p></header>
+      <p>The GrimoireSync addon records your level, zone, gold, talents, spells, gear, bags and professions every time you log out or type <kbd>/reload</kbd>. Importing that file updates your level and ticks the matching class quests and profession goals below.</p></header>
     <div class="gamecard" id="gameCard"></div>
     <div class="importrow">
       <label class="btn" for="svFile">Load GrimoireSync.lua</label>
       <input type="file" id="svFile" accept=".lua,text/plain" hidden>
       <div class="drop" id="drop">…or drop the file here</div>
+      <label class="namein"><span>Character name</span><input id="charName" maxlength="24" autocomplete="off" placeholder="from the addon file"></label>
     </div>
     <p class="muted" id="importMsg" aria-live="polite" style="margin-top:var(--s2)"></p>
     <p class="muted" style="margin-top:var(--s2)">First time? See <a href="#setup">Addon setup</a> at the bottom.</p>
+  </div>
+</section>
+
+<!-- Item worth: rendered by renderItems() from the addon's bag/gear/bank scan. Scores use per-character weights. -->
+<section id="items">
+  <div class="wrap">
+    <header><p class="eyebrow">Your bags</p><h2>Item worth</h2>
+      <p>Every item in your bags gets one verdict: equip it, keep it for later, give it to your partner, auction it, or vendor it. "Points" are stats × your character's weights. A positive number means it beats what you're wearing in that slot.</p></header>
+    <div class="grid">
+      <article class="card">
+        <span class="tag">Equipped now</span>
+        <p class="muted" id="gearMiss"></p>
+        <ul class="gearlist" id="gearList"></ul>
+      </article>
+      <article class="card" id="calcBox">
+        <span class="tag">Try an item</span>
+        <p class="muted">Looking at a quest reward or something on the AH? Type its stats to see if it's an upgrade.</p>
+        <label class="calcslot"><span>Slot</span><select id="calcSlot"></select></label>
+        <div class="statgrid" id="calcStats"></div>
+        <p class="tnext" id="calcOut"></p>
+      </article>
+    </div>
+    <div class="filters ifilters" role="group" aria-label="Filter items" style="margin-top:var(--s4)">
+      <button type="button" data-f="bags" aria-pressed="true">Bags</button>
+      <button type="button" data-f="up" aria-pressed="false">Upgrades</button>
+      <button type="button" data-f="sell" aria-pressed="false">To sell</button>
+      <button type="button" data-f="bank" aria-pressed="false">Bank</button>
+    </div>
+    <p class="muted" id="itemSum" style="margin-bottom:var(--s3)"></p>
+    <div class="tablebox"><table class="itable"><thead><tr><th>Item</th><th>Points vs worn</th><th>Vendor</th><th>AH (each)</th><th>Verdict</th></tr></thead><tbody id="itemBody"></tbody></table></div>
+    <p class="muted" style="margin-top:var(--s3)">AH prices fill in by themselves if <b>Auctionator</b> is installed and you've scanned. Otherwise type one into the box (for example <code>1g 20s</code>), and it's remembered. Soulbound items can only go to a vendor. "Give" needs the other character's addon data too.</p>
+    <details class="card weights" style="margin-top:var(--s4)">
+      <summary>Stat weights <span class="badge unv">guess</span></summary>
+      <p class="muted">How many points one of each stat is worth for this character. The defaults are my estimate for leveling, not simulation output: Warlock favours Shadow damage and wand DPS, Paladin favours two-hander DPS and Strength. Change any number and every verdict updates.</p>
+      <div class="statgrid" id="weightGrid"></div>
+      <button type="button" class="btn" id="weightReset" style="margin-top:var(--s3)">Reset to defaults</button>
+    </details>
   </div>
 </section>
 
@@ -698,21 +773,26 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
       <article class="card">
         <span class="tag">Solo pull</span>
         <ol class="rot">
-          <li>Seal up: <b>Seal of Command</b> with a slow two-hander, <b>Seal of Righteousness</b> otherwise.</li>
-          <li>Open with <b>Judgement</b>. Your Seal stays up.</li>
-          <li><b>Holy Strike</b> on cooldown, between swings.</li>
-          <li>On 2+ mobs, from 20: drop <b>Consecration</b> under them.</li>
-          <li>For burst, <b>Hammer of Justice</b>, then judge on the stunned target.</li>
-          <li>Between pulls: <b>Cannibalize</b> on humanoid or undead corpses, then <b>Flash of Light</b> if you need more.</li>
+          <li>Seal up: <b>Seal of Righteousness</b>.</li>
+          <li data-lv="10" data-spell="Seal of Command">With a slow two-hander, use <b>Seal of Command</b> instead.</li>
+          <li data-lv="4" data-spell="Judgement">Open with <b>Judgement</b>. Your Seal stays up.</li>
+          <li data-spell="Holy Strike"><b>Holy Strike</b> on cooldown, between swings.</li>
+          <li data-lv="20" data-spell="Consecration">On 2+ mobs, drop <b>Consecration</b> under them.</li>
+          <li data-lv="8" data-spell="Hammer of Justice">For burst, <b>Hammer of Justice</b>, then judge on the stunned target.</li>
+          <li>Between pulls: <b>Cannibalize</b> on humanoid or undead corpses, then <b>Holy Light</b> if you need more.</li>
+          <li data-lv="20" data-spell="Flash of Light">Use <b>Flash of Light</b> instead of Holy Light: cheaper and faster.</li>
         </ol>
       </article>
       <article class="card">
         <span class="tag">Trouble &amp; dungeons</span>
         <ul class="plain">
-          <li>On a bad pull: <b>Divine Protection</b> (6), then <b>Divine Shield</b> (34) and a <b>Hearthstone</b> or a heal. <b>Lay on Hands</b> when you're nearly dead.</li>
-          <li>Stop runners with <b>Seal of Justice</b> (22) or <b>Hammer of Wrath</b> (44).</li>
-          <li>Put <b>Blessing of Protection</b> on a party member who pulls aggro. <b>Blessing of Freedom</b> breaks roots and slows.</li>
-          <li>In dungeons, use <b>Seal of Fury</b> to taunt if the tank dies, <b>Turn Undead</b> (24) in Scarlet and Scholomance, and <b>Redemption</b> after a wipe.</li>
+          <li data-lv="6" data-spell="Divine Protection">On a bad pull: <b>Divine Protection</b>, then a heal or a <b>Hearthstone</b>.</li>
+          <li data-lv="10" data-spell="Lay on Hands"><b>Lay on Hands</b> when you're nearly dead.</li>
+          <li data-lv="34" data-spell="Divine Shield"><b>Divine Shield</b> makes you immune: heal up or walk away.</li>
+          <li data-lv="22" data-spell="Seal of Justice">Stop runners with <b>Seal of Justice</b>.</li>
+          <li data-lv="44" data-spell="Hammer of Wrath">Finish runners at low health with <b>Hammer of Wrath</b>.</li>
+          <li data-lv="10" data-spell="Blessing of Protection">Put <b>Blessing of Protection</b> on a party member who pulls aggro. <b>Blessing of Freedom</b> breaks roots and slows.</li>
+          <li data-lv="12">In dungeons, use <b>Seal of Fury</b> to taunt if the tank dies, <b>Turn Undead</b> (24) in Scarlet and Scholomance, and <b>Redemption</b> after a wipe.</li>
           <li>Blessings: Might on melee, Wisdom on casters and healers, Kings on everyone.</li>
         </ul>
       </article>
@@ -721,13 +801,17 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
       <article class="card">
         <span class="tag">Solo pull</span>
         <ol class="rot">
-          <li>Send the <b>Voidwalker</b> in (Imp before 10). Wait for one Torment so it has threat.</li>
-          <li><b>Corruption</b> (instant from 14), then <b>Bane of Agony</b>. From 42, add <b>Siphon Life</b>.</li>
-          <li>Two or three mobs? Put the same DoTs on each one. That's where Affliction beats the other specs.</li>
-          <li><b>Wand</b> while the DoTs tick to save mana. From 40, cast <b>Shadow Bolt</b> when Nightfall makes it instant.</li>
-          <li>Hurt? <b>Drain Life</b> the target: it damages it and heals you at once. Low on mana? <b>Life Tap</b>, then drain the health back.</li>
-          <li>Finish with <b>Drain Soul</b> for a guaranteed shard.</li>
-          <li>Between pulls: <b>Life Tap</b>, then <b>Cannibalize</b>. Use <b>Health Funnel</b> if the demon is low.</li>
+          <li data-lvmax="9">Send the <b>Imp</b> in first, or just open with Shadow Bolt: below 10 nothing hits hard enough to need a tank.</li>
+          <li data-lv="10" data-spell="Summon Voidwalker">Send the <b>Voidwalker</b> in. Wait for one Torment so it has threat.</li>
+          <li data-lv="4" data-spell="Corruption"><b>Corruption</b> (instant from 14 with the talent), then <b>Bane of Agony</b> (8).</li>
+          <li data-lv="42" data-spell="Siphon Life">Add <b>Siphon Life</b> as a third DoT.</li>
+          <li data-lv="8">Two or three mobs? Put the same DoTs on each one. That's where Affliction beats the other specs.</li>
+          <li><b>Wand</b> while the DoTs tick to save mana (no wand yet? Shadow Bolt instead).</li>
+          <li data-lv="40" data-spell="Nightfall">Cast <b>Shadow Bolt</b> when Nightfall makes it instant.</li>
+          <li data-lv="14" data-spell="Drain Life">Hurt? <b>Drain Life</b> the target: it damages it and heals you at once. Low on mana? <b>Life Tap</b>, then drain the health back.</li>
+          <li data-lv="10" data-spell="Drain Soul">Finish with <b>Drain Soul</b> for a guaranteed shard.</li>
+          <li data-lv="6" data-spell="Life Tap">Between pulls: <b>Life Tap</b>, then <b>Cannibalize</b>.</li>
+          <li data-lv="12" data-spell="Health Funnel">Use <b>Health Funnel</b> if the demon is low.</li>
         </ol>
       </article>
       <article class="card">
@@ -737,21 +821,21 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
           <li><b>Stance:</b> keep it on <b>Defensive</b>. Aggressive pulls extra mobs; Passive is for sneaking past packs.</li>
           <li><b>Autocast:</b> right-click an ability to toggle it (gold moving border = on).</li>
           <li><b>Imp:</b> Firebolt and Blood Pact on, Phase Shift <b>off</b>. Cast Fire Shield on the paladin.</li>
-          <li><b>Voidwalker:</b> Torment on (its taunt). Suffering by hand when adds show up. Sacrifice only when you're about to die, then heal it back with Consume Shadows.</li>
-          <li><b>Succubus:</b> Seduction autocast off. Seduce first, DoT later: damage breaks it.</li>
-          <li><b>Felhunter:</b> Spell Lock by hand to interrupt casters.</li>
+          <li data-lv="10" data-spell="Summon Voidwalker"><b>Voidwalker:</b> Torment on (its taunt). Suffering by hand when adds show up. Sacrifice only when you're about to die, then heal it back with Consume Shadows.</li>
+          <li data-lv="20" data-spell="Summon Succubus|Summon Incubus"><b>Succubus:</b> Seduction autocast off. Seduce first, DoT later: damage breaks it.</li>
+          <li data-lv="30" data-spell="Summon Felhunter"><b>Felhunter:</b> Spell Lock by hand to interrupt casters.</li>
           <li><b>Grimoires</b> teach the demon that's out right now, so summon the right one before you use one.</li>
-          <li>Every demon except the Imp costs a <b>Soul Shard</b> to summon.</li>
+          <li data-lv="10">Every demon except the Imp costs a <b>Soul Shard</b> to summon.</li>
         </ul>
       </article>
       <article class="card">
         <span class="tag">Trouble &amp; dungeons</span>
         <ul class="plain">
-          <li>On an extra mob: <b>Fear</b> it, or let the Voidwalker taunt it with Suffering.</li>
+          <li data-lv="8" data-spell="Fear">On an extra mob: <b>Fear</b> it, or let the Voidwalker taunt it with Suffering.</li>
           <li>If the demon dies, finish the fight with DoTs and Drain Life, then resummon. Fel Domination is a Demonology talent you don't take.</li>
-          <li><b>Sacrifice</b> the Voidwalker for a shield, then <b>Healthstone</b>.</li>
-          <li>Keep a <b>Soulstone</b> on yourself before risky pulls.</li>
-          <li>In dungeons, run the <b>Imp</b> (Blood Pact), or the <b>Succubus</b> if the tank needs crowd control. Apply <b>Curse of the Elements</b>, hand out Healthstones, and use <b>Ritual of Summoning</b> to bring players in.</li>
+          <li data-lv="10" data-spell="Create Healthstone"><b>Sacrifice</b> the Voidwalker for a shield, then <b>Healthstone</b>.</li>
+          <li data-lv="18" data-spell="Create Soulstone">Keep a <b>Soulstone</b> on yourself before risky pulls.</li>
+          <li data-lv="13">In dungeons, run the <b>Imp</b> (Blood Pact), or the <b>Succubus</b> if the tank needs crowd control. Apply <b>Curse of the Elements</b>, hand out Healthstones, and use <b>Ritual of Summoning</b> to bring players in.</li>
         </ul>
       </article>
     </div>
@@ -763,7 +847,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
         <li><b>Buffs:</b> <b>Blessing of Wisdom</b> or <b>Kings</b> on the warlock, <b>Might</b> on the paladin. The Imp's <b>Blood Pact</b> raises both of your Stamina early on.</li>
         <li><b>Safety:</b> the warlock <b>Soulstones</b> the paladin, the paladin <b>Redemptions</b> the warlock, and Healthstones go to both. <b>Blessing of Protection</b> saves the warlock if something breaks through.</li>
         <li><b>Downtime:</b> you both have <b>Cannibalize</b>, so split the corpses. The warlock <b>Life Taps</b> while the paladin heals them back up.</li>
-        <li><b>Professions:</b> Tailoring and Enchanting on the warlock, Mining and Blacksmithing on the paladin. The enchanter enchants the paladin's two-hander. Swap materials instead of selling them.</li>
+        <li><b>Professions:</b> Herbalism and Alchemy on the warlock, Mining and Blacksmithing on the paladin. The warlock brews potions for both of you. Swap materials instead of selling them.</li>
         <li><b>Dungeons:</b> run the Wolfsbane dungeons together. After 40, a Protection paladin and a warlock can build a group around themselves.</li>
       </ul>
     </article>
@@ -773,23 +857,15 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
 <!-- Warlock-only: talent plan + trainer list, both follow the level slider (renderTalents / renderTraining). -->
 <section id="training" data-only="wl">
   <div class="wrap">
-    <header><p class="eyebrow">Your build</p><h2>Talents &amp; trainer</h2><p>Where every talent point goes, and what to buy at each trainer visit. Both lists follow your level: past steps dim, the current one glows, and the box on top tells you what's next.</p></header>
+    <header><p class="eyebrow">Your build</p><h2>Talents &amp; trainer</h2><p>Where every talent point goes, and what to buy at each trainer visit. Both lists follow your level: what you're working on now stays open, finished and far-off steps fold away, and with the addon each one shows what you've really learned.</p></header>
     <div class="grid">
-      <article class="card tplan-card">
-        <span class="tag">Trainer rules of thumb</span>
-        <ul class="plain">
-          <li><b>Always buy:</b> Shadow Bolt, Corruption, Bane of Agony, Immolate, Searing Pain, Siphon Life (from 42), Life Tap, Drain Life, Drain Soul, Health Funnel, Demon Skin/Armor, Healthstone, Soulstone and Spellstone ranks, Fear, Death Coil, Banish, Curse of the Elements.</li>
-          <li><b>Skip:</b> Shadowburn, Conflagrate and Incinerate ranks (talents you don't take), Firestone, Rain of Fire and Hellfire, Eye of Kilrogg, Sense Demons.</li>
-          <li><b>Rank 1 is enough:</b> Curse of Weakness, Recklessness and Tongues, Drain Mana, Detect Invisibility, Subjugate Demon, Shadow Ward.</li>
-          <li><b>After training:</b> new spells don't go on your bars by themselves. Press <kbd>P</kbd> and drag them on.</li>
-        </ul>
-      </article>
+      
       <!-- Talent plan: rows rendered by renderTalents() from TALENTS_WL, coloured by the level slider. -->
       <article class="card tplan-card">
         <span class="tag">Talent plan · one point per level from 10</span>
         <p class="muted"><b>How to spend a point:</b> press <kbd>N</kbd>, open the tab shown under the talent (<b>Affliction</b> or <b>Demonology</b>), and left-click the talent named below; each click adds one point. A row of the tree unlocks after every 5 points you spend in that tree. Points can't be refunded one at a time; a full reset at your class trainer costs gold, starting at 1g.</p>
         <p class="tnext" id="talentNext"></p>
-        <ol class="tplan" id="talentPlan"></ol>
+        <div id="talentPlan"></div>
         <p class="muted">Order: the most common Affliction leveling path on <a href="https://talentsforever.com/warlock/leveling" target="_blank" rel="noopener">Talents Forever</a> (about 31% of warlock builds), with <a href="https://www.warcrafttavern.com/forever/guides/warlock-leveling/" target="_blank" rel="noopener">Warcraft Tavern</a>'s Unholy Power and Demonic Energies at 20–26 so your demon stays useful. Improved Drains is cut to one filler point because the Nov 2 patch made it Drain Mana only. <span class="badge unv">verify</span> Descriptions marked "read the tooltip" aren't documented yet, and the 50–60 data is thin. Want a tankier demon instead? At 40, use dual spec for Demonology.</p>
       </article>
       <!-- Trainer list: rows rendered by renderTraining() from TRAIN_WL; struck-through spells are safe to skip for this build. -->
@@ -797,7 +873,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
         <span class="tag">What to buy at the trainer</span>
         <p class="muted">Visit your trainer at every even level (Brill, or the Undercity Magic Quarter). Buy the normal entries. <s>Struck-through</s> ones are safe to skip for this build; hover or tap one for the reason. Training 1–60 costs about 206g if you buy everything, so skipping saves real gold. Demons come from class quests and Grimoires, not from this list.</p>
         <p class="tnext" id="trainNext"></p>
-        <ol class="tplan train" id="trainPlan"></ol>
+        <div id="trainPlan" class="train"></div>
         <p class="muted">Spell list from <a href="https://wowforever.wclbox.com/en/fashu/warlock/levels" target="_blank" rel="noopener">WCLBox</a>. <span class="badge unv">verify</span> The skip advice is my call for this build, not from a guide; if the trainer shows a spell that isn't here, buy it.</p>
       </article>
     </div>
@@ -873,7 +949,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
     <div class="grid">
       <article class="card" data-only="pal">
         <span class="tag">Professions</span>
-        <p><b>Mining and Blacksmithing</b> fits a two-hander paladin: Blacksmithing makes your weapons and plate, and Mining supplies the ore. It also complements the warlock's Tailoring and Enchanting.</p>
+        <p><b>Mining and Blacksmithing</b> fits a two-hander paladin: Blacksmithing makes your weapons and plate, and Mining supplies the ore. The warlock's Herbalism uses different nodes, and Alchemy makes potions for you.</p>
         <p><b>Early quest reward:</b> around level 3–4 a quest offers three books. Take <b>Mining for Dummies</b> and use it right away (right-click it in your bags); it teaches you Mining for free. The warlock takes the Skinning book, so you don't compete for ore.</p>
         <p class="muted">For more gold, run <b>Mining and Herbalism</b> to 40, then swap Herbalism for Blacksmithing. Minor Healing Potions are now a First Aid recipe.</p>
       </article>
@@ -888,9 +964,15 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
       </article>
       <article class="card" data-only="wl">
         <span class="tag">Professions</span>
-        <p><b>Tailoring and Enchanting</b> is the classic warlock pairing. Tailoring turns the cloth you loot into your own gear and bags. Enchanting turns the gear you don't need into enchanting materials, and early on it makes <b>wands</b>, which are a big upgrade at levels 10–20.</p>
-        <p><b>Starting-zone manual quest</b> (Mining for Dummies / Wild Harvest / Pelt Collecting for Beginners): take <b>Pelt Collecting (Skinning)</b>. You skin the beasts you kill anyway, with no detours, and leather sells. Skip Mining: the paladin mines, and you'd compete for the same nodes. Using the book teaches the profession and fills a slot, so if you want Tailoring and Enchanting from day one, just don't use it.</p>
-        <p class="muted">For more gold early, take <b>Herbalism and Skinning</b> or <b>Mining</b> to 40, then switch. Minor Healing Potions are now a First Aid recipe. Leveling crafting professions also earns Legacy Points.</p>
+        <p>You have <b>Herbalism and Alchemy</b>. That's a strong pair for a duo: you pick every herb on the route, and Alchemy turns them into healing and mana potions for both of you, plus elixirs. At 60 it makes Flasks and transmutes, which are the profession's real money.</p>
+        <ul class="plain">
+          <li><b>Keep Herbalism ahead of your level.</b> Pick every herb you pass. Herbs need skill to gather, so if you fall behind, whole zones of nodes stop being usable.</li>
+          <li><b>Level Alchemy in Brill or Undercity</b> every few levels, using your own herbs. Make whatever is still orange or yellow. Once a recipe turns grey, sell the herbs instead.</li>
+          <li><b>Sell or craft?</b> On a fresh server, raw herbs like Peacebloom, Silverleaf and Briarthorn often sell on the AH for more than the potions. The Item worth table shows the vendor value, and once you enter an AH price it shows the auction value too.</li>
+          <li><b>Wands:</b> without Enchanting you can't make your own, so take wand quest rewards and check the AH around level 13–20.</li>
+          <li><b>Your partner:</b> the paladin mines, so you never compete for nodes. Give them healing potions before hard pulls.</li>
+        </ul>
+        <p class="muted">Leveling crafting professions also earns Legacy Points.</p>
       </article>
       <article class="card" data-only="wl">
         <span class="tag">Gold plan</span>
@@ -933,7 +1015,7 @@ footer{padding-block:var(--s6);color:var(--muted);font-size:.85rem;border-top:1p
   <div class="wrap">
     <header><p class="eyebrow">Chapter VIII</p><h2>Your notes</h2><p>Use this for anything: guild name, gear you are after, a rare you saw. It saves on its own.</p></header>
     <label for="notesBox" class="eyebrow" style="display:block;margin-bottom:var(--s2)">Notes</label>
-    <textarea id="notesBox" placeholder="e.g. Saw Gorefang in Silverpine at the lake. Need Tailoring 150 before Barrens."></textarea>
+    <textarea id="notesBox" placeholder="e.g. Saw Gorefang in Silverpine at the lake. Need Herbalism 150 before Barrens."></textarea>
   </div>
 </section>
 
@@ -981,7 +1063,7 @@ const ROUTE = [
   {id:"r1", lo:1, hi:6, zones:["Tirisfal Glades"], hub:"Deathknell", dun:"—",
    tip:"Start with the Imp and Shadow Bolt. Finish the starting-zone quest that unlocks Camping (around level 5)."},
   {id:"r2", lo:6, hi:11, zones:["Tirisfal Glades"], hub:"Brill · Undercity", dun:"—",
-   tip:"Train in Brill. At 10, do the Voidwalker quest; the Voidwalker is now your main demon. Pick up Tailoring and Enchanting in the Undercity."},
+   tip:"Train in Brill. At 10, do the Voidwalker quest; the Voidwalker is now your main demon. Train Herbalism and Alchemy in Brill or the Undercity."},
   {id:"r3", lo:11, hi:15, zones:["Silverpine Forest","Tirisfal Glades"], hub:"The Sepulcher", dun:"Ruins of Lordaeron (new; quests need level 15)",
    tip:"Ruins of Lordaeron is the new dungeon right under the Undercity. Its quests need level 15, so run it at the end of this bracket, after gathering the quests in Tirisfal."},
   {id:"r4", lo:15, hi:20, zones:["The Barrens","Silverpine Forest"], hub:"Crossroads (zeppelin to Orgrimmar)", dun:"Wailing Caverns (~17) · Shadowfang Keep (~18) · Ragefire (optional)",
@@ -1142,13 +1224,14 @@ const CHECKS = [
     ["lg-25","Legacy: 25 points (companion)"],
     ["lg-40","Legacy: 40 points (tabard)"],
     ["lg-55","Legacy: 55 points (mount)"],
-    ["pf-tail150","Tailoring 150"],
-    ["pf-tail300","Tailoring 300"],
-    ["pf-ench150","Enchanting 150"],
-    ["pf-ench300","Enchanting 300"]
+    ["pf-herb150","Herbalism 150"],
+    ["pf-herb300","Herbalism 300"],
+    ["pf-alch150","Alchemy 150"],
+    ["pf-alch300","Alchemy 300"]
   ]}
 ];
-const PROF_CHECKS = [["Tailoring",150,"pf-tail150"],["Tailoring",300,"pf-tail300"],["Enchanting",150,"pf-ench150"],["Enchanting",300,"pf-ench300"]];
+// Warlock professions: Herbalism + Alchemy (the player's pick at launch).
+const PROF_CHECKS = [["Herbalism",150,"pf-herb150"],["Herbalism",300,"pf-herb300"],["Alchemy",150,"pf-alch150"],["Alchemy",300,"pf-alch300"]];
 
 const CHECKS_PAL = [
   {title:"Class quests & mounts", tag:"Class quests", items:[
@@ -1189,7 +1272,7 @@ const CHARS = {
   wl:{cls:"WARLOCK", label:"Warlock", lsKey:"forsaken-grimoire-v1", doc:"progress", checks:CHECKS, prof:PROF_CHECKS},
   pal:{cls:"PALADIN", label:"Paladin", lsKey:"forsaken-grimoire-pal-v1", doc:"progress-pal", checks:CHECKS_PAL, prof:PROF_CHECKS_PAL}
 };
-const blankState = ()=>({level:1, checks:{}, notes:"", game:null});
+const blankState = ()=>({level:1, checks:{}, notes:"", game:null, charName:"", weights:{}, ah:{}});
 const states = {wl:blankState(), pal:blankState()};
 let CHAR = (()=>{ const q = new URLSearchParams(location.search).get("char");
   if(CHARS[q]) return q; try{ const v = localStorage.getItem("fg-char"); if(CHARS[v]) return v; }catch(e){} return "wl"; })();
@@ -1260,8 +1343,10 @@ function applyGame(sv, source){
   if(last && last.level){ const k = last.class || "WARLOCK"; if(!snaps[k] || (+last.time||0) > (+snaps[k].time||0)) snaps[k] = last; }
   const msgs = []; let matched = 0;
   for(const [c,def] of Object.entries(CHARS)){
-    const s = snaps[def.cls]; if(!s || !s.level) continue;
-    matched++; const m = applySnap(c, s, source); if(m) msgs.push(`${def.label}: ${m}`);
+    let s = snaps[def.cls]; if(!s || !s.level) continue;
+    matched++;
+    const bank = db.bank && db.bank[def.cls]; if(bank && !s.bank) s = {...s, bank};
+    const m = applySnap(c, s, source); if(m) msgs.push(`${def.label}: ${m}`);
   }
   if(!matched) throw new Error("This file has no Warlock or Paladin snapshot yet. Log in with the addon enabled, then log out or /reload.");
   return msgs.join(" ");
@@ -1271,8 +1356,17 @@ function applySnap(c, s, source){
   if(st.game && (s.time||0) <= (st.game.time||0)) return source==="auto" ? "" : "not newer than the one already loaded.";
   const demons = (Array.isArray(s.demons) ? s.demons : Object.values(s.demons||{})).filter(x=>typeof x==="string");
   const profs = (s.profs && typeof s.profs==="object" && !Array.isArray(s.profs)) ? s.profs : {};
+  const objOrNull = v => (v && typeof v==="object" && !Array.isArray(v)) ? v : null;
+  const inv = objOrNull(s.inv), bank = objOrNull(s.bank);
+  const gear = {}; if(inv && inv.gear) for(const [k,v] of Object.entries(inv.gear)){ const it=compactItem(v); if(it) gear[k]=it; }
   st.game = {level:s.level, cls:s.class||"", race:s.race||"", zone:s.zone||"", subzone:s.subzone||"",
-    money:+s.money||0, quests:(s.quests??null), xp:+s.xp||0, xpMax:+s.xpMax||0, time:+s.time||0, demons, profs};
+    money:+s.money||0, quests:(s.quests??null), xp:+s.xp||0, xpMax:+s.xpMax||0, time:+s.time||0, demons, profs,
+    talents: objOrNull(s.talents) ? {tabs:s.talents.tabs||[], ranks:objOrNull(s.talents.ranks)||{}, free:+s.talents.free||0} : null,
+    spells: objOrNull(s.spells),
+    bags: inv ? compactList(inv.bags) : null, gear: inv ? gear : null, invTime: inv ? +inv.time||0 : 0,
+    bank: bank ? {time:+bank.time||0, items:compactList(bank.items)} : null};
+  // 0.2+ files keep the character name in `who` (items use `name`); older files used `name`.
+  const who = s.who || (!inv && s.name); if(who) st.charName = String(who);
   st.level = Math.max(1, Math.min(60, Math.round(s.level)));
   demons.forEach(id=>{ st.checks[id]=true; });
   def.prof.forEach(([p,r,id])=>{ if((+profs[p]||0) >= r) st.checks[id]=true; });
@@ -1295,6 +1389,7 @@ function renderGame(){
   const pct = g.xpMax ? Math.round(100*g.xp/g.xpMax) : 0;
   const profs = Object.entries(g.profs||{}).filter(([k])=>!/Language|Defense|Staves|Daggers|Swords|Wands|Unarmed|Cloth/.test(k)).map(([k,v])=>`${k} ${v}`).join(" · ") || "—";
   el.innerHTML = `
+    <div><b>${esc(state.charName||CHARS[CHAR].label)}</b><span>${esc([g.race==="Scourge"?"Undead":g.race, CHARS[CHAR].label].filter(Boolean).join(" "))}</span></div>
     <div><b>${esc(g.level)}</b><span>Level · ${pct}% to next</span><div class="xpbar"><i style="width:${pct}%"></i></div></div>
     <div><b>${esc(g.zone||"—")}</b><span>${esc(g.subzone||"Zone")}</span></div>
     <div><b>${fmtMoney(g.money)}</b><span>Gold on hand</span></div>
@@ -1312,6 +1407,256 @@ async function importFile(file){
 async function autoFetchSV(){
   try{ const r = await fetch("sync/GrimoireSync.lua", {cache:"no-store"}); if(!r.ok) return;
        const msg = applyGame(parseLuaSV(await r.text()), "auto"); if(msg) setImportMsg("Synced from your PC: "+msg); }catch(e){}
+}
+
+// ---------- item worth ----------
+// Items come from the addon with raw tooltip lines; compactItem() parses them once at import so
+// the stored state (localStorage / db) only holds stats, never the tooltip text.
+// A score is just Σ weight × stat. The weights are editable per character and stored with the state.
+// Defaults are my estimate for leveling (marked "guess" on the page), not sim output.
+const STAT_DEFS = [
+  ["sta","Stamina"],["int","Intellect"],["spi","Spirit"],["str","Strength"],["agi","Agility"],
+  ["sp","Spell damage"],["shadow","Shadow damage"],["fire","Fire damage"],["holy","Holy damage"],["heal","Healing"],
+  ["scrit","Spell crit %"],["shit","Spell hit %"],["crit","Crit %"],["hit","Hit %"],["ap","Attack power"],
+  ["mp5","Mana / 5 s"],["hp5","Health / 5 s"],["armor","Armor"],["mdps","Weapon DPS"],["rdps","Wand DPS"],["res","Resistance"]
+];
+const DEFAULT_WEIGHTS = {
+  // Affliction: shadow damage is king, wand DPS matters while leveling, Stamina feeds Life Tap.
+  wl:{sta:.5,int:.4,spi:.45,str:0,agi:0,sp:1,shadow:1,fire:.15,holy:0,heal:0,scrit:6,shit:8,crit:0,hit:0,ap:0,mp5:1,hp5:.5,armor:.01,mdps:0,rdps:2.5,res:.05},
+  // Retribution with a two-hander: weapon DPS dominates (1 DPS ≈ 14 AP ≈ 7 Strength).
+  pal:{sta:.5,int:.25,spi:.1,str:1,agi:.6,sp:.3,shadow:0,fire:0,holy:.3,heal:.05,scrit:2,shit:2,crit:12,hit:12,ap:.5,mp5:.8,hp5:.5,armor:.02,mdps:7,rdps:0,res:.05}
+};
+// What each class can equip (item subType strings from the English client). Paladin plate needs level 40.
+const PROFS = {
+  wl:{armor:["Cloth","Miscellaneous"], weapon:["Daggers","Staves","One-Handed Swords","Wands","Miscellaneous","Fishing Poles"]},
+  pal:{armor:["Cloth","Leather","Mail","Plate","Shields","Librams","Miscellaneous"],
+       weapon:["One-Handed Maces","Two-Handed Maces","One-Handed Swords","Two-Handed Swords","One-Handed Axes","Two-Handed Axes","Polearms","Miscellaneous","Fishing Poles"]}
+};
+const SLOT_NAMES = {1:"Head",2:"Neck",3:"Shoulder",4:"Shirt",5:"Chest",6:"Waist",7:"Legs",8:"Feet",9:"Wrist",10:"Hands",
+  11:"Ring 1",12:"Ring 2",13:"Trinket 1",14:"Trinket 2",15:"Back",16:"Main hand",17:"Off hand",18:"Ranged / relic",19:"Tabard"};
+const LOC_SLOTS = {INVTYPE_HEAD:[1],INVTYPE_NECK:[2],INVTYPE_SHOULDER:[3],INVTYPE_BODY:[4],INVTYPE_CHEST:[5],INVTYPE_ROBE:[5],
+  INVTYPE_WAIST:[6],INVTYPE_LEGS:[7],INVTYPE_FEET:[8],INVTYPE_WRIST:[9],INVTYPE_HAND:[10],INVTYPE_FINGER:[11,12],
+  INVTYPE_TRINKET:[13,14],INVTYPE_CLOAK:[15],INVTYPE_WEAPON:[16],INVTYPE_WEAPONMAINHAND:[16],INVTYPE_2HWEAPON:[16],
+  INVTYPE_WEAPONOFFHAND:[17],INVTYPE_SHIELD:[17],INVTYPE_HOLDABLE:[17],INVTYPE_RANGED:[18],INVTYPE_RANGEDRIGHT:[18],
+  INVTYPE_THROWN:[18],INVTYPE_RELIC:[18],INVTYPE_TABARD:[19]};
+// Slots that matter for "what's missing" (shirt/tabard are cosmetic; off hand is fine empty with a two-hander).
+const CORE_SLOTS = [1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
+const QCOL = ["#9d9d9d","#e8e8e8","#1eff00","#0070dd","#a335ee","#ff8000","#e6cc80"];
+const KEEP_IDS = {6265:"Soul Shard: Drain Soul ammo, keep a few", 6948:"Hearthstone"};
+
+// Tooltip lines -> stats. Covers Classic wording plus "spell power" wording in case Forever uses it.
+const STAT_RX = [
+  [/^\+(\d+) Stamina$/,"sta"],[/^\+(\d+) Intellect$/,"int"],[/^\+(\d+) Spirit$/,"spi"],[/^\+(\d+) Strength$/,"str"],[/^\+(\d+) Agility$/,"agi"],
+  [/^(\d+) Armor$/,"armor"],
+  [/damage and healing done by magical spells and effects by up to (\d+)/i,"sp"],
+  [/spell (?:power|damage) by (?:up to )?(\d+)/i,"sp"],[/^\+(\d+) Spell (?:Power|Damage)/i,"sp"],
+  [/damage done by Shadow spells and effects by up to (\d+)/i,"shadow"],[/^\+(\d+) Shadow Spell Damage/i,"shadow"],
+  [/damage done by Fire spells and effects by up to (\d+)/i,"fire"],[/^\+(\d+) Fire Spell Damage/i,"fire"],
+  [/damage done by Holy spells and effects by up to (\d+)/i,"holy"],
+  [/healing done by spells and effects by up to (\d+)/i,"heal"],[/^\+(\d+) Healing/i,"heal"],
+  [/critical strike with spells by (\d+)%/i,"scrit"],[/chance to hit with spells by (\d+)%/i,"shit"],
+  [/chance to get a critical strike by (\d+)%/i,"crit"],[/chance to hit by (\d+)%/i,"hit"],
+  [/\+(\d+) (?:ranged )?Attack Power/i,"ap"],[/Restores (\d+) mana per 5 sec/i,"mp5"],[/Restores (\d+) health per 5 sec/i,"hp5"],
+  [/^\+(\d+) (?:Shadow|Fire|Frost|Nature|Arcane) Resistance$/,"res"],[/^\+(\d+) All Resistances$/,"res"]
+];
+function parseTip(lines){
+  const st = {}; let unusable = false, bop = false, quest = false, classes = null, lvlRed = false;
+  for(const raw of (Array.isArray(lines)?lines:Object.values(lines||{}))){
+    if(typeof raw!=="string") continue;
+    const [lRaw, rRaw=""] = raw.split("\t");
+    const redL = lRaw.startsWith("!"), redR = rRaw.startsWith("!");
+    const L = redL ? lRaw.slice(1) : lRaw;
+    if(redL || redR){ if(/^Requires Level \d+/.test(L)) lvlRed = true; else unusable = true; }
+    if(/^Binds when picked up/.test(L)) bop = true;
+    if(/^Quest Item/.test(L) || /^This Item Begins a Quest/.test(L)) quest = true;
+    const cm = /^Classes: (.*)$/.exec(L); if(cm) classes = cm[1];
+    const dm = /\((\d+(?:\.\d+)?) damage per second\)/.exec(L); if(dm) st.dps = +dm[1];
+    if(/^Use:/.test(L)) continue;                      // on-use effects aren't passive stats
+    for(const [rx,k] of STAT_RX){ const m = rx.exec(L); if(m){ st[k] = (st[k]||0) + (+m[1]); break; } }
+  }
+  return {st, unusable, bop, quest, classes, lvlRed};
+}
+// Addon item record -> the compact form kept in state.
+function compactItem(r){
+  if(!r || !r.id) return null;
+  const p = parseTip(r.tip);
+  return {id:+r.id, name:r.name||("Item "+r.id), q:(r.q==null?1:+r.q), ilvl:+r.ilvl||0, req:+r.req||0, type:r.type||"", sub:r.sub||"",
+    loc:r.loc||"", sell:+r.sell||0, ah:r.ah?+r.ah:0, n:+r.n||1, bound:!!r.bound, bag:r.bag??null,
+    st:p.st, un:p.unusable, bop:p.bop, quest:p.quest, cls:p.classes};
+}
+function compactList(a){ return (Array.isArray(a)?a:Object.values(a||{})).map(compactItem).filter(Boolean); }
+
+function weightsFor(c){ return {...DEFAULT_WEIGHTS[c], ...((states[c] && states[c].weights) || {})}; }
+// Score of one item for character c. Weapon DPS counts as wand DPS in the ranged slot.
+function itemScore(it, c, w = weightsFor(c)){
+  if(!it) return 0;
+  let s = 0;
+  for(const [k,v] of Object.entries(it.st||{})){
+    if(k==="dps") s += v * ((LOC_SLOTS[it.loc]||[])[0]===18 ? w.rdps : w.mdps);
+    else s += v * (w[k]||0);
+  }
+  return Math.round(s*10)/10;
+}
+// Can character c wear it? Returns null if yes, else a short reason. `now` false = ignore the level.
+function cantUse(it, c, now = true){
+  if(it.un && c===CHAR) return "can't use (red in tooltip)";
+  if(it.cls && !it.cls.split(/,\s*/).includes(CHARS[c].label)) return "class only: "+it.cls;
+  const lvl = (states[c].game && states[c].game.level) || states[c].level || 1;
+  if(it.type==="Armor" && !PROFS[c].armor.includes(it.sub)) return it.sub+" armor";
+  if(it.type==="Weapon" && !PROFS[c].weapon.includes(it.sub)) return it.sub;
+  if(c==="pal" && it.sub==="Plate" && lvl<40) return now ? "plate from level 40" : null;
+  if(c==="wl" && it.sub==="Librams") return "Librams";
+  if(now && it.req > lvl) return "level "+it.req;
+  return null;
+}
+const isTwoHand = it => it && it.loc==="INVTYPE_2HWEAPON";
+// Value currently held in the slot(s) the item would replace, or null if it can't be compared cleanly.
+function slotBase(it, c){
+  const g = (states[c].game && states[c].game.gear) || {}, sc = s=>itemScore(g[s], c);
+  const slots = LOC_SLOTS[it.loc]; if(!slots) return null;
+  if(it.loc==="INVTYPE_2HWEAPON") return sc(16) + sc(17);
+  if(slots[0]===17 && isTwoHand(g[16])) return null;   // an off-hand needs a one-hander first
+  if(slots.length===2) return Math.min(sc(slots[0]), sc(slots[1]));
+  return sc(slots[0]);
+}
+// Upgrade delta for character c (positive = better than what's equipped), or null if not comparable.
+function upgradeFor(it, c){
+  if(!LOC_SLOTS[it.loc] || !states[c].game || !states[c].game.gear) return null;
+  if(cantUse(it, c, false)) return null;
+  const base = slotBase(it, c); if(base===null) return null;
+  return Math.round((itemScore(it, c) - base)*10)/10;
+}
+// "1g 20s", "45s", "1.5" (gold), "30c" -> copper. Returns null for empty/invalid input.
+function parseMoney(t){
+  t = String(t||"").trim().toLowerCase(); if(!t) return null;
+  if(/^\d+(\.\d+)?$/.test(t)) return Math.round(+t*10000);
+  let c = 0, ok = false;
+  t.replace(/(\d+(?:\.\d+)?)\s*([gsc])/g, (_,n,u)=>{ ok = true; c += +n * (u==="g"?10000:u==="s"?100:1); });
+  return ok ? Math.round(c) : null;
+}
+function fmtCoin(c){ c = Math.round(c||0); if(!c) return "—"; const g=Math.floor(c/10000), s=Math.floor(c%10000/100), cc=c%100;
+  return [g?g+"g":"", s?s+"s":"", (!g && cc)?cc+"c":""].filter(Boolean).join(" ") || "0c"; }
+
+const partnerOf = c => c==="wl" ? "pal" : "wl";
+const charName = c => (states[c] && states[c].charName) || CHARS[c].label;
+// The verdict: one action per item, in priority order. Returns {k, label, why, val} (val = copper if sold).
+function verdict(it){
+  const c = CHAR, o = partnerOf(c), lvl = (state.game && state.game.level) || state.level;
+  const ahPer = (state.ah && state.ah[it.id]) || it.ah || 0;
+  const vendor = it.sell * it.n, ahNet = Math.round(ahPer * it.n * 0.95);   // AH keeps 5%
+  const sellable = !it.bound && !it.bop;
+  const sell = ()=> sellable && ahPer && ahNet > vendor*1.3 + 500
+      ? {k:"ah", label:"Auction", why:`about ${fmtCoin(ahNet)} after the 5% cut, vs ${fmtCoin(vendor)} at a vendor`, val:ahNet}
+      : vendor ? {k:"vendor", label:"Vendor", why:`${fmtCoin(vendor)} at any merchant`+(sellable && !ahPer ? "; add an AH price to compare" : ""), val:vendor}
+      : {k:"junk", label:"No value", why:"can't be sold; destroy it when you need the space", val:0};
+  if(KEEP_IDS[it.id]) return {k:"keep", label:"Keep", why:KEEP_IDS[it.id], val:0};
+  if(it.quest || it.type==="Quest") return {k:"keep", label:"Quest item", why:"used by a quest; keep it", val:0};
+  const me = upgradeFor(it, c), why = cantUse(it, c, true);
+  if(me!==null && me>0.5){
+    if(!why) return {k:"equip", label:"Equip", why:`+${me} points over your ${SLOT_NAMES[(LOC_SLOTS[it.loc]||[])[0]]||"gear"}`, val:0, me};
+    if(/^level|^plate/.test(why) && it.req <= lvl+8) return {k:"later", label:"Keep for later", why:`+${me} points once you reach ${why}`, val:0, me};
+  }
+  if(!it.bound && states[o].game){
+    const pd = upgradeFor(it, o);
+    if(pd!==null && pd>0.5) return {k:"give", label:"Give to "+charName(o), why:`+${pd} points for the ${CHARS[o].label.toLowerCase()}`+(it.req>states[o].game.level?` from level ${it.req}`:(o==="pal" && it.sub==="Plate" && states[o].game.level<40)?" from level 40 (plate)":""), val:0, pd};
+  }
+  if(it.type==="Consumable") return vendor || (sellable && ahPer) ? {...sell(), k:"use", label:"Use or sell", why:"consumable; "+sell().why}
+    : {k:"use", label:"Use", why:"consumable with no sale value", val:0};
+  // Materials for this character's own professions: craft while they still give skill, otherwise sell.
+  const profs = (state.game && state.game.profs) || {}, lvlOf = n => +profs[n]||0;
+  if(it.sub==="Herb" && lvlOf("Alchemy") && lvlOf("Alchemy") < 300)
+    return {...sell(), k:"use", label:"Alchemy or AH", why:"brew potions while the recipes still give Alchemy skill; otherwise "+sell().why};
+  if(it.sub==="Cloth" && /Linen|Wool|Silk|Mageweave|Runecloth/.test(it.name) && lvlOf("First Aid") && lvlOf("First Aid") < 300)
+    return {...sell(), k:"use", label:"Bandages", why:"make bandages for First Aid skill; extras: "+sell().why};
+  return {...sell(), me};
+}
+
+let iFilter = "bags";
+/* Paints the Item worth section: equipped gear (with empty slots), the item list with verdicts, weights. */
+function renderItems(){
+  const box = $("#itemBody"); if(!box) return;
+  const g = state.game, inv = g && g.bags;
+  const sum = $("#itemSum"), gearEl = $("#gearList");
+  if(!inv){
+    box.innerHTML = `<tr><td colspan="5" class="muted">No inventory yet. Update the addon (version 0.2), log in, then <kbd>/reload</kbd>. Your bags, gear and bank (after you open it once) show up here.</td></tr>`;
+    sum.textContent = ""; gearEl.innerHTML = ""; renderCalc(); renderWeights(); return;
+  }
+  // Equipped gear: achieved slots, plus what's missing.
+  const gear = g.gear || {};
+  const missing = CORE_SLOTS.filter(s=>!gear[s] && !(s===17 && isTwoHand(gear[16])));
+  gearEl.innerHTML = CORE_SLOTS.map(s=>{
+    const it = gear[s];
+    if(!it) return (s===17 && isTwoHand(gear[16])) ? "" : `<li class="miss"><span class="gs">${SLOT_NAMES[s]}</span><span>Empty</span><span class="pts">—</span></li>`;
+    return `<li><span class="gs">${SLOT_NAMES[s]}</span><a href="https://www.wowhead.com/classic/item=${it.id}" target="_blank" rel="noopener" style="color:${QCOL[it.q]||""}">${esc(it.name)}</a><span class="pts">${itemScore(it,CHAR)}</span></li>`;
+  }).join("");
+  $("#gearMiss").innerHTML = missing.length ? `<b>${missing.length} empty slot${missing.length===1?"":"s"}:</b> ${missing.map(s=>SLOT_NAMES[s]).join(", ")}. Anything with stats beats nothing there.` : `<b>Every slot filled.</b> Now it's about upgrades.`;
+
+  const list = iFilter==="bank" ? ((g.bank && g.bank.items) || []) : inv;
+  const rows = list.map(it=>({it, v:verdict(it)}));
+  const order = {equip:0, give:1, later:2, ah:3, vendor:4, use:5, keep:6, junk:7};
+  rows.sort((a,b)=>(order[a.v.k]-order[b.v.k]) || (b.v.val-a.v.val));
+  const shown = iFilter==="up" ? rows.filter(r=>/equip|later|give/.test(r.v.k)) : iFilter==="sell" ? rows.filter(r=>/ah|vendor|junk/.test(r.v.k)) : rows;
+  box.innerHTML = shown.length ? shown.map(({it,v})=>{
+    const ahv = (state.ah && state.ah[it.id]) || "";
+    const ahCell = (it.bound || it.bop) ? `<span class="muted">soulbound</span>`
+      : `<input class="ahin" data-ah="${it.id}" value="${ahv?esc(fmtCoin(ahv)):""}" placeholder="${it.ah?esc(fmtCoin(it.ah)):"AH price"}" aria-label="Auction price for one ${esc(it.name)}">`;
+    const me = upgradeFor(it, CHAR);
+    return `<tr class="v-${v.k}"><td><a href="https://www.wowhead.com/classic/item=${it.id}" target="_blank" rel="noopener" style="color:${QCOL[it.q]||""}">${esc(it.name)}</a>${it.n>1?` <span class="muted">×${it.n}</span>`:""}`+
+      `<span class="isub">${esc([it.sub!==it.type?it.sub:"", it.req>1?"lvl "+it.req:"", it.ilvl?"ilvl "+it.ilvl:""].filter(Boolean).join(" · "))}</span></td>`+
+      `<td class="mono">${me===null?"—":(me>0?"+":"")+me}</td><td class="mono">${fmtCoin(it.sell*it.n)}</td><td>${ahCell}</td>`+
+      `<td><span class="vd">${esc(v.label)}</span><span class="isub">${esc(v.why)}</span></td></tr>`;
+  }).join("") : `<tr><td colspan="5" class="muted">${iFilter==="bank" ? "No bank data yet: open your bank once with the addon running." : "Nothing in this filter."}</td></tr>`;
+
+  const tot = k=>rows.filter(r=>r.v.k===k);
+  const cash = rows.filter(r=>/ah|vendor|use/.test(r.v.k)).reduce((s,r)=>s+r.v.val,0);
+  sum.innerHTML = `<b>${tot("equip").length}</b> to equip now · <b>${tot("later").length}</b> to keep for later · <b>${tot("give").length}</b> for ${esc(charName(partnerOf(CHAR)))} · `+
+    `<b>${fmtCoin(cash)}</b> if you sell the rest · scanned ${esc(ago(g.invTime||g.time))}`;
+  renderCalc(); renderWeights();
+}
+
+// Manual calculator: pick a slot, type stats, see the score and the delta against what you wear.
+function renderCalc(){
+  const out = $("#calcOut"); if(!out) return;
+  const loc = $("#calcSlot").value, st = {};
+  document.querySelectorAll("#calcStats input").forEach(i=>{ const v=+i.value; if(v) st[i.dataset.k]=v; });
+  const it = {loc, st, type:"", sub:"", req:0};
+  const sc = itemScore(it, CHAR), base = state.game && state.game.gear ? slotBase(it, CHAR) : null;
+  out.innerHTML = `Score <b>${sc}</b>` + (base===null ? (state.game && state.game.gear ? " · can't compare (an off-hand needs a one-handed weapon)" : " · load the addon file to compare with your gear")
+    : ` · you wear <b>${Math.round(base*10)/10}</b> there · <b class="${sc-base>0?"up":"down"}">${sc-base>0?"+":""}${Math.round((sc-base)*10)/10}</b>`);
+}
+function renderWeights(){
+  const el = $("#weightGrid"); if(!el) return;
+  const sig = CHAR + JSON.stringify(state.weights||{});
+  if(el.dataset.char===sig || el.contains(document.activeElement)) return;   // rebuild only on char switch, so typing keeps focus
+  el.dataset.char = sig; const w = weightsFor(CHAR);
+  el.innerHTML = STAT_DEFS.map(([k,l])=>`<label><span>${l}</span><input type="number" step="0.05" data-w="${k}" value="${w[k]}"></label>`).join("");
+}
+function initItems(){
+  $("#calcSlot").innerHTML = Object.entries({INVTYPE_HEAD:"Head",INVTYPE_NECK:"Neck",INVTYPE_SHOULDER:"Shoulder",INVTYPE_CHEST:"Chest",INVTYPE_WAIST:"Waist",
+    INVTYPE_LEGS:"Legs",INVTYPE_FEET:"Feet",INVTYPE_WRIST:"Wrist",INVTYPE_HAND:"Hands",INVTYPE_FINGER:"Ring",INVTYPE_TRINKET:"Trinket",INVTYPE_CLOAK:"Back",
+    INVTYPE_WEAPON:"One-hand weapon",INVTYPE_2HWEAPON:"Two-hand weapon",INVTYPE_HOLDABLE:"Off-hand",INVTYPE_SHIELD:"Shield",INVTYPE_RANGEDRIGHT:"Wand",INVTYPE_RELIC:"Libram"})
+    .map(([v,l])=>`<option value="${v}">${l}</option>`).join("");
+  $("#calcStats").innerHTML = [["sta","Stamina"],["int","Intellect"],["spi","Spirit"],["str","Strength"],["agi","Agility"],["sp","Spell dmg"],["shadow","Shadow dmg"],
+    ["crit","Crit %"],["hit","Hit %"],["ap","Attack pwr"],["mp5","Mana/5"],["armor","Armor"],["dps","Weapon DPS"]]
+    .map(([k,l])=>`<label><span>${l}</span><input type="number" min="0" step="any" data-k="${k}" inputmode="decimal"></label>`).join("");
+  $("#calcBox").addEventListener("input", renderCalc);
+  $("#weightGrid").addEventListener("input", e=>{
+    const k = e.target.dataset.w; if(!k) return;
+    state.weights = {...(state.weights||{}), [k]: +e.target.value||0};
+    renderItems(); scheduleSave();
+  });
+  $("#weightReset").addEventListener("click", ()=>{ state.weights = {}; $("#weightGrid").dataset.char = ""; renderItems(); scheduleSave(); });
+  document.querySelectorAll(".ifilters button").forEach(b=>b.addEventListener("click", ()=>{
+    iFilter = b.dataset.f; document.querySelectorAll(".ifilters button").forEach(x=>x.setAttribute("aria-pressed", x===b)); renderItems();
+  }));
+  // AH price inputs: commit on change (blur/enter) so the table doesn't re-sort under the cursor.
+  $("#itemBody").addEventListener("change", e=>{
+    const id = e.target.dataset.ah; if(!id) return;
+    const c = parseMoney(e.target.value); state.ah = {...(state.ah||{})};
+    if(c) state.ah[id] = c; else delete state.ah[id];
+    renderItems(); scheduleSave();
+  });
+  $("#charName").addEventListener("change", e=>{ state.charName = e.target.value.trim().slice(0,24); renderBar(); renderItems(); scheduleSave(); });
 }
 
 // ---------- rendering ----------
@@ -1679,6 +2024,10 @@ function followLevel(){
 }
 
 function renderBar(){
+  // Character name: from a manually loaded addon file or typed in; never from the public sync file.
+  document.querySelectorAll(".cname").forEach(el=>{ el.textContent = charName(el.dataset.c); });
+  document.querySelectorAll(".hero .who").forEach(el=>{ const n = states[el.dataset.c].charName; el.textContent = n ? n+" · " : ""; });
+  const ni = $("#charName"); if(ni && document.activeElement!==ni) ni.value = state.charName||"";
   $("#level").value = state.level; $("#levelOut").textContent = state.level;
   const ids = allCheckIds(), n = ids.filter(i=>state.checks[i]).length;
   $("#progTxt").textContent = `${n}/${ids.length}`;
@@ -1710,29 +2059,6 @@ const TALENTS_WL = [
   [55,59,"Demonic Embrace",5,"Demonology","Read the tooltip."],
   [60,60,"Demonic Sacrifice",1,"Demonology","Optional. Kills your demon for a buff, which you rarely want while questing with it. Any spare point is fine here."]
 ];
-
-/* Paints the talent plan for the active level: done / now (the point you'd spend at this level) / next up. */
-function renderTalents(){
-  const ol=$("#talentPlan"), nx=$("#talentNext"); if(!ol) return;
-  const L=state.level|0;
-  const ownIn = (a,b)=>Math.max(0,Math.min(b-a+1, L-a+1));
-  // Rank is summed over every row of the same talent, so a talent split across rows shows its true total.
-  const rankOf = name=>TALENTS_WL.filter(t=>t[2]===name).reduce((s,t)=>s+ownIn(t[0],t[1]),0);
-  ol.innerHTML = TALENTS_WL.map(([a,b,name,max,tree,desc])=>{
-    const n=b-a+1, own=ownIn(a,b), rank=rankOf(name);
-    const cls = own===n ? "done" : own>0 ? "now" : (L+1>=a && L+1<=b ? "soon" : "");
-    const pips = "●".repeat(rank) + "○".repeat(Math.max(0,max-rank));
-    return `<li class="${cls}"><span class="tlv">${a===b?a:a+"–"+b}</span>`+
-      `<span><span class="tname">${name}</span><span class="ttree">${tree}</span><span class="tdesc">${desc}</span></span>`+
-      `<span class="pips" title="${rank}/${max}">${pips} ${rank}/${max}</span></li>`;
-  }).join("");
-  // The row containing level L+1 is where the next point goes; at 60 every point is spent.
-  const next = TALENTS_WL.find(t=>L+1>=t[0] && L+1<=t[1]);
-  const spent = Math.max(0, Math.min(51, L-9));
-  nx.innerHTML = L<10 ? `Talents start at level 10. Your first point goes into <b>Improved Corruption</b>.`
-    : next ? `Level ${L}: you should have <b>${spent}</b> point${spent===1?"":"s"} spent. At level ${L+1}, put the next one into <b>${next[2]}</b>.`
-    : `Level 60: all 51 points spent (35 Affliction, 16 Demonology).`;
-}
 
 // Warlock trainer, level → spells taught (WCLBox). "Name N" = rank N.
 const TRAIN_WL = {
@@ -1772,24 +2098,122 @@ function trainSkip(spell){
   if(rank>1 && /^(Curse of Weakness|Curse of Recklessness|Curse of Tongues|Drain Mana|Detect Invisibility|Subjugate Demon|Shadow Ward)$/.test(name)) return "Rarely used; rank 1 is enough.";
   return null;
 }
-/* Paints the trainer list: past visits dimmed, the latest visit at your level highlighted, the next one marked. */
-function renderTraining(){
-  const ol=$("#trainPlan"), nx=$("#trainNext"); if(!ol) return;
-  const L=state.level|0, lvls=Object.keys(TRAIN_WL).map(Number);
-  const cur=[...lvls].reverse().find(v=>v<=L), nxt=lvls.find(v=>v>L);
-  ol.innerHTML = lvls.map(v=>{
-    const cls = v===cur ? "now" : v===nxt ? "soon" : v<L ? "done" : "";
-    const sp = TRAIN_WL[v].split("|").map(s=>{ const why=trainSkip(s);
-      return why ? `<span class="sp skip" title="${why}">${s.replace(/ 1$/,"").replace(/ (\d+)$/," (rank $1)")}</span>`
-                 : `<span class="sp">${s.replace(/ 1$/,"").replace(/ (\d+)$/," (rank $1)")}</span>`; }).join("");
-    return `<li class="${cls}"><span class="tlv">Lv ${v}</span><span>${sp}</span></li>`;
-  }).join("");
-  const buys = v=>TRAIN_WL[v].split("|").filter(s=>!trainSkip(s)).length;
-  nx.innerHTML = nxt ? `Next trainer visit: <b>level ${nxt}</b>, ${buys(nxt)} spell${buys(nxt)===1?"":"s"} to buy.`
-    : `You've trained everything. At 60, also look for the Dreadsteed and Inferno class quests.`;
+// Fold a plan list into: done (collapsed) / near your level (open) / later (collapsed).
+// rows = [{html, group:"done"|"near"|"far"}]. Rows you're behind on are passed as "near" so they never hide.
+function foldPlan(rows, doneLabel, farLabel){
+  const part = g => rows.filter(r=>r.group===g).map(r=>r.html).join("");
+  const nDone = rows.filter(r=>r.group==="done").length, nFar = rows.filter(r=>r.group==="far").length;
+  return (nDone ? `<details class="fold"><summary>${doneLabel} (${nDone})</summary><ol class="tplan">${part("done")}</ol></details>` : "")
+    + `<ol class="tplan">${part("near")}</ol>`
+    + (nFar ? `<details class="fold"><summary>${farLabel} (${nFar})</summary><ol class="tplan">${part("far")}</ol></details>` : "");
+}
+const NEAR = 5;   // levels ahead that stay unfolded
+
+/* Talent plan for the active level. With addon data, pips show the ranks you really have, rows you're
+   behind on are flagged, and points outside the plan are listed in the summary box. */
+function renderTalents(){
+  const box=$("#talentPlan"), nx=$("#talentNext"); if(!box) return;
+  const L=state.level|0, gt0 = state.game && state.game.talents;
+  // Forever's first 0.2 scan returned no talent tabs at all; treat that as "no data", not "0 points".
+  const gt = gt0 && Array.isArray(gt0.tabs) && gt0.tabs.length ? gt0 : null, real = gt && gt.ranks;
+  const ownIn = (a,b)=>Math.max(0,Math.min(b-a+1, L-a+1));
+  const RL = Math.min(L, (state.game && state.game.level) || L);   // real level caps the "behind" check
+  const ownIn2 = (a,b)=>Math.max(0,Math.min(b-a+1, RL-a+1));
+  const rankOf = name=>TALENTS_WL.filter(t=>t[2]===name).reduce((s,t)=>s+ownIn(t[0],t[1]),0);
+  const seen = {};   // ranks of a talent already assigned to earlier rows, to split real ranks across rows
+  const rows = TALENTS_WL.map(([a,b,name,max,tree,desc])=>{
+    const n=b-a+1, plan=ownIn(a,b);
+    let have = plan;
+    if(real){ const before = seen[name]||0; have = Math.max(0, Math.min(n, (+real[name]||0) - before)); seen[name] = before + n; }
+    const realPlan = ownIn2(a,b);
+    const behind = real && have < realPlan;
+    const cls = behind ? "miss-row" : have===n ? "done" : have>0||plan>0 ? "now" : (L+1>=a && L+1<=b ? "soon" : "");
+    const total = real ? (+real[name]||0) : rankOf(name);
+    const pips = "●".repeat(Math.min(max,total)) + "○".repeat(Math.max(0,max-total));
+    const html = `<li class="${cls}"><span class="tlv">${a===b?a:a+"–"+b}</span>`+
+      `<span><span class="tname">${name}</span><span class="ttree">${tree}</span><span class="tdesc">${desc}</span></span>`+
+      `<span class="pips" title="${total}/${max}">${pips} ${total}/${max}</span></li>`;
+    const group = behind ? "near" : (b < L && have===n) ? "done" : a > L+NEAR ? "far" : "near";
+    return {html, group};
+  });
+  box.innerHTML = foldPlan(rows, "Done", "Later");
+  const next = TALENTS_WL.find(t=>L+1>=t[0] && L+1<=t[1]);
+  const spent = Math.max(0, Math.min(51, L-9));
+  let msg = L<10 ? `Talents start at level 10. Your first point goes into <b>Improved Corruption</b>.`
+    : next ? `Level ${L}: you should have <b>${spent}</b> point${spent===1?"":"s"} spent. At level ${L+1}, put the next one into <b>${next[2]}</b>.`
+    : `Level 60: all 51 points spent (35 Affliction, 16 Demonology).`;
+  if(gt0 && !gt) msg += `<br><span class="muted">The addon couldn't read talents on this client yet.</span>`;
+  if(gt){
+    let tabs = (Array.isArray(gt.tabs)?gt.tabs:Object.values(gt.tabs||{})).filter(t=>t&&t.name).map(t=>`${esc(t.name)} ${t.spent}`).join(" · ");
+    // Forever's trait API returns one combined tree; split points by tree using the plan's talent names.
+    if(/^Talents \d+$/.test(tabs)){
+      const byTree = {};
+      for(const [k,v] of Object.entries(real||{})){ const t = (TALENTS_WL.find(r=>r[2]===k)||[])[4] || "other"; byTree[t] = (byTree[t]||0) + (+v||0); }
+      tabs = Object.entries(byTree).map(([t,v])=>`${esc(t)} ${v}`).join(" · ") || tabs;
+    }
+    const planned = new Set(TALENTS_WL.map(t=>t[2]));
+    const off = Object.entries(real||{}).filter(([k])=>!planned.has(k)).map(([k,v])=>`${esc(k)} ${v}`);
+    const behind = TALENTS_WL.filter((t,i)=>rows[i].html.includes("miss-row")).map(t=>t[2]);
+    msg += `<br><b>From the game:</b> ${tabs||"no points yet"}.`
+      + (+gt.free>0 ? ` <b style="color:var(--warn)">${gt.free} unspent point${gt.free>1?"s":""}</b> — press N.` : "")
+      + (behind.length ? ` Missing vs the plan: ${[...new Set(behind)].map(esc).join(", ")}.` : real && L>=10 ? " On plan." : "")
+      + (off.length ? ` Off-plan: ${off.join(", ")}.` : "");
+  }
+  nx.innerHTML = msg;
 }
 
-function renderAll(){ renderBar(); renderGame(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents(); renderTraining();
+/* Trainer list. With addon data each spell shows ✓ (known) or "not learned" once you're past its level. */
+function renderTraining(){
+  const box=$("#trainPlan"), nx=$("#trainNext"); if(!box) return;
+  const L=state.level|0, lvls=Object.keys(TRAIN_WL).map(Number);
+  const known = state.game && state.game.spells;
+  // Some clients give no "Rank N" text; then only rank-1 entries can be checked.
+  const hasRanks = known && Object.values(known).some(v=>v>1);
+  const status = s=>{ if(!known) return ""; const m=s.match(/^(.*) (\d+)$/), have=+known[m[1]]||0;
+    if(have>=+m[2]) return "have"; if(+m[2]>1 && !hasRanks) return have ? "have" : "unk"; return "no"; };
+  const cur=[...lvls].reverse().find(v=>v<=L), nxt=lvls.find(v=>v>L);
+  const missing = [];
+  const rows = lvls.map(v=>{
+    let miss = false;
+    const sp = TRAIN_WL[v].split("|").map(s=>{ const why=trainSkip(s), st=status(s), label=s.replace(/ 1$/,"").replace(/ (\d+)$/," (rank $1)");
+      if(why) return `<span class="sp skip" title="${why}">${label}</span>`;
+      if(st==="no" && v<=Math.min(L, (state.game && state.game.level) || L)){ miss = true; missing.push(label); return `<span class="sp miss">${label}</span>`; }
+      return `<span class="sp${st==="have"?" have":""}">${label}</span>`; }).join("");
+    const cls = v===cur ? "now" : v===nxt ? "soon" : v<L ? "done" : "";
+    const html = `<li class="${cls}${miss?" miss-row":""}"><span class="tlv">Lv ${v}</span><span>${sp}</span></li>`;
+    const group = miss ? "near" : v < (cur||0) ? "done" : v > L+NEAR+1 ? "far" : "near";
+    return {html, group};
+  });
+  box.innerHTML = foldPlan(rows, "Earlier visits", "Later visits");
+  const buys = v=>TRAIN_WL[v].split("|").filter(s=>!trainSkip(s)).length;
+  nx.innerHTML = (nxt ? `Next trainer visit: <b>level ${nxt}</b>, ${buys(nxt)} spell${buys(nxt)===1?"":"s"} to buy.`
+    : `You've trained everything. At 60, also look for the Dreadsteed and Inferno class quests.`)
+    + (known ? (missing.length ? `<br><b style="color:var(--warn)">Not learned yet (${missing.length}):</b> ${missing.join(", ")}. Visit your trainer.` : `<br><b>From the game:</b> everything up to your level is learned.`) : "");
+}
+
+/* Spec cards: lines tagged data-lv / data-lvmax / data-spell follow your level and your spellbook. */
+function renderGates(){
+  const L = state.level|0, known = state.game && state.game.spells;
+  document.querySelectorAll("#rotation li[data-lv], #rotation li[data-lvmax], #rotation li[data-spell]").forEach(li=>{
+    const lv = +li.dataset.lv||0, mx = li.dataset.lvmax ? +li.dataset.lvmax : 99;
+    const spells = (li.dataset.spell||"").split("|").filter(Boolean);
+    let tag = li.querySelector(".lvtag");
+    if(!tag){ tag = document.createElement("span"); tag.className = "lvtag"; li.appendChild(tag); }
+    const future = L < lv, past = L > mx;
+    li.classList.toggle("lk", future || past);
+    li.hidden = past;   // lines for a lower level (e.g. "Imp before 10") disappear once outgrown
+    let t = "", c = "";
+    if(future){ t = "at "+lv; }
+    else if(spells.length && known && lv <= ((state.game && state.game.level) || L)){
+      if(spells.some(s=>known[s])){ t = "learned"; c = "have"; }
+      // Talent/quest-gated lines (Nightfall, Seal of Command, demons) may simply not be taken yet.
+      else { t = "not learned"; c = "miss"; }
+    }
+    tag.textContent = t; tag.className = "lvtag" + (c ? " "+c : ""); tag.hidden = !t;
+  });
+}
+
+function renderAll(){ renderBar(); renderGame(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderItems();
   const nb=$("#notesBox"); if(document.activeElement!==nb) nb.value = state.notes||""; }
 
 // ---------- persistence ----------
@@ -1809,7 +2233,8 @@ function scheduleSave(c = CHAR){
   clearTimeout(saveTimers[c]);
   saveTimers[c] = setTimeout(()=>{
     const st = states[c];
-    const body = {level:st.level, checks:{...st.checks}, notes:st.notes, game:st.game||null, updated:Date.now()};
+    const body = {level:st.level, checks:{...st.checks}, notes:st.notes, game:st.game||null,
+      charName:st.charName||"", weights:st.weights||{}, ah:st.ah||{}, updated:Date.now()};
     mode="saving"; renderBar();
     savings[c] = savings[c].then(()=>ref.set(body)).then(()=>{ mode="cloud"; renderBar(); })
       .catch(e=>{ console.warn("save failed",e); if(e&&e.code==="invalid_argument"){ delete docRefs[c]; mode="local"; } else mode="offline"; renderBar(); });
@@ -1830,7 +2255,8 @@ async function initCloud(){
       if(!snap.metadata.fromCache){ answered=true; clearTimeout(t); }
       if(snap.exists){
         const d = snap.data();
-        states[c] = {level:d.level||1, checks:{...(d.checks||{})}, notes:d.notes||"", game:d.game||null};
+        states[c] = {level:d.level||1, checks:{...(d.checks||{})}, notes:d.notes||"", game:d.game||null,
+          charName:d.charName||"", weights:d.weights||{}, ah:d.ah||{}};
         if(c===CHAR) state = states[c];
         saveLocal(c); if(c===CHAR) renderAll();
       } else if(!snap.metadata.fromCache){
@@ -1850,13 +2276,15 @@ function setChar(c){
   document.body.classList.toggle("char-pal", c==="pal");
   document.querySelectorAll(".charsw button").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.char===c)));
   try{ localStorage.setItem("fg-char", c); }catch(e){}
+  // Keep ?char= in step with the switch, or a reload would jump back to the URL's character.
+  try{ const u = new URL(location.href); if(u.searchParams.has("char")){ u.searchParams.set("char", c); history.replaceState(null, "", u); } }catch(e){}
   setImportMsg("");
   followLevel(); renderAll();
 }
 document.querySelectorAll(".charsw button").forEach(b=>b.addEventListener("click", ()=>setChar(b.dataset.char)));
 
 // ---------- events ----------
-$("#level").addEventListener("input", e=>{ state.level=+e.target.value; followLevel(); renderBar(); renderRoute(); renderDungeons(); renderMap(); scheduleSave(); });
+$("#level").addEventListener("input", e=>{ state.level=+e.target.value; followLevel(); renderBar(); renderRoute(); renderDungeons(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderItems(); scheduleSave(); });
 document.addEventListener("change", e=>{
   if(e.target.id==="svFile"){ const f=e.target.files[0]; if(f) importFile(f); e.target.value=""; return; }
   const id = e.target && e.target.dataset && e.target.dataset.id; if(!id) return;
@@ -1864,8 +2292,8 @@ document.addEventListener("change", e=>{
   renderAll(); scheduleSave();
 });
 $("#notesBox").addEventListener("input", e=>{ state.notes=e.target.value; scheduleSave(); });
-document.querySelectorAll(".filters button").forEach(b=>b.addEventListener("click",()=>{
-  dFilter=b.dataset.f; document.querySelectorAll(".filters button").forEach(x=>x.setAttribute("aria-pressed",x===b)); renderDungeons();
+document.querySelectorAll(".filters:not(.ifilters) button").forEach(b=>b.addEventListener("click",()=>{
+  dFilter=b.dataset.f; document.querySelectorAll(".filters:not(.ifilters) button").forEach(x=>x.setAttribute("aria-pressed",x===b)); renderDungeons();
 }));
 const drop = $("#drop");
 ["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{ e.preventDefault(); drop.classList.add("over"); }));
@@ -1892,7 +2320,7 @@ function tick(){
 }
 tick(); setInterval(tick,1000);
 
-loadLocal(); setChar(CHAR); addKitIcons(); initRealMap(); initCloud(); autoFetchSV();
+initItems(); loadLocal(); setChar(CHAR); addKitIcons(); initRealMap(); initCloud(); autoFetchSV();
 // Re-check the synced file every minute while the tab is visible, and when you come back to it.
 // Safe to repeat: applySnap ignores snapshots that aren't newer. On the Claude artifact the fetch just fails quietly.
 setInterval(()=>{ if(document.visibilityState==="visible") autoFetchSV(); }, 60000);

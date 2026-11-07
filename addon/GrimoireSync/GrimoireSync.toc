@@ -1,8 +1,8 @@
 ## Interface: 16001, 11507
 ## Title: Grimoire Sync
-## Notes: Records level, zone, gold, demons and professions for the Forsaken Grimoire guide page.
+## Notes: Records level, zone, gold, demons, professions, talents, spells and inventory for the Forsaken Grimoire guide page.
 ## Author: Art
-## Version: 0.1.0
+## Version: 0.2.0
 ## SavedVariables: GrimoireSyncDB
 
 GrimoireSync.lua

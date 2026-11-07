@@ -12,14 +12,14 @@ A second character, an **Undead Retribution Paladin** who levels alongside the w
 |---|---|
 | `index.html` | Page source. It is also published as a Claude artifact, so it has no `<head>`. |
 | `docs/` | GitHub Pages output, built by `tools/build.ps1`. Don't edit it by hand. |
-| `docs/sync/GrimoireSync.lua` | Latest addon snapshot, pushed by `tools/sync.ps1`. Name and realm are removed first. |
+| `docs/sync/GrimoireSync.lua` | Latest addon snapshot, pushed by `tools/sync.ps1`. Character name (`who`) and realm are removed first. |
 | `addon/GrimoireSync/` | The WoW addon. |
 | `tools/` | `install-addon.ps1`, `sync.ps1`, `build.ps1` |
 
 ## Sync from the game
 
 1. Install Forever, then run `.\tools\install-addon.ps1`. Use `-Flavor <folder>` if it can't find the Forever folder.
-2. In game, enable **Grimoire Sync**. Type `/grimoire` to check what it recorded.
+2. In game, enable **Grimoire Sync**. It records level, zone, gold, demons, professions, talents, spells, equipped gear, bags and bank (after you open it once). The page uses these for the talent/trainer progress and the **Item worth** calculator. Type `/grimoire` to check what it recorded.
 3. Log out or `/reload`. WoW only writes the SavedVariables file at those moments.
 4. Run `.\tools\sync.ps1 -Watch`. It pushes each new snapshot, and the site picks it up after GitHub Pages redeploys.
 
