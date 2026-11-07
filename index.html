@@ -459,6 +459,12 @@ section:not(.fold) .foldwhy{display:none}
 .itt-dim{color:#c8c8c8}
 .itt-ours{margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.18);color:#f0cf74;font-size:12px}
 .upd-site{margin:0 0 var(--s2)}
+.poi{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;font:700 10px/1 var(--f-mono);color:#0d0a10;
+  border:1.5px solid #0d0a10;box-shadow:0 1px 3px rgba(0,0,0,.6)}
+.poi-f{background:#e8c86a}.poi-t{background:#a98bf0}.poi-b{background:#7fc3e8}.poi-a{background:#e89a6a}
+.poi.unv{border-style:dashed;opacity:.85}
+.poikey{display:inline-flex;align-items:center;gap:6px}
+.svc li{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap;margin-bottom:4px}
 .foldall{display:flex;gap:var(--s2);flex-wrap:wrap;align-items:center;margin-top:var(--s2)}
 .updline{font:12px/1.3 var(--f-mono);color:var(--muted);margin-left:auto}
 </style>
@@ -767,7 +773,13 @@ section:not(.fold) .foldwhy{display:none}
           <span><i style="background:#4a3a62"></i>On your route</span>
           <span><i style="background:#5e5034"></i>New in Forever</span>
           <span><i style="background:var(--land-other)"></i>Off-route or Alliance</span>
+          <span class="poikey"><b class="poi poi-f">F</b>Flight master</span>
+          <span class="poikey" data-only="wl"><b class="poi poi-t">T</b>Warlock trainer</span>
+          <span class="poikey"><b class="poi poi-b">B</b>Bank</span>
+          <span class="poikey"><b class="poi poi-a">A</b>Auction house</span>
+          <label class="poikey"><input type="checkbox" id="showFlights" checked> Flight paths</label>
         </div>
+        <p class="muted" style="font-size:.8rem;margin-top:var(--s2)">Pins show on zone and city maps (open a zone). Flight paths on the continent are drawn between zones, so they're approximate. Trainers and flight points are from Forever sources (Warcraft Tavern class-trainer guide; wowforever.be flight table, datamined from build 1.60.1). Banks and the auction house use Classic positions, marked <i>verify</i>.</p>
       </div>
       <aside class="zinfo" id="zinfo" aria-live="polite">
         <span class="eyebrow">Selected zone</span>
@@ -1084,7 +1096,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-07T17:57:26Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-07T18:07:03Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -2014,6 +2026,115 @@ function renderMapOverlay(){
   }
   $("#mapsvg").innerHTML = s;
 }
+
+// ---------- services: trainers, banks, AH, flight masters ----------
+// [map key, x, y, kind, label, verified?]. Map key = zone name (ZMAP) or city name (CITY[...][0]).
+// x,y are in-game map coordinates (0-100), which span the full 1002x668 Warcraft Wiki zone image.
+// Sources (checked Nov 7 2026): warlock trainers = warcraftavern.com/forever/guides/class-trainers;
+// flight points + routes = wowforever.be/guides/flight-paths (beta build 1.60.1.70009 datamine);
+// banks/AH = warcraftmaps.com, Classic data not confirmed for Forever -> verified=false ("verify").
+const POIS = [
+  ["Tirisfal Glades",30.8,66.2,"t","Maximillion (Deathknell, up to level 6)",1],
+  ["Tirisfal Glades",61.6,52.4,"t","Rupert Boch (Brill, Gallows' End Tavern)",1],
+  ["Undercity",86.0,15.6,"t","Kaal Soulreaper, Luther Pickman, Richard Kerwin (Magic Quarter)",1],
+  ["Durotar",40.6,68.4,"t","Nartok (Valley of Trials, up to level 6)",1],
+  ["Durotar",54.2,41.2,"t","Dhugru Gorelust (Razor Hill)",1],
+  ["Orgrimmar",48.4,46.4,"t","Grol'dar, Mirket, Zevrost (Cleft of Shadow)",1],
+  ["Swamp of Sorrows",48.6,55.6,"t","Kartosh (Stonard)",1],
+  ["Undercity",66.0,44.1,"b","Bank (Trade Quarter)",0],
+  ["Orgrimmar",49.6,69.1,"b","Bank",0],
+  ["Thunder Bluff",47.3,58.6,"b","Bank (Lower Rise)",0],
+  ["Orgrimmar",55.7,63.1,"a","Auction House",0],
+];
+// Flight points: name -> [map key, x, y, continent, [destinations]]. Horde-usable only.
+const FLIGHTS = {
+  "Booty Bay":["Stranglethorn Vale",26.8,77.0,"EK",["Grom'gol","Kargath","Stonard"]],
+  "Flame Crest":["Burning Steppes",65.6,24.2,"EK",["Kargath","Rog'mar","Stonard","Thorium Point"]],
+  "Grom'gol":["Stranglethorn Vale",32.4,29.2,"EK",["Booty Bay","Kargath","Stonard"]],
+  "Hammerfall":["Arathi Highlands",73.0,32.6,"EK",["Kargath","Revantusk Village","Rog'mar","Tarren Mill","Undercity"]],
+  "Kargath":["Badlands",4.0,44.8,"EK",["Booty Bay","Flame Crest","Grom'gol","Hammerfall","Rog'mar","Stonard","Thorium Point","Undercity"]],
+  "Light's Hope Chapel":["Eastern Plaguelands",80.2,57.0,"EK",["Revantusk Village","Undercity"]],
+  "Revantusk Village":["The Hinterlands",81.6,81.8,"EK",["Hammerfall","Light's Hope Chapel","Tarren Mill","Undercity"]],
+  "Rog'mar":["Riverglades",59.6,45.2,"RG",["Flame Crest","Hammerfall","Kargath","Stonard"]],
+  "Stonard":["Swamp of Sorrows",46.0,54.6,"EK",["Booty Bay","Flame Crest","Grom'gol","Kargath","Rog'mar"]],
+  "Tarren Mill":["Hillsbrad Foothills",60.2,18.6,"EK",["Hammerfall","Revantusk Village","The Sepulcher","Undercity"]],
+  "The Sepulcher":["Silverpine Forest",45.6,42.4,"EK",["Tarren Mill","Undercity"]],
+  "Thorium Point":["Searing Gorge",34.8,30.8,"EK",["Flame Crest","Kargath"]],
+  "Undercity":["Undercity",63.4,48.6,"EK",["Hammerfall","Kargath","Light's Hope Chapel","Revantusk Village","Tarren Mill","The Sepulcher"]],
+  "Bloodvenom Post":["Felwood",34.4,53.8,"K",["Crossroads","Everlook","Moonglade","Orgrimmar","Valormok"]],
+  "Brackenwall Village":["Dustwallow Marsh",35.6,31.8,"K",["Crossroads","Gadgetzan","Orgrimmar","Thunder Bluff"]],
+  "Camp Mojache":["Feralas",75.4,44.2,"K",["Cenarion Hold","Crossroads","Freewind Post","Gadgetzan","Shadowprey Village","Thunder Bluff"]],
+  "Camp Taurajo":["The Barrens",44.4,59.0,"K",["Crossroads","Freewind Post","Thunder Bluff"]],
+  "Cenarion Hold":["Silithus",48.8,36.6,"K",["Camp Mojache","Gadgetzan","Marshal's Refuge"]],
+  "Crossroads":["The Barrens",51.4,30.2,"K",["Bloodvenom Post","Brackenwall Village","Camp Mojache","Camp Taurajo","Freewind Post","Gadgetzan","Orgrimmar","Ratchet","Splintertree Post","Sun Rock Retreat","Thunder Bluff","Valormok","Zoram'gar Outpost"]],
+  "Everlook":["Winterspring",60.4,36.4,"K",["Bloodvenom Post","Moonglade","Orgrimmar","Tainted Foothills","Valormok"]],
+  "Freewind Post":["Thousand Needles",45.0,49.2,"K",["Camp Mojache","Camp Taurajo","Crossroads","Gadgetzan","Thunder Bluff"]],
+  "Gadgetzan":["Tanaris",51.6,25.4,"K",["Brackenwall Village","Camp Mojache","Cenarion Hold","Crossroads","Freewind Post","Marshal's Refuge","Orgrimmar","Thunder Bluff"]],
+  "Marshal's Refuge":["Un'Goro Crater",45.2,5.8,"K",["Cenarion Hold","Gadgetzan"]],
+  "Moonglade":["Moonglade",32.2,66.4,"K",["Bloodvenom Post","Everlook"]],
+  "Orgrimmar":["Orgrimmar",45.2,63.8,"K",["Bloodvenom Post","Brackenwall Village","Crossroads","Everlook","Gadgetzan","Splintertree Post","Thunder Bluff","Valormok"]],
+  "Ratchet":["The Barrens",63.0,37.2,"K",["Crossroads"]],
+  "Shadowprey Village":["Desolace",21.6,74.0,"K",["Camp Mojache","Sun Rock Retreat","Thunder Bluff"]],
+  "Splintertree Post":["Ashenvale",73.2,61.6,"K",["Crossroads","Orgrimmar","Valormok","Zoram'gar Outpost"]],
+  "Summit of Eternity":["Mount Hyjal",68.6,44.0,"K",["Tainted Foothills"]],
+  "Sun Rock Retreat":["Stonetalon Mountains",45.2,59.8,"K",["Crossroads","Shadowprey Village","Thunder Bluff"]],
+  "Tainted Foothills":["Mount Hyjal",55.0,82.8,"K",["Everlook","Summit of Eternity"]],
+  "Thunder Bluff":["Thunder Bluff",46.8,50.0,"K",["Brackenwall Village","Camp Mojache","Camp Taurajo","Crossroads","Freewind Post","Gadgetzan","Orgrimmar","Shadowprey Village","Sun Rock Retreat","Valormok"]],
+  "Valormok":["Azshara",22.0,49.6,"K",["Bloodvenom Post","Crossroads","Everlook","Orgrimmar","Splintertree Post","Thunder Bluff"]],
+  "Zoram'gar Outpost":["Ashenvale",12.2,33.8,"K",["Crossroads","Splintertree Post"]]
+};
+// Cities have no continent pin of their own: they sit on their zone's pin.
+const CITY_ZONE = {"Undercity":"Tirisfal Glades","Orgrimmar":"Durotar","Thunder Bluff":"Mulgore"};
+// Continent pixel for a flight point: the zone pin nudged by its in-zone coords. Zone sizes vary,
+// so this is only good enough to draw the network, not to navigate by (the zone maps are exact).
+function flightPx(fp){
+  const [key, x, y] = FLIGHTS[fp], zone = CITY_ZONE[key] || key, R = REAL[curCont];
+  const pin = R && R.z[zone]; if(!pin) return null;
+  return CITY_ZONE[key] ? pin : [pin[0] + (x-50)*0.7, pin[1] + (y-50)*0.7];
+}
+function poiIcon(kind, verified){
+  return L.divIcon({className:"", html:`<b class="poi poi-${kind}${verified?"":" unv"}">${kind.toUpperCase()}</b>`, iconSize:[18,18], iconAnchor:[9,9]});
+}
+// Services on one zone/city map: trainers (warlock tab only), banks, AH, flight masters.
+function poisFor(mapKey){
+  const out = POIS.filter(p=>p[0]===mapKey && (p[3]!=="t" || CHAR==="wl"))
+    .map(([,x,y,k,label,v])=>({x,y,k,label,v}));
+  for(const [name,[key,x,y,,to]] of Object.entries(FLIGHTS))
+    if(key===mapKey) out.push({x,y,k:"f",label:`${name} flight master → ${to.join(", ")}`,v:1});
+  return out;
+}
+function addZonePois(mapKey){
+  for(const p of poisFor(mapKey)){
+    L.marker(pxToLL([p.x/100*1002, p.y/100*668]), {icon:poiIcon(p.k, p.v), keyboard:false})
+      .bindTooltip(`${esc(p.label)} <span class="mono">(${p.x}, ${p.y})</span>${p.v?"":" · verify"}`, {direction:"top", offset:[0,-8]})
+      .addTo(leafGroup);
+  }
+}
+function addFlightLines(){
+  if(!$("#showFlights") || !$("#showFlights").checked) return;
+  const seen = new Set();
+  for(const [name,[, , , cont, to]] of Object.entries(FLIGHTS)){
+    if(cont!==curCont) continue;
+    const a = flightPx(name); if(!a) continue;
+    for(const d of to){
+      const k = [name,d].sort().join("|"); if(seen.has(k)) continue; seen.add(k);
+      if(!FLIGHTS[d] || FLIGHTS[d][3]!==curCont) continue;
+      const b = flightPx(d); if(!b) continue;
+      L.polyline([pxToLL(a),pxToLL(b)], {color:"#e8c86a", weight:1.2, opacity:.55, interactive:false}).addTo(leafGroup);
+    }
+    L.circleMarker(pxToLL(a), {radius:3, color:"#0d0a10", weight:1, fillColor:"#e8c86a", fillOpacity:1})
+      .bindTooltip(`${esc(name)} flight master`).addTo(leafGroup);
+  }
+}
+// Text list for the zone panel, so the info is there on the Claude page (drawn map) too.
+function servicesHTML(zone){
+  const keys = [zone, ...Object.entries(CITY_ZONE).filter(([,z])=>z===zone).map(([c])=>c)];
+  const rows = keys.flatMap(k=>poisFor(k).map(p=>({...p, where:k})));
+  if(!rows.length) return "";
+  const name = {f:"Flight", t:"Warlock trainer", b:"Bank", a:"Auction house"};
+  return `<p><b>Services</b></p><ul class="plain svc">${rows.map(p=>`<li><b class="poi poi-${p.k}${p.v?"":" unv"}">${p.k.toUpperCase()}</b> ${esc(name[p.k])}: ${esc(p.label.replace(/ flight master/, ""))} <span class="mono">${p.where!==zone?esc(p.where)+" ":""}(${p.x}, ${p.y})</span>${p.v?"":` <span class="badge unv">verify</span>`}</li>`).join("")}</ul>`;
+}
+
 // ---------- real map (Leaflet) ----------
 // Pixel positions on the Warcraft Wiki Forever continent maps (1002×668), read off the images by eye.
 // Riverglades and Shen'dralas aren't drawn on those images yet, so their pins are approximate.
@@ -2106,6 +2227,7 @@ function openZoneMap(name, isCity){
     L.imageOverlay(wikiImg(file), [[0,0],[668,1002]], {attribution:'Map © Blizzard Entertainment via <a href="https://warcraft.wiki.gg/wiki/Forever_map_comparison" target="_blank" rel="noopener">Warcraft Wiki</a>'})
       .on("error", ()=>{ $("#zbody").insertAdjacentHTML("beforeend", '<p style="color:var(--warn)">This map didn\'t load. Try the Warcraft Wiki link.</p>'); })
       .addTo(leafGroup);
+    addZonePois(isCity ? CITY[name][0] : name);
     leafGroup.addTo(leaf);
     zoneView = name; zoneIsCity = !!isCity;
     $("#mapinner").classList.add("zoneview"); leaf.invalidateSize();   // zone maps are landscape
@@ -2139,6 +2261,7 @@ function showContinent(c, at){
     const a = R.z[ord[i-1]], b = R.z[ord[i]];
     if(a && b) L.polyline([pxToLL(a),pxToLL(b)], {color:"#8fdc5a", weight:2.5, opacity:.85, dashArray:"7 6", interactive:false}).addTo(leafGroup);
   }
+  addFlightLines();
   for(const [name,p] of Object.entries(R.z)){
     const z = ZONES[name];
     const m = L.circleMarker(pxToLL(p), zoneStyle(name)).addTo(leafGroup);
@@ -2172,6 +2295,7 @@ function initRealMap(){
   probe.src = REAL.EK.img;
 }
 document.querySelectorAll("#contabs button").forEach(b=>b.addEventListener("click",()=>showContinent(b.dataset.c)));
+$("#showFlights").addEventListener("change", ()=>{ if(realMode && !zoneView) showContinent(curCont); });
 // Delegated: zone-nav buttons and the "Open zone map" button in the info panel are re-rendered often.
 document.addEventListener("click", e=>{
   const t = e.target.closest && e.target.closest("[data-back],[data-city],[data-openzone]"); if(!t) return;
@@ -2190,6 +2314,7 @@ function renderZoneInfo(){
   $("#zbody").innerHTML = `<p class="mono" style="color:var(--fg)">Levels ${esc(z.lv)}</p><p>${esc(z.desc)}</p>
     ${steps.length?`<p>On your route in brackets ${steps.join(", ")}.</p>`:""}
     ${duns.length?`<p>Dungeons: ${duns.map(d=>`${esc(d[2])} <span class="mono">(${d[0]??"?"}–${d[1]})</span>`).join(", ")}</p>`:""}
+    ${servicesHTML(selZone)}
     ${openBtn}
     <p><a href="${wiki}" target="_blank" rel="noopener">Zone page on Warcraft Wiki ↗</a></p>`;
 }
