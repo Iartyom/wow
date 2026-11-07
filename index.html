@@ -1084,7 +1084,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-07T11:33:00Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-07T17:57:26Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -1579,13 +1579,16 @@ function fmtCoin(c){ c = Math.round(c||0); if(!c) return "—"; const g=Math.flo
 const partnerOf = c => c==="wl" ? "pal" : "wl";
 const charName = c => (states[c] && states[c].charName) || CHARS[c].label;
 // The verdict: one action per item, in priority order. Returns {k, label, why, val} (val = copper if sold).
+// Cost of one AH listing in copper. Player saw 1s in Forever (Nov 7); the deposit is lost if the item doesn't sell,
+// so it's subtracted from every auction estimate as if paid once.
+const AH_FEE = 100;
 function verdict(it){
   const c = CHAR, o = partnerOf(c), lvl = (state.game && state.game.level) || state.level;
   const ahPer = (state.ah && state.ah[it.id]) || it.ah || 0;
-  const vendor = it.sell * it.n, ahNet = Math.round(ahPer * it.n * 0.95);   // AH keeps 5%
+  const vendor = it.sell * it.n, ahNet = Math.round(ahPer * it.n * 0.95) - AH_FEE;   // AH keeps 5%, plus the listing fee
   const sellable = !it.bound && !it.bop;
   const sell = ()=> sellable && ahPer && ahNet > vendor*1.3 + 500
-      ? {k:"ah", label:"Auction", why:`about ${fmtCoin(ahNet)} after the 5% cut, vs ${fmtCoin(vendor)} at a vendor`, val:ahNet}
+      ? {k:"ah", label:"Auction", why:`about ${fmtCoin(ahNet)} after the 5% cut and ${fmtCoin(AH_FEE)} fee, vs ${fmtCoin(vendor)} at a vendor`, val:ahNet}
       : vendor ? {k:"vendor", label:"Vendor", why:`${fmtCoin(vendor)} at any merchant`+(sellable && !ahPer ? "; add an AH price to compare" : ""), val:vendor}
       : {k:"junk", label:"No value", why:"can't be sold; destroy it when you need the space", val:0};
   if(KEEP_IDS[it.id]) return {k:"keep", label:"Keep", why:KEEP_IDS[it.id], val:0};
@@ -1618,7 +1621,7 @@ function ahLookup(it, v){
   if((state.ah && state.ah[it.id]) || it.ah) return null;            // already has a price
   // Vendor-sold reagents (vials, thread, flux) never sell above the vendor's own price; your potions you drink.
   if(/(Vial|Thread|Flux|Flask of Oil|Salt)/.test(it.name) || it.type==="Consumable") return null;
-  const min = Math.ceil((it.sell*it.n*1.3 + 500) / (0.95*it.n));
+  const min = Math.ceil((it.sell*it.n*1.3 + 500 + AH_FEE) / (0.95*it.n));
   const gear = it.type==="Armor" || it.type==="Weapon";
   if(gear && it.q >= 2) return {rank:0, why:"uncommon or better gear that isn't soulbound: other players pay well above vendor for these", min};
   if(it.type==="Recipe") return {rank:1, why:"crafters buy recipes they can't train", min};
@@ -1631,7 +1634,7 @@ function renderAhCheck(inv){
   const list = (inv||[]).map(it=>({it, a:ahLookup(it, verdict(it))})).filter(x=>x.a)
     .sort((x,y)=>x.a.rank-y.a.rank || y.it.sell*y.it.n - x.it.sell*x.it.n);
   el.hidden = !list.length; if(!list.length){ el.innerHTML = ""; return; }
-  el.innerHTML = `<p class="ah-h"><b>Look these up at the auction house</b> (${list.length}). Search each name, take the cheapest listing, and type that price into its AH box below. The page then tells you whether to list it or vendor it. The price shown is the point where the auction, after its 5% cut, earns at least 50s more than the vendor would pay for the whole stack. Below that, vendor it.</p><ol>`+
+  el.innerHTML = `<p class="ah-h"><b>Look these up at the auction house</b> (${list.length}). Search each name, take the cheapest listing, and type that price into its AH box below. The page then tells you whether to list it or vendor it. The price shown is the point where the auction, after its 5% cut and the ${fmtCoin(AH_FEE)} listing fee, earns at least 50s more than the vendor would pay for the whole stack. Below that, vendor it.</p><ol>`+
     list.map(({it,a})=>`<li>${itemIcon(it.id)}<a href="#" data-ahgo="${it.id}" style="color:${QCOL[it.q]||""}">${esc(it.name)}</a>${it.n>1?` <span class="muted">×${it.n}</span>`:""}`+
       ` <span class="mono ah-min">list it if above ${fmtCoin(a.min)}${it.n>1?` each (${fmtCoin(a.min*it.n)} for all ${it.n})`:""}</span><span class="isub">${esc(a.why)}</span></li>`).join("")+`</ol>`;
 }
