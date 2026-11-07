@@ -444,6 +444,8 @@ section > .wrap > header h2{display:flex;align-items:center;gap:var(--s3);flex-w
 .foldwhy{font:400 12px/1.3 var(--f-mono);color:var(--muted)}
 section:not(.fold) .foldwhy{display:none}
 .toc a.folded{opacity:.5}
+.ii{display:inline-block;width:20px;height:20px;margin-right:6px;vertical-align:-5px;border-radius:3px}
+.ii.ph{background:var(--line)}
 .foldall{display:flex;gap:var(--s2);flex-wrap:wrap;margin-top:var(--s2)}
 </style>
 
@@ -904,6 +906,7 @@ section:not(.fold) .foldwhy{display:none}
       <button type="button" data-f="near" aria-pressed="true">Near my level</button>
     </div>
     <div class="tablebox"><table><thead><tr><th>Level</th><th>Dungeon</th><th>Zone</th><th>Horde notes</th></tr></thead><tbody id="dungeonBody"></tbody></table></div>
+    <p class="muted" id="dunMore" style="margin-top:var(--s2)"></p>
     <p class="muted" style="margin-top:var(--s3)">Raids open Dec 9: <b>Barrow Deeps</b> (10-player, Mount Hyjal), <b>Hyjal Summit</b> (20-player) and <b>Onyxia's Lair</b> (40-player, Dustwallow).</p>
   </div>
 </section>
@@ -1594,6 +1597,36 @@ function verdict(it){
 
 let iFilter = "bags";
 /* Paints the Item worth section: equipped gear (with empty slots), the item list with verdicts, weights. */
+
+// Item icons. The addon only knows numeric texture ids, so the icon *name* comes from Wowhead's
+// tooltip endpoint (sends Access-Control-Allow-Origin: *). Names are cached in localStorage; "" means
+// "Wowhead had none" so we don't ask again. On claude.ai the fetch and image are blocked, so no icon.
+const ICON_KEY = "fg-item-icons";
+let iconCache = (()=>{ try{ return JSON.parse(localStorage.getItem(ICON_KEY)||"{}")||{}; }catch(e){ return {}; } })();
+const iconWant = new Set(); let iconBusy = 0;
+function itemIcon(id){
+  if(!id) return "";
+  const n = iconCache[id];
+  if(n) return `<img class="wi ii" src="https://wow.zamimg.com/images/wow/icons/medium/${esc(n)}.jpg" alt="" loading="lazy">`;
+  if(n === undefined){ iconWant.add(id); pumpIcons(); }
+  return `<span class="ii ph" data-iid="${id}"></span>`;
+}
+function pumpIcons(){
+  while(iconBusy < 4 && iconWant.size){
+    const id = iconWant.values().next().value; iconWant.delete(id); iconBusy++;
+    fetch(`https://nether.wowhead.com/classic/tooltip/item/${id}?dataEnv=4&locale=0`)
+      .then(r=>r.ok ? r.json() : {}).then(j=>{ iconCache[id] = (j && j.icon) || ""; })
+      .catch(()=>{ iconCache[id] = ""; })
+      .finally(()=>{
+        iconBusy--;
+        try{ localStorage.setItem(ICON_KEY, JSON.stringify(iconCache)); }catch(e){}
+        // Swap placeholders in place instead of re-rendering the table (keeps focus in AH inputs).
+        document.querySelectorAll(`.ii.ph[data-iid="${id}"]`).forEach(el=>{ if(iconCache[id]) el.outerHTML = itemIcon(id); });
+        pumpIcons();
+      });
+  }
+}
+
 function renderItems(){
   const box = $("#itemBody"); if(!box) return;
   const g = state.game, inv = g && g.bags;
@@ -1608,7 +1641,7 @@ function renderItems(){
   gearEl.innerHTML = CORE_SLOTS.map(s=>{
     const it = gear[s];
     if(!it) return (s===17 && isTwoHand(gear[16])) ? "" : `<li class="miss"><span class="gs">${SLOT_NAMES[s]}</span><span>Empty</span><span class="pts">—</span></li>`;
-    return `<li><span class="gs">${SLOT_NAMES[s]}</span><a href="https://www.wowhead.com/classic/item=${it.id}" target="_blank" rel="noopener" style="color:${QCOL[it.q]||""}">${esc(it.name)}</a><span class="pts">${itemScore(it,CHAR)}</span></li>`;
+    return `<li><span class="gs">${SLOT_NAMES[s]}</span><a href="https://www.wowhead.com/classic/item=${it.id}" target="_blank" rel="noopener" style="color:${QCOL[it.q]||""}">${itemIcon(it.id)}${esc(it.name)}</a><span class="pts">${itemScore(it,CHAR)}</span></li>`;
   }).join("");
   $("#gearMiss").innerHTML = missing.length ? `<b>${missing.length} empty slot${missing.length===1?"":"s"}:</b> ${missing.map(s=>SLOT_NAMES[s]).join(", ")}. Anything with stats beats nothing there.` : `<b>Every slot filled.</b> Now it's about upgrades.`;
 
@@ -1622,7 +1655,7 @@ function renderItems(){
     const ahCell = (it.bound || it.bop) ? `<span class="muted">soulbound</span>`
       : `<input class="ahin" data-ah="${it.id}" value="${ahv?esc(fmtCoin(ahv)):""}" placeholder="${it.ah?esc(fmtCoin(it.ah)):"AH price"}" aria-label="Auction price for one ${esc(it.name)}">`;
     const me = upgradeFor(it, CHAR);
-    return `<tr class="v-${v.k}"><td><a href="https://www.wowhead.com/classic/item=${it.id}" target="_blank" rel="noopener" style="color:${QCOL[it.q]||""}">${esc(it.name)}</a>${it.n>1?` <span class="muted">×${it.n}</span>`:""}`+
+    return `<tr class="v-${v.k}"><td>${itemIcon(it.id)}<a href="https://www.wowhead.com/classic/item=${it.id}" target="_blank" rel="noopener" style="color:${QCOL[it.q]||""}">${esc(it.name)}</a>${it.n>1?` <span class="muted">×${it.n}</span>`:""}`+
       `<span class="isub">${esc([it.sub!==it.type?it.sub:"", it.req>1?"lvl "+it.req:"", it.ilvl?"ilvl "+it.ilvl:""].filter(Boolean).join(" · "))}</span></td>`+
       `<td class="mono">${me===null?"—":(me>0?"+":"")+me}</td><td class="mono">${fmtCoin(it.sell*it.n)}</td><td>${ahCell}</td>`+
       `<td><span class="vd">${esc(v.label)}</span><span class="isub">${esc(v.why)}</span></td></tr>`;
@@ -1718,6 +1751,8 @@ function renderDungeons(){
     return `<tr class="${inr?"inrange":""}"><td class="mono">${d[0]??"?"}–${d[1]}</td>
       <td>${d[2]} ${d[4]?'<span class="badge new">new</span>':""}</td><td>${d[3]}</td><td class="muted">${d[5]}</td></tr>`;
   }).join("") || `<tr><td colspan="4" class="muted">No dungeons are within 2 levels of ${L}. Try "All".</td></tr>`;
+  const later = DUNGEONS.filter(d=>(d[0]??(d[1]-5)) - 2 > L).length, dm = $("#dunMore");
+  if(dm) dm.innerHTML = dFilter==="near" && later ? `${later} higher-level dungeon${later===1?"":"s"} folded away. <button type="button" class="foldbtn" data-dunall>Show all</button>` : "";
 }
 
 // Real WoW spell icons, hotlinked from Wowhead's CDN (never stored in the repo). On claude.ai the
@@ -2399,6 +2434,8 @@ document.addEventListener("change", e=>{
   renderAll(); scheduleSave();
 });
 $("#notesBox").addEventListener("input", e=>{ state.notes=e.target.value; scheduleSave(); });
+document.addEventListener("click", e=>{ if(!(e.target.closest && e.target.closest("[data-dunall]"))) return;
+  const b = document.querySelector('.filters:not(.ifilters) button[data-f="all"]'); if(b) b.click(); });
 $("#routeMore").addEventListener("click", ()=>{ routeAll = !routeAll; renderRoute(); });
 document.querySelectorAll(".filters:not(.ifilters) button").forEach(b=>b.addEventListener("click",()=>{
   dFilter=b.dataset.f; document.querySelectorAll(".filters:not(.ifilters) button").forEach(x=>x.setAttribute("aria-pressed",x===b)); renderDungeons();
