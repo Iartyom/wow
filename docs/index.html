@@ -1085,7 +1085,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-07T11:26:29Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-07T11:27:57Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -1632,9 +1632,9 @@ function renderAhCheck(inv){
   const list = (inv||[]).map(it=>({it, a:ahLookup(it, verdict(it))})).filter(x=>x.a)
     .sort((x,y)=>x.a.rank-y.a.rank || y.it.sell*y.it.n - x.it.sell*x.it.n);
   el.hidden = !list.length; if(!list.length){ el.innerHTML = ""; return; }
-  el.innerHTML = `<p class="ah-h"><b>Look these up at the auction house</b> (${list.length}). Search each name, take the cheapest listing, and type that price into its AH box below. The page then tells you whether to list it or vendor it.</p><ol>`+
+  el.innerHTML = `<p class="ah-h"><b>Look these up at the auction house</b> (${list.length}). Search each name, take the cheapest listing, and type that price into its AH box below. The page then tells you whether to list it or vendor it. The price shown is the point where the auction, after its 5% cut, earns at least 50s more than the vendor would pay for the whole stack. Below that, vendor it.</p><ol>`+
     list.map(({it,a})=>`<li>${itemIcon(it.id)}<a href="#" data-ahgo="${it.id}" style="color:${QCOL[it.q]||""}">${esc(it.name)}</a>${it.n>1?` <span class="muted">×${it.n}</span>`:""}`+
-      ` <span class="mono ah-min">list it if above ${fmtCoin(a.min)}${it.n>1?" each":""}</span><span class="isub">${esc(a.why)}</span></li>`).join("")+`</ol>`;
+      ` <span class="mono ah-min">list it if above ${fmtCoin(a.min)}${it.n>1?` each (${fmtCoin(a.min*it.n)} for all ${it.n})`:""}</span><span class="isub">${esc(a.why)}</span></li>`).join("")+`</ol>`;
 }
 // Clicking a name jumps to that item's AH box in the table (switching to the Bags filter if needed).
 document.addEventListener("click", e=>{
