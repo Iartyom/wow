@@ -477,7 +477,6 @@ section:not(.fold) .foldwhy{display:none}
     </div>
     <div class="prog"><span id="progTxt">0/0</span><span class="meter"><i id="progBar"></i></span></div>
     <span class="sync" id="sync">connecting…</span>
-    <span class="sync upd" id="updated" title="">game data —</span>
   </div>
   <div class="wrap">
     <nav class="toc" aria-label="Sections">
@@ -1084,7 +1083,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-07T11:27:57Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-07T11:29:46Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -2217,6 +2216,8 @@ function renderBar(){
   const sy = $("#sync");
   sy.className = "sync" + (mode==="cloud"?" ok":mode==="local"||mode==="offline"?" warn":"");
   sy.textContent = mode==="cloud"?"synced":mode==="saving"?"saving…":mode==="local"?"this browser only":mode==="offline"?"can't reach sync":"connecting…";
+  // Game-data age shares the save pill to keep the bar to one badge: "synced · data 5 min ago".
+  sy.insertAdjacentHTML("beforeend", ' <span id="updated"></span>');
   renderUpdated();
 }
 // "Last updated": game data = the addon snapshot time (unix s); site = build stamp in #siteBuilt[data-t].
@@ -2224,9 +2225,9 @@ const fmtWhen = d => d.toLocaleString(undefined, {month:"short", day:"numeric", 
 function renderUpdated(){
   const g = state.game, t = g && Math.max(+g.time||0, +g.invTime||0), el = $("#updated"), gu = $("#gameUpd");
   const txt = t ? ago(t) : "none yet", full = t ? fmtWhen(new Date(t*1000)) : "no addon data loaded";
-  if(el){ el.textContent = "game data " + txt; el.title = "Last addon snapshot: " + full;
+  if(el){ el.textContent = "· data " + txt; el.parentNode.title = "Last addon snapshot: " + full;
     // Older than a day: nudge to log in / reload so the page isn't advising on stale bags.
-    el.classList.toggle("warn", !!t && Date.now()/1000 - t > 86400); }
+    el.style.color = t && Date.now()/1000 - t > 86400 ? "var(--warn)" : ""; }
   if(gu){ gu.textContent = t ? `${full} (${txt})` : "none yet"; }
   const sb = $("#siteBuilt"); if(sb && sb.dataset.t){ const d = new Date(sb.dataset.t); if(!isNaN(d)) sb.textContent = fmtWhen(d); }
 }
