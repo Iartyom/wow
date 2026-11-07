@@ -445,6 +445,12 @@ section:not(.fold) .foldwhy{display:none}
 .toc a.folded{opacity:.5}
 .ii{display:inline-block;width:20px;height:20px;margin-right:6px;vertical-align:-5px;border-radius:3px}
 .ii.ph{background:var(--line)}
+.ahcheck{border:1px solid var(--bronze);border-radius:6px;padding:var(--s3) var(--s4);margin-bottom:var(--s4);background:rgba(240,207,116,.04)}
+.ahcheck .ah-h{margin:0 0 var(--s2);max-width:70ch}
+.ahcheck ol{margin:0;padding-left:1.4em;display:grid;gap:6px}
+.ahcheck a{text-decoration:none}
+.ahcheck .ah-min{color:var(--fg);font-size:.8rem;margin-left:6px}
+.ahcheck .isub{display:block;color:var(--muted);font-size:.8rem}
 .foldall{display:flex;gap:var(--s2);flex-wrap:wrap;margin-top:var(--s2)}
 </style>
 
@@ -654,6 +660,7 @@ section:not(.fold) .foldwhy{display:none}
       <button type="button" data-f="bank" aria-pressed="false">Bank</button>
     </div>
     <p class="muted" id="itemSum" style="margin-bottom:var(--s3)"></p>
+    <div class="ahcheck" id="ahCheck" hidden></div>
     <div class="tablebox"><table class="itable"><thead><tr><th>Item</th><th>Points vs worn</th><th>Vendor</th><th>AH (each)</th><th>Verdict</th></tr></thead><tbody id="itemBody"></tbody></table></div>
     <p class="muted" style="margin-top:var(--s3)">AH prices fill in by themselves if <b>Auctionator</b> is installed and you've scanned. Otherwise type one into the box (for example <code>1g 20s</code>), and it's remembered. Soulbound items can only go to a vendor. "Give" needs the other character's addon data too.</p>
     <details class="card weights" style="margin-top:var(--s4)">
@@ -1594,6 +1601,38 @@ function verdict(it){
   return {...sell(), me};
 }
 
+/* Which bag items are worth a look at the AH, and the price that makes listing beat the vendor.
+   Only tradeable items you don't need yourself; greys are skipped (they almost never beat the vendor).
+   Returns {rank, why, min} or null. `min` mirrors sell(): ahNet > vendor*1.3 + 50s, per unit. */
+function ahLookup(it, v){
+  if(it.bound || it.bop || !/ah|vendor|use/.test(v.k) || (it.q|0) < 1) return null;
+  if((state.ah && state.ah[it.id]) || it.ah) return null;            // already has a price
+  const min = Math.ceil((it.sell*it.n*1.3 + 500) / (0.95*it.n));
+  const gear = it.type==="Armor" || it.type==="Weapon";
+  if(gear && it.q >= 2) return {rank:0, why:"uncommon or better gear that isn't soulbound: other players pay well above vendor for these", min};
+  if(it.type==="Recipe") return {rank:1, why:"crafters buy recipes they can't train", min};
+  if(it.type==="Trade Goods" || /Herb|Cloth|Leather|Metal|Elemental|Meat|Parts/.test(it.sub||""))
+    return {rank: it.n >= 5 ? 2 : 3, why:"crafting material; levelers buy these for their professions", min};
+  if(it.type==="Consumable" && it.q >= 1 && /Potion|Elixir|Flask/.test(it.sub||"")) return {rank:4, why:"potions sell to people who don't do Alchemy", min};
+  return null;
+}
+function renderAhCheck(inv){
+  const el = $("#ahCheck"); if(!el) return;
+  const list = (inv||[]).map(it=>({it, a:ahLookup(it, verdict(it))})).filter(x=>x.a)
+    .sort((x,y)=>x.a.rank-y.a.rank || y.it.sell*y.it.n - x.it.sell*x.it.n);
+  el.hidden = !list.length; if(!list.length){ el.innerHTML = ""; return; }
+  el.innerHTML = `<p class="ah-h"><b>Look these up at the auction house</b> (${list.length}). Search each name, take the cheapest listing, and type that price into its AH box below. The page then tells you whether to list it or vendor it.</p><ol>`+
+    list.map(({it,a})=>`<li>${itemIcon(it.id)}<a href="#" data-ahgo="${it.id}" style="color:${QCOL[it.q]||""}">${esc(it.name)}</a>${it.n>1?` <span class="muted">×${it.n}</span>`:""}`+
+      ` <span class="mono ah-min">list it if above ${fmtCoin(a.min)}${it.n>1?" each":""}</span><span class="isub">${esc(a.why)}</span></li>`).join("")+`</ol>`;
+}
+// Clicking a name jumps to that item's AH box in the table (switching to the Bags filter if needed).
+document.addEventListener("click", e=>{
+  const a = e.target.closest && e.target.closest("[data-ahgo]"); if(!a) return; e.preventDefault();
+  if(iFilter!=="bags"){ const b = document.querySelector('.ifilters button[data-if="bags"], .ifilters button[data-f="bags"]'); if(b) b.click(); }
+  const inp = document.querySelector(`.ahin[data-ah="${a.dataset.ahgo}"]`);
+  if(inp){ inp.scrollIntoView({block:"center", behavior:"smooth"}); inp.focus({preventScroll:true}); }
+});
+
 let iFilter = "bags";
 /* Paints the Item worth section: equipped gear (with empty slots), the item list with verdicts, weights. */
 
@@ -1665,6 +1704,7 @@ function renderItems(){
   const cash = rows.filter(r=>/ah|vendor|use/.test(r.v.k)).reduce((s,r)=>s+r.v.val,0);
   sum.innerHTML = `<b>${tot("equip").length}</b> to equip now · <b>${tot("later").length}</b> to keep for later · <b>${tot("give").length}</b> for ${esc(charName(partnerOf(CHAR)))} · `+
     `<b>${fmtCoin(cash)}</b> if you sell the rest · scanned ${esc(ago(g.invTime||g.time))}`;
+  renderAhCheck(inv);
   renderCalc(); renderWeights();
 }
 
