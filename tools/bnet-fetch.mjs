@@ -30,35 +30,43 @@ const tok = await fetch("https://oauth.battle.net/token", {
 if (!tok.ok) { console.error(`Token request failed: HTTP ${tok.status}. Check the client ID/secret.`); process.exit(1); }
 const { access_token } = await tok.json();
 
-async function get(path, namespace = ns) {
-  const r = await fetch(`${api}${path}?locale=en_US`, {
+async function get(path, namespace = ns, host = api) {
+  const r = await fetch(`${host}${path}?locale=en_US`, {
     headers: { Authorization: `Bearer ${access_token}`, "Battlenet-Namespace": namespace },
   });
-  return { status: r.status, data: r.ok ? await r.json() : null };
+  // Keep Blizzard's error text: it says whether the namespace or the resource is the problem.
+  return r.ok ? { status: r.status, data: await r.json() } : { status: r.status, data: null, err: (await r.text()).slice(0, 200) };
 }
 
-// Repo is public: drop anything that names the character, realm or guild, plus self-links (they embed both).
-const SCRUB = new Set(["_links", "character", "name", "realm", "guild", "id"]);
-const scrub = (o) => o && Object.fromEntries(Object.entries(o).filter(([k]) => !SCRUB.has(k)));
+// User is fine publishing character details, so only self-links are dropped (they're just API noise).
+const scrub = (o) => o && Object.fromEntries(Object.entries(o).filter(([k]) => k !== "_links"));
 
 const base = `/profile/wow/character/${encodeURIComponent(realm)}/${encodeURIComponent(name)}`;
 const endpoints = {
   summary: "", equipment: "/equipment", statistics: "/statistics",
-  specializations: "/specializations", professions: "/professions",
-  // character-media left out: its render URLs embed realm + character IDs, which identify you.
+  specializations: "/specializations", professions: "/professions", media: "/character-media",
 };
+console.log(`Character ${name} @ ${realm}, namespace ${ns}`);
 const results = {};
 for (const [key, suffix] of Object.entries(endpoints)) {
-  const { status, data } = await get(base + suffix);
+  const { status, data, err } = await get(base + suffix);
   results[key] = { status, data: scrub(data) };
-  console.log(`${key.padEnd(16)} HTTP ${status}`);
+  console.log(`${key.padEnd(16)} HTTP ${status}${err ? "  " + err : ""}`);
 }
 
-// Diagnostic only (not published): a 404 on summary is often a wrong realm slug, so list the valid ones.
+// Diagnostic: on a 404, find which namespace/region actually serves realms and whether ours is listed.
+// Forever's namespace is undocumented, so try the community-reported one plus the Classic families.
 if (results.summary.status === 404) {
-  const realms = await get("/data/wow/realm/index", ns.replace(/^profile-/, "dynamic-"));
-  const slugs = realms.data?.realms?.map((r) => r.slug).join(", ");
-  console.log(`Realm index (${ns.replace(/^profile-/, "dynamic-")}) HTTP ${realms.status}${slugs ? ": " + slugs : ""}`);
+  for (const reg of ["us", "eu", "kr", "tw"]) {
+    for (const fam of ["forever", "classic", "classic1x", "classicann"]) {
+      const dns = `dynamic-${fam}-${reg}`;
+      const r = await get("/data/wow/realm/index", dns, `https://${reg}.api.blizzard.com`);
+      const slugs = r.data?.realms?.map((x) => x.slug) ?? [];
+      const hit = slugs.includes(realm) ? "  <-- YOUR REALM IS HERE" : "";
+      console.log(`probe ${dns.padEnd(24)} HTTP ${r.status}  ${slugs.length} realms${hit}`);
+      if (hit) console.log(`  -> set repo variable BNET_REGION=${reg}, BNET_NAMESPACE=profile-${fam}-${reg}`);
+    }
+  }
 }
 
 const payload = { region, namespace: ns, endpoints: results };

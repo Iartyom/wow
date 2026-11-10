@@ -32,6 +32,7 @@ jobs:
           BNET_REALM: ${{ secrets.BNET_REALM }}
           BNET_CHARACTER: ${{ secrets.BNET_CHARACTER }}
           BNET_REGION: ${{ vars.BNET_REGION }}
+          BNET_NAMESPACE: ${{ vars.BNET_NAMESPACE }}   # optional override, e.g. profile-classic-eu
         run: node tools/bnet-fetch.mjs
 
       # Rebase before push: tools/sync.ps1 pushes to main from the PC, so the two can race.
