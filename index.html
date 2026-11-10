@@ -468,6 +468,26 @@ section:not(.fold) .foldwhy{display:none}
 .svc .poi{vertical-align:-3px;margin-right:4px;width:16px;height:16px;font-size:9px}
 .foldall{display:flex;gap:var(--s2);flex-wrap:wrap;align-items:center;margin-top:var(--s2)}
 .updline{font:12px/1.3 var(--f-mono);color:var(--muted);margin-left:auto}
+/* Armory stat strip (mirrors the Armory's ring-icon tiles) and the base-vs-gear bars.
+   Bar colours validated with the dataviz palette checker on --surface: violet base, WoW-green gear. */
+.astats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--s3) var(--s4);margin-top:var(--s4)}
+.astat{display:flex;align-items:center;gap:10px;min-width:0}
+.astat .ic{width:40px;height:40px;flex:none;border-radius:50%;border:2px solid currentColor;display:grid;place-items:center;background:rgba(0,0,0,.35)}
+.astat svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.astat b{display:block;font-family:var(--f-mono);font-size:1.05rem;font-weight:600}
+.astat span:not(.ic){font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.alegend{display:flex;gap:var(--s4);flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.alegend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.alegend i.b,.abar i.b{background:#9078d6}.alegend i.g,.abar i.g{background:#6fa832}
+.abars{margin-top:var(--s2)}
+.abar{display:grid;grid-template-columns:minmax(70px,90px) 1fr auto;gap:var(--s3);align-items:center;padding:5px 4px;border-radius:4px;cursor:help}
+.abar:hover,.abar:focus-visible{background:var(--surface-2);outline:none}
+.abar .an{font-size:.85rem}
+.abar .trk{display:flex;gap:2px;height:12px;min-width:0}
+.abar .trk i{display:block;height:100%}
+.abar .trk i.g,.abar .trk i.b.end{border-radius:0 4px 4px 0}
+.abar .av{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);white-space:nowrap}
+.abar .av em{font-style:normal}.abar .av b{color:inherit;font-weight:600}
 /* Spell icons in plan lists + the shared Wowhead-style tooltip (always dark, like the game's). */
 .tplan .si{width:20px;height:20px;margin-right:5px;vertical-align:-5px}
 .si.ph{display:inline-block;width:20px;height:20px;margin-right:5px;vertical-align:-5px;border-radius:4px;background:var(--surface-2)}
@@ -1119,7 +1139,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-10T17:23:45Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-10T17:32:28Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -1561,6 +1581,19 @@ async function autoFetchArmory(){
     if(changed || fresh) renderAll();
   }catch(e){}
 }
+// Stat strip icons: [ring colour, inline SVG]. Colours follow the Armory's own (health green, mana blue,
+// strength red, …); they only mark which tile is which, and every tile is also labelled.
+const STAT_ICON = {
+  HEALTH:["#4fc24a",`<path d="M12 20s-7-4.4-8.6-8.7A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 8.6 4.3C19 15.6 12 20 12 20z"/>`],
+  MANA:["#4f8df0",`<path d="M9.5 3h5M10.5 3v6L5.5 18a2 2 0 0 0 1.8 3h9.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/>`],
+  STRENGTH:["#e05050",`<path d="M3.5 9.5v5M6.5 7v10M17.5 7v10M20.5 9.5v5M6.5 12h11"/>`],
+  INTELLECT:["#c77be6",`<path d="M9.5 18h5M10.5 21h3M12 3a6 6 0 0 0-3.9 10.6c.8.7 1.4 1.6 1.4 2.4h5c0-.8.6-1.7 1.4-2.4A6 6 0 0 0 12 3z"/>`],
+  AGILITY:["#e0b13a",`<circle cx="7" cy="10" r="1.6"/><circle cx="10.5" cy="6.5" r="1.6"/><circle cx="14.5" cy="6.5" r="1.6"/><circle cx="17.5" cy="10" r="1.6"/><path d="M12 12c-2.8 0-4.8 3-4.8 5 0 1.6 1.8 2.2 4.8 2.2s4.8-.6 4.8-2.2c0-2-2-5-4.8-5z"/>`],
+  STAMINA:["#e08a3a",`<path d="M12 3.5l7.5 8.5-7.5 8.5L4.5 12z"/><path d="M12 8l3.6 4-3.6 4-3.6-4z"/>`],
+  CRITICALSTRIKE:["#e05050",`<circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="1.5"/><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4"/>`],
+  SPIRIT:["#8fb4f0",`<path d="M12 3l2 7 7 2-7 2-2 7-2-7-7-2 7-2z"/>`],
+  _:["#9a9888",`<circle cx="12" cy="12" r="6"/>`]
+};
 // Panel for the Armory-only data: stats, reputation, PvP, pets. Shows the active character's class only.
 function renderArmory(){
   const el = $("#armoryBody"); if(!el) return;
@@ -1570,8 +1603,24 @@ function renderArmory(){
   const NICE = {CRITICALSTRIKE:"Crit", ATTACKPOWER:"Attack power", ATTACKSPEED:"Attack speed", ATTACKDPS:"Melee DPS",
     SPELLPOWER:"Spell power", MANAREGEN:"Mana regen", ITEMLEVEL:"Equipped item level", MOVEMENTSPEED:"Move speed"};
   const nice = e => NICE[e] || e.charAt(0) + e.slice(1).toLowerCase();
+  // Headline tiles, laid out like the Armory's own stat strip (ring icon + value + caps label).
+  const ov = ch.stats?.overview || [];
+  const tiles = ov.map(s=>{ const ic = STAT_ICON[s.enum] || STAT_ICON._; const v = fmt(s.value); if(v==null) return "";
+    return `<div class="astat"><span class="ic" style="color:${ic[0]}"><svg viewBox="0 0 24 24" aria-hidden="true">${ic[1]}</svg></span><div><b>${esc(v)}</b><span>${esc(nice(s.enum))}</span></div></div>`; }).join("");
+  // Base vs gear: one shared scale (largest total), base segment + 2px gap + gear segment. Numbers are
+  // printed on every row, so the bars never carry meaning by color alone; hover/focus repeats them.
+  const attrs = ov.filter(s=>s.details?.type==="ENHANCED" && s.details.base && s.details.bonus);
+  const top = Math.max(1, ...attrs.map(s=>+s.details.effective?.value || +s.value?.value || 0));
+  const bars = attrs.map(s=>{
+    const b = +s.details.base.value||0, g = +s.details.bonus.value||0, t = b+g, n = nice(s.enum);
+    const tipHtml = `<b class="tiphead">${esc(n)} ${t}</b><div>Base (race and level): ${b}</div><div>From gear: ${g >= 0 ? "+" : ""}${g}</div>`;
+    return `<div class="abar" tabindex="0" data-tiphtml="${esc(tipHtml)}"><span class="an">${esc(n)}</span>`
+      + `<span class="trk"><i class="b${g>0?"":" end"}" style="width:${(100*b/top).toFixed(1)}%"></i>${g>0?`<i class="g" style="width:${(100*g/top).toFixed(1)}%"></i>`:""}</span>`
+      + `<span class="av">${b}${g>0?` <em>+${g}</em>`:""} = <b>${t}</b></span></div>`;
+  }).join("");
   // Zero/empty stats (haste, mastery, parry… don't exist at these levels) are noise; skip them.
-  const groups = (ch.stats?.groups||[]).map(gr=>{
+  // Attributes are already in the tiles and bars above, so only the combat groups stay as text.
+  const groups = (ch.stats?.groups||[]).filter(gr=>/^(Attack|Spell|Defense)$/.test(gr.name)).map(gr=>{
     const items = (gr.stats||[]).map(s=>[nice(s.enum), fmt(s.value)]).filter(([,v])=>v && !/^0(\.0+)?%?$/.test(v));
     return items.length ? `<div style="grid-column:1/-1"><span><b style="display:inline;font-size:.8rem">${esc(gr.name)}</b> · ${items.map(([k,v])=>`${esc(k)} ${esc(v)}`).join(" · ")}</span></div>` : "";
   }).join("");
@@ -1588,8 +1637,12 @@ function renderArmory(){
       <div><b>${esc(ch.pvp?.honorableKills?.value ?? 0)}</b><span>Honorable kills</span></div>
       <div><b>${got.length} / ${pets.length}</b><span>Companion pets</span></div>
       <div><b>${esc(ago(armoryTime(a)))}</b><span>Armory last updated</span></div>
-      ${groups}
     </div>
+    ${tiles ? `<div class="astats">${tiles}</div>` : ""}
+    ${bars ? `<h3 style="margin:var(--s5) 0 var(--s2)">Attributes: base vs gear</h3>
+      <div class="alegend"><span><i class="b"></i>Base (race and level)</span><span><i class="g"></i>From gear</span></div>
+      <div class="abars">${bars}</div>` : ""}
+    ${groups ? `<div class="gamecard" style="margin-top:var(--s4)">${groups}</div>` : ""}
     ${reps ? `<h3 style="margin:var(--s4) 0 var(--s2)">Reputation</h3><div class="gamecard">${reps}</div>` : ""}
     <p class="muted" style="margin-top:var(--s2)">${got.length ? "Pets: " + got.map(p=>esc(p.name)).join(", ") + " · " : ""}<a href="${esc(link)}" target="_blank" rel="noopener">Open on the Armory</a> · checked ${esc(ago(Math.floor(Date.parse(a.fetched)/1000)))}</p>`;
 }
@@ -1968,6 +2021,8 @@ function initSpellTips(){
     tip.style.left = x + "px"; tip.style.top = y + "px";
   };
   const fill = el => {
+    // data-tiphtml: page-built HTML (values already escaped where it's made), e.g. the stat bars.
+    if(el.dataset.tiphtml){ tip.innerHTML = el.dataset.tiphtml; return; }
     const id = +el.dataset.sid, at = el.dataset.atal && armoryTalent(el.dataset.atal);
     if(id && spellTipCache[id] === undefined){ tip.innerHTML = `<span class="muted">Loading…</span>`; loadSpell(id, ()=>{ if(cur === el){ fill(el); place(el); } }); return; }
     if(id && spellTipCache[id]) tip.innerHTML = spellTipCache[id] + (el.dataset.alias ? `<div class="tipnote">Forever name: ${esc(el.dataset.alias)}</div>` : "");
@@ -1977,7 +2032,7 @@ function initSpellTips(){
   };
   const show = el => { cur = el; tip.hidden = false; fill(el); place(el); };
   const hide = () => { cur = null; tip.hidden = true; };
-  const target = e => e.target.closest && e.target.closest("[data-sid],[data-atal]");
+  const target = e => e.target.closest && e.target.closest("[data-sid],[data-atal],[data-tiphtml]");
   document.addEventListener("pointerover", e => { if(e.pointerType === "touch") return; const el = target(e); if(el && el !== cur) show(el); else if(!el && cur) hide(); });
   document.addEventListener("focusin", e => { const el = target(e); if(el) show(el); });
   document.addEventListener("focusout", hide);
