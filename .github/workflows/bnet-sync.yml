@@ -5,7 +5,9 @@ name: Battle.net sync
 
 on:
   schedule:
-    - cron: "17 * * * *"   # off the hour; GitHub queues :00 jobs heavily
+    # Daily, not hourly: as of 2026-11-10 Blizzard serves no Forever namespace in any region (all 404),
+    # so this is just a canary. Tighten to "17 * * * *" once summary returns 200.
+    - cron: "17 6 * * *"
   workflow_dispatch:
 
 permissions:
