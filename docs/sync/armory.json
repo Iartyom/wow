@@ -1,5 +1,5 @@
 {
- "fetched": "2026-11-10T17:10:01.068Z",
+ "fetched": "2026-11-10T17:16:24.207Z",
  "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/dark-bober",
  "character": {
   "avatar": {
@@ -2221,5 +2221,2279 @@
   "achievementUrl": "/forever/eu/armory/character/dark-bober/achievements",
   "isOutdated": false,
   "showRangedSlot": true
+ },
+ "reputations": {
+  "region": "eu",
+  "reputations": [
+   {
+    "id": "horde",
+    "max": false,
+    "name": "Horde",
+    "reputations": [
+     {
+      "id": "darkspear-trolls",
+      "max": false,
+      "maxValue": 3000,
+      "name": "Darkspear Trolls",
+      "standing": "Neutral",
+      "standingType": {
+       "id": 3,
+       "name": "Neutral",
+       "enum": "NEUTRAL",
+       "slug": "neutral"
+      },
+      "value": 2605
+     },
+     {
+      "id": "orgrimmar",
+      "max": false,
+      "maxValue": 3000,
+      "name": "Orgrimmar",
+      "standing": "Neutral",
+      "standingType": {
+       "id": 3,
+       "name": "Neutral",
+       "enum": "NEUTRAL",
+       "slug": "neutral"
+      },
+      "value": 2605
+     },
+     {
+      "id": "thunder-bluff",
+      "max": false,
+      "maxValue": 3000,
+      "name": "Thunder Bluff",
+      "standing": "Neutral",
+      "standingType": {
+       "id": 3,
+       "name": "Neutral",
+       "enum": "NEUTRAL",
+       "slug": "neutral"
+      },
+      "value": 1105
+     },
+     {
+      "id": "undercity",
+      "max": false,
+      "maxValue": 12000,
+      "name": "Undercity",
+      "standing": "Honored",
+      "standingType": {
+       "id": 5,
+       "name": "Honored",
+       "enum": "HONORED",
+       "slug": "honored"
+      },
+      "value": 2380
+     }
+    ]
+   }
+  ]
+ },
+ "pets": {
+  "battlePetSlots": [],
+  "pets": [
+   {
+    "name": "Albino Snake",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/136040.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-2955.jpg"
+    },
+    "collected": false,
+    "id": 74,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Ancona Chicken",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/2027860.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-147417.jpg"
+    },
+    "collected": false,
+    "id": 52,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Arctic Hare",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132766.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-328.jpg"
+    },
+    "collected": false,
+    "id": 4180,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Azure Whelpling",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/134155.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-6293.jpg"
+    },
+    "collected": false,
+    "id": 57,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Baby Crocolisk",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/656555.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-147381.jpg"
+    },
+    "collected": false,
+    "id": 5162,
+    "family": {
+     "id": 7,
+     "name": "Beast",
+     "enum": "BEAST",
+     "slug": "beast"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Bitter Baitling",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/236197.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-145177.jpg"
+    },
+    "collected": false,
+    "id": 5094,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Black Furbolg Pet",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/7959843.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-146842.jpg"
+    },
+    "collected": false,
+    "id": 5140,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Black Kingsnake",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/136040.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-1206.jpg"
+    },
+    "collected": false,
+    "id": 75,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Black Tabby",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/236547.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-5448.jpg"
+    },
+    "collected": false,
+    "id": 42,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Blue Ent Pet",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/7929460.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-146851.jpg"
+    },
+    "collected": false,
+    "id": 5147,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Bombay",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132599.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-5556.jpg"
+    },
+    "collected": false,
+    "id": 40,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Brown Furbolg Pet",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/7959844.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-146843.jpg"
+    },
+    "collected": false,
+    "id": 5141,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Brown Ground Squirrel",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132161.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-146884.jpg"
+    },
+    "collected": false,
+    "id": 5154,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Brown Prairie Dog",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132161.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-1072.jpg"
+    },
+    "collected": false,
+    "id": 70,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Brown Rabbit",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132762.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-4626.jpg"
+    },
+    "collected": false,
+    "id": 5157,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Brown Snake",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/136040.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-2957.jpg"
+    },
+    "collected": false,
+    "id": 77,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Child of By'zaali",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/237179.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-143743.jpg"
+    },
+    "collected": false,
+    "id": 5047,
+    "family": {
+     "id": 8,
+     "name": "Aquatic",
+     "enum": "AQUATIC",
+     "slug": "aquatic"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Cockatiel",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132921.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-6191.jpg"
+    },
+    "collected": false,
+    "id": 47,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Cockroach",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/294474.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-2177.jpg"
+    },
+    "collected": false,
+    "id": 55,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Condor Hatchling",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132834.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-3248.jpg"
+    },
+    "collected": false,
+    "id": 5167,
+    "family": {
+     "id": 2,
+     "name": "Flying",
+     "enum": "FLYING",
+     "slug": "flying"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Cornish Rex",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132599.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-5586.jpg"
+    },
+    "collected": false,
+    "id": 41,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Corrupted Kitten",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132599.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-9209.jpg"
+    },
+    "collected": false,
+    "id": 5006,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Crimson Snake",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/136040.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-6303.jpg"
+    },
+    "collected": false,
+    "id": 78,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Crimson Whelpling",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/134158.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-6290.jpg"
+    },
+    "collected": false,
+    "id": 58,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Dark Whelpling",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/134154.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-6288.jpg"
+    },
+    "collected": false,
+    "id": 56,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Disgusting Oozeling",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132107.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-15436.jpg"
+    },
+    "collected": false,
+    "id": 114,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Eagle Owl",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132150.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-6300.jpg"
+    },
+    "collected": false,
+    "id": 5158,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Emerald Whelpling",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/134157.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-6291.jpg"
+    },
+    "collected": false,
+    "id": 59,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Excitable Slime",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/3459153.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-144879.jpg"
+    },
+    "collected": false,
+    "id": 5075,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Father Winter's Helper",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/133204.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-15660.jpg"
+    },
+    "collected": false,
+    "id": 119,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Festival Lantern",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/236704.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-39333.jpg"
+    },
+    "collected": false,
+    "id": 342,
+    "family": {
+     "id": 5,
+     "name": "Magic",
+     "enum": "MAGIC",
+     "slug": "magic"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Flowery Lashling",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/4554353.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-11634.jpg"
+    },
+    "collected": false,
+    "id": 5203,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Frosty Lashling",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/4554350.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-132023.jpg"
+    },
+    "collected": false,
+    "id": 5201,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Galestrider Chick",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/646586.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-144905.jpg"
+    },
+    "collected": false,
+    "id": 5139,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Gray Ent Pet",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/7929461.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-146852.jpg"
+    },
+    "collected": false,
+    "id": 5148,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Gray Furbolg Pet",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/7959845.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-146844.jpg"
+    },
+    "collected": false,
+    "id": 5142,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Great Horned Owl",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132150.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-4615.jpg"
+    },
+    "collected": false,
+    "id": 68,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Green Wing Macaw",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132925.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-5207.jpg"
+    },
+    "collected": false,
+    "id": 50,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Gurky",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/294479.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-15984.jpg"
+    },
+    "collected": false,
+    "id": 121,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Hawk Owl",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132150.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-6299.jpg"
+    },
+    "collected": false,
+    "id": 67,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Hippogryph Hatchling",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132833.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-16943.jpg"
+    },
+    "collected": false,
+    "id": 130,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Hyacinth Macaw",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132921.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-6192.jpg"
+    },
+    "collected": false,
+    "id": 49,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Jubling",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/237579.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-14938.jpg"
+    },
+    "collected": false,
+    "id": 106,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Jungle Boa",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/136040.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-2958.jpg"
+    },
+    "collected": false,
+    "id": 5153,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Lifelike Toad",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/237579.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-901.jpg"
+    },
+    "collected": false,
+    "id": 95,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Lil' Smoky",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/294476.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-8910.jpg"
+    },
+    "collected": false,
+    "id": 86,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Lunar Lantern",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/236704.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-39163.jpg"
+    },
+    "collected": false,
+    "id": 341,
+    "family": {
+     "id": 5,
+     "name": "Magic",
+     "enum": "MAGIC",
+     "slug": "magic"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Mechanical Chicken",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/656513.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-7920.jpg"
+    },
+    "collected": false,
+    "id": 83,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Mechanical Squirrel",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132761.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-7937.jpg"
+    },
+    "collected": false,
+    "id": 39,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Minfernal",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/136219.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-147738.jpg"
+    },
+    "collected": false,
+    "id": 5174,
+    "family": {
+     "id": 5,
+     "name": "Magic",
+     "enum": "MAGIC",
+     "slug": "magic"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Mini Diablo",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132787.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-10992.jpg"
+    },
+    "collected": false,
+    "id": 93,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Mini Diablo",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/7831523.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-146956.jpg"
+    },
+    "collected": false,
+    "id": 5161,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Mini Uber Diablo",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132787.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-142494.jpg"
+    },
+    "collected": false,
+    "id": 5008,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Minimule",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/134010.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-147969.jpg"
+    },
+    "collected": false,
+    "id": 5176,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Mr. Wiggles",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132514.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-16257.jpg"
+    },
+    "collected": false,
+    "id": 126,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Murki",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132834.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-15395.jpg"
+    },
+    "collected": false,
+    "id": 1168,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Murky",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/134169.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-15369.jpg"
+    },
+    "collected": false,
+    "id": 107,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Musical Gustjumper",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/2399243.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-6296.jpg"
+    },
+    "collected": false,
+    "id": 5005,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Orange Ent Pet",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/7929462.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-146853.jpg"
+    },
+    "collected": false,
+    "id": 5149,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Orange Tabby",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132599.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-5554.jpg"
+    },
+    "collected": false,
+    "id": 43,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Pachimari",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/7741132.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-146839.jpg"
+    },
+    "collected": false,
+    "id": 5138,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Panda Cub",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132494.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-10990.jpg"
+    },
+    "collected": false,
+    "id": 92,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Panda Cub",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/7831521.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-146955.jpg"
+    },
+    "collected": false,
+    "id": 5159,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Peddlefeet",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132382.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-15992.jpg"
+    },
+    "collected": false,
+    "id": 122,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Plagued Cockroach",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/294474.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-146859.jpg"
+    },
+    "collected": false,
+    "id": 5151,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Poley",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132498.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-16189.jpg"
+    },
+    "collected": false,
+    "id": 124,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Prairie Chicken",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/135996.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-304.jpg"
+    },
+    "collected": false,
+    "id": 5004,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Prairie Wolf Pup",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132203.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-145568.jpg"
+    },
+    "collected": false,
+    "id": 5121,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Purple Ent Pet",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/7929458.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-146849.jpg"
+    },
+    "collected": false,
+    "id": 5145,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Red Ent Pet",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/7929459.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-146850.jpg"
+    },
+    "collected": false,
+    "id": 5146,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Red Ground Squirrel",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132161.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-146882.jpg"
+    },
+    "collected": false,
+    "id": 5155,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Senegal",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132924.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-6190.jpg"
+    },
+    "collected": false,
+    "id": 51,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Shadowgale Squirrel",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/4528721.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-146639.jpg"
+    },
+    "collected": false,
+    "id": 5135,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Shen'dorei Wisp",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/135864.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-147450.jpg"
+    },
+    "collected": false,
+    "id": 5163,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Siamese",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132599.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-5585.jpg"
+    },
+    "collected": false,
+    "id": 44,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Silver Tabby",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132599.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-5555.jpg"
+    },
+    "collected": false,
+    "id": 45,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Sinister Squashling",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/134015.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-21900.jpg"
+    },
+    "collected": false,
+    "id": 162,
+    "family": {
+     "id": 6,
+     "name": "Elemental",
+     "enum": "ELEMENTAL",
+     "slug": "elemental"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Smolderweb Hatchling",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132598.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-9997.jpg"
+    },
+    "collected": false,
+    "id": 90,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Snowshoe Rabbit",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132762.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-6302.jpg"
+    },
+    "collected": false,
+    "id": 72,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Snowy Wolf Pup",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132266.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-142952.jpg"
+    },
+    "collected": false,
+    "id": 5018,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Spawn of Grubthor",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/134895.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-12336.jpg"
+    },
+    "collected": false,
+    "id": 5183,
+    "family": {
+     "id": 7,
+     "name": "Beast",
+     "enum": "BEAST",
+     "slug": "beast"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Spectral Bear Cub",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/294471.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-145638.jpg"
+    },
+    "collected": false,
+    "id": 5122,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Speedy",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132763.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-16259.jpg"
+    },
+    "collected": false,
+    "id": 125,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Spirit of Summer",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/134813.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-122023.jpg"
+    },
+    "collected": false,
+    "id": 128,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Sprite Darter Hatchling",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132833.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-6294.jpg"
+    },
+    "collected": false,
+    "id": 87,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Tallstrider Hatchling",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132198.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-147717.jpg"
+    },
+    "collected": false,
+    "id": 5172,
+    "family": {
+     "id": 7,
+     "name": "Beast",
+     "enum": "BEAST",
+     "slug": "beast"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Tan Furbolg Pet",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/7959846.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-146845.jpg"
+    },
+    "collected": false,
+    "id": 5143,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Tiny Green Dragon",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/134333.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-14778.jpg"
+    },
+    "collected": false,
+    "id": 757,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Tiny Red Dragon",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/134337.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-14779.jpg"
+    },
+    "collected": false,
+    "id": 758,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Tiny Snowman",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/133650.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-15671.jpg"
+    },
+    "collected": false,
+    "id": 117,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Tiny Walking Bomb",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/133712.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-8909.jpg"
+    },
+    "collected": false,
+    "id": 85,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Tranquil Mechanical Yeti",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132189.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-10269.jpg"
+    },
+    "collected": false,
+    "id": 116,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Tree Frog",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/237579.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-6295.jpg"
+    },
+    "collected": false,
+    "id": 65,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Undercity Cockroach",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/294474.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-146860.jpg"
+    },
+    "collected": false,
+    "id": 5152,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Viridian Lashling",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/4554351.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-132024.jpg"
+    },
+    "collected": false,
+    "id": 5200,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Weevil K. Neevil",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/237144.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-117132.jpg"
+    },
+    "collected": false,
+    "id": 5136,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Whiskers the Rat",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/294480.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-148791.jpg"
+    },
+    "collected": false,
+    "id": 127,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "White Baby Murloc",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132834.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-15398.jpg"
+    },
+    "collected": false,
+    "id": 111,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "White Furbolg Pet",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/7959847.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-146846.jpg"
+    },
+    "collected": false,
+    "id": 5144,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "White Kitten",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132599.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-9989.jpg"
+    },
+    "collected": false,
+    "id": 46,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "White Tiger Cub",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/134176.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-16942.jpg"
+    },
+    "collected": false,
+    "id": 1927,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Wild Chicken",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/135996.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-6193.jpg"
+    },
+    "collected": false,
+    "id": 5069,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Wilted Lashling",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/4554352.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-132025.jpg"
+    },
+    "collected": false,
+    "id": 5202,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Winter Reindeer",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/133706.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-15904.jpg"
+    },
+    "collected": false,
+    "id": 118,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Winter's Little Helper",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/133202.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-15663.jpg"
+    },
+    "collected": false,
+    "id": 120,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Wood Frog",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/237579.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-901.jpg"
+    },
+    "collected": false,
+    "id": 64,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Worg Pup",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/132599.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-9563.jpg"
+    },
+    "collected": false,
+    "id": 89,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Yellow Ent Pet",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/7929463.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-146854.jpg"
+    },
+    "collected": false,
+    "id": 5150,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Zergling",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/136217.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-10993.jpg"
+    },
+    "collected": false,
+    "id": 94,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   },
+   {
+    "name": "Zergling",
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/7831522.jpg"
+    },
+    "render": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-146954.jpg"
+    },
+    "collected": false,
+    "id": 5160,
+    "family": {
+     "id": 4,
+     "name": "Critter",
+     "enum": "CRITTER",
+     "slug": "critter"
+    },
+    "level": 1,
+    "favorite": false,
+    "isBattlePet": true
+   }
+  ],
+  "petsCollected": 0
  }
 }

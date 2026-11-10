@@ -13,27 +13,38 @@ const OUT = "docs/sync/armory.json";
 // Forever characters have realmless URLs; the realm isn't part of the path.
 const url = `https://worldofwarcraft.blizzard.com/en-gb/forever/${region}/armory/character/${encodeURIComponent(slug)}`;
 
-const r = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (compatible; grimoire-sync)", "Accept-Language": "en-GB" } });
-if (!r.ok) { console.error(`Armory returned HTTP ${r.status} for ${url}`); process.exit(1); }
-const html = await r.text();
-
-// Brace-walk the object literal instead of regexing it: item descriptions contain braces and quotes.
-const marker = "var characterProfileInitialState = ";
-const start = html.indexOf(marker);
-if (start < 0) { console.error("Profile JSON not found; Blizzard may have changed the page layout."); process.exit(1); }
-let i = start + marker.length, depth = 0, inStr = false, end = -1;
-for (let k = i; k < html.length; k++) {
-  const c = html[k];
-  if (inStr) { if (c === "\\") k++; else if (c === '"') inStr = false; continue; }
-  if (c === '"') inStr = true;
-  else if (c === "{") depth++;
-  else if (c === "}" && --depth === 0) { end = k + 1; break; }
+// Fetch one Armory tab and return its embedded state object. `tab` "" = main character page.
+async function armoryState(tab) {
+  const u = tab ? `${url}/${tab}` : url;
+  const r = await fetch(u, { headers: { "User-Agent": "Mozilla/5.0 (compatible; grimoire-sync)", "Accept-Language": "en-GB" } });
+  if (!r.ok) throw new Error(`Armory returned HTTP ${r.status} for ${u}`);
+  const html = await r.text();
+  // Brace-walk the object literal instead of regexing it: item descriptions contain braces and quotes.
+  const marker = "var characterProfileInitialState = ";
+  const start = html.indexOf(marker);
+  if (start < 0) throw new Error(`Profile JSON not found on ${u}; Blizzard may have changed the page layout.`);
+  let i = start + marker.length, depth = 0, inStr = false, end = -1;
+  for (let k = i; k < html.length; k++) {
+    const c = html[k];
+    if (inStr) { if (c === "\\") k++; else if (c === '"') inStr = false; continue; }
+    if (c === '"') inStr = true;
+    else if (c === "{") depth++;
+    else if (c === "}" && --depth === 0) { end = k + 1; break; }
+  }
+  return JSON.parse(html.slice(i, end));
 }
-const state = JSON.parse(html.slice(i, end));
-const ch = state.character;
-console.log(`${ch.name}: level ${ch.level} ${ch.race?.name} ${ch.class?.name}, ilvl ${ch.averageItemLevel}, armory updated ${ch.lastUpdatedTimestamp?.iso8601}`);
 
-const payload = { source: url, character: ch };
+let main;
+try { main = await armoryState(""); } catch (e) { console.error(e.message); process.exit(1); }
+const ch = main.character;
+console.log(`${ch.name}: level ${ch.level} ${ch.race?.name} ${ch.class?.name}, ilvl ${ch.averageItemLevel}, armory updated ${ch.lastUpdatedTimestamp?.iso8601}`);
+// Side tabs are nice-to-have: a failure there keeps the main profile instead of failing the run.
+const side = async (tab, key) => { try { return (await armoryState(tab))[key] ?? null; } catch (e) { console.log(`${tab}: ${e.message}`); return null; } };
+const reputations = await side("reputation", "reputations");
+const pets = await side("collections", "pets");
+console.log(`reputation: ${reputations ? "ok" : "missing"}, collections: ${pets ? "ok" : "missing"}`);
+
+const payload = { source: url, character: ch, reputations, pets };
 // Skip the write when only the fetch time would change, so the hourly cron doesn't spam commits.
 if (existsSync(OUT)) {
   try {

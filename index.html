@@ -468,6 +468,19 @@ section:not(.fold) .foldwhy{display:none}
 .svc .poi{vertical-align:-3px;margin-right:4px;width:16px;height:16px;font-size:9px}
 .foldall{display:flex;gap:var(--s2);flex-wrap:wrap;align-items:center;margin-top:var(--s2)}
 .updline{font:12px/1.3 var(--f-mono);color:var(--muted);margin-left:auto}
+/* Spell icons in plan lists + the shared Wowhead-style tooltip (always dark, like the game's). */
+.tplan .si{width:20px;height:20px;margin-right:5px;vertical-align:-5px}
+.si.ph{display:inline-block;width:20px;height:20px;margin-right:5px;vertical-align:-5px;border-radius:4px;background:var(--surface-2)}
+[data-sid],[data-atal]{cursor:help}
+[data-sid]:focus-visible,[data-atal]:focus-visible{outline:2px solid var(--void);outline-offset:2px}
+#sptip{position:fixed;z-index:1000;max-width:min(320px,calc(100vw - 16px));padding:8px 10px;background:#070712f2;color:#fff;
+  border:1px solid #5a5a7a;border-radius:4px;box-shadow:0 4px 14px rgba(0,0,0,.6);font-size:.82rem;line-height:1.35;pointer-events:none}
+/* Reset the page's data-table styles (min-width 560px, uppercase mono th) inside Wowhead's tooltip tables. */
+#sptip table{width:100%;min-width:0;border-collapse:collapse;font-size:inherit}
+#sptip td,#sptip th{padding:0;vertical-align:top;text-align:left;font:inherit;border:0;background:none;color:inherit;letter-spacing:0;text-transform:none}
+#sptip th{text-align:right;padding-left:12px}#sptip b.whtt-name,#sptip .tiphead{font-size:.95rem;color:#fff}
+#sptip .q{color:#ffd100}#sptip .q0{color:#9d9d9d}#sptip .q2{color:#1eff00}#sptip .wowhead-tooltip-requirements{color:#ccc}
+#sptip .tipdesc{color:#ffd100;margin-top:4px}#sptip .tipnote{color:#9d9d9d;font-size:.75rem;margin-top:6px}#sptip .muted{color:#aaa}
 </style>
 
 <div class="bar">
@@ -647,6 +660,15 @@ section:not(.fold) .foldwhy{display:none}
     </div>
     <p class="muted" id="importMsg" aria-live="polite" style="margin-top:var(--s2)"></p>
     <p class="muted" style="margin-top:var(--s2)">First time? See <a href="#setup">Addon setup</a> at the bottom.</p>
+  </div>
+</section>
+
+<!-- Armory: rendered by renderArmory() from sync/armory.json (GitHub Action, hourly). GitHub site only. -->
+<section id="armory">
+  <div class="wrap">
+    <header><p class="eyebrow">Blizzard Armory</p><h2>From the Armory</h2>
+      <p>Pulled every hour from your public Forever Armory page. When it's newer than the addon file, it also updates your level, gear, talents and professions above. The Armory only refreshes after you log out.</p></header>
+    <div id="armoryBody"></div>
   </div>
 </section>
 
@@ -1076,7 +1098,7 @@ section:not(.fold) .foldwhy{display:none}
       <li>Log out or <kbd>/reload</kbd>. WoW writes the file to <code class="path">World of Warcraft\&lt;forever folder&gt;\WTF\Account\&lt;ACCOUNT&gt;\SavedVariables\GrimoireSync.lua</code></li>
       <li><b>GitHub site:</b> keep <code class="path">.\tools\sync.ps1 -Watch</code> running and the site updates itself after each logout. <b>Claude page:</b> load the file with the button in <a href="#game">From the game</a>.</li>
     </ol>
-    <p class="muted" style="margin-top:var(--s3)">Blizzard's official character API doesn't support Forever yet. Once it does, this page can read your character directly from your Battle.net account.</p>
+    <p class="muted" style="margin-top:var(--s3)">Without the addon, the GitHub site still reads your public Forever Armory every hour (the <b>Armory sync</b> Action in the repo). That covers level, gear, talents, professions, reputation and stats, but not XP, zone, gold, bags or demons. The Armory only refreshes after you log out.</p>
   </div>
 </section>
 
@@ -1097,7 +1119,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-07T18:08:45Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-10T17:23:45Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -1403,7 +1425,10 @@ function applySnap(c, s, source){
   // Same-time snapshot still applies when it carries data this state never stored (gear/bags/talents
   // added in 0.2: a browser that loaded the file under the old page would otherwise never pick them up).
   const adds = (s.inv && !st.game?.gear) || (s.talents && !st.game?.talents);
-  if(st.game && !adds && (s.time||0) <= (st.game.time||0)) return source==="auto" ? "" : "not newer than the one already loaded.";
+  // Compare against the last *addon* snapshot: an Armory merge moves game.time forward, but the addon's
+  // XP/zone/gold/bags must still load when the addon file is newer than the previous addon file.
+  const prevAddon = st.game ? (st.game.addonTime ?? (st.game.armoryTime ? 0 : st.game.time) ?? 0) : 0;
+  if(st.game && !adds && (s.time||0) <= prevAddon) return source==="auto" ? "" : "not newer than the one already loaded.";
   const demons = (Array.isArray(s.demons) ? s.demons : Object.values(s.demons||{})).filter(x=>typeof x==="string");
   const profs = (s.profs && typeof s.profs==="object" && !Array.isArray(s.profs)) ? s.profs : {};
   const objOrNull = v => (v && typeof v==="object" && !Array.isArray(v)) ? v : null;
@@ -1414,10 +1439,13 @@ function applySnap(c, s, source){
     talents: objOrNull(s.talents) ? {tabs:s.talents.tabs||[], ranks:objOrNull(s.talents.ranks)||{}, free:+s.talents.free||0} : null,
     spells: objOrNull(s.spells),
     bags: inv ? compactList(inv.bags) : null, gear: inv ? gear : null, invTime: inv ? +inv.time||0 : 0,
-    bank: bank ? {time:+bank.time||0, items:compactList(bank.items)} : null};
+    bank: bank ? {time:+bank.time||0, items:compactList(bank.items)} : null, addonTime:+s.time||0};
   // 0.2+ files keep the character name in `who` (items use `name`); older files used `name`.
   const who = s.who || (!inv && s.name); if(who) st.charName = String(who);
   st.level = Math.max(1, Math.min(60, Math.round(s.level)));
+  // Armory newer than this snapshot (you logged out later on another PC, or didn't run sync.ps1):
+  // put its level/gear/talents/professions back on top. The ticks below then use the merged level.
+  if(mergeArmory(c)) s = {...s, level: st.game.level};
   demons.forEach(id=>{ st.checks[id]=true; });
   def.prof.forEach(([p,r,id])=>{ if((+profs[p]||0) >= r) st.checks[id]=true; });
   if(s.level >= 60) st.checks["ms-60"] = true;
@@ -1459,6 +1487,111 @@ async function importFile(file){
 async function autoFetchSV(){
   try{ const r = await fetch("sync/GrimoireSync.lua", {cache:"no-store"}); if(!r.ok) return;
        const msg = applyGame(parseLuaSV(await r.text()), "auto"); if(msg) setImportMsg("Synced from your PC: "+msg); }catch(e){}
+}
+
+// ---------- Blizzard Armory ----------
+// tools/armory-fetch.mjs (GitHub Action, hourly) saves the public Forever Armory profile to sync/armory.json.
+// The Armory has level/race/gear/talents/professions (+ reputation, stats, pets) but no XP, zone, gold, bags,
+// demons or spells. Merge rule: whichever of addon snapshot / Armory has the later logout time wins for the
+// fields both have; addon-only fields are always kept. Armory payloads stay in memory (not saved state).
+const armory = {};   // class enum ("WARLOCK") -> last sync/armory.json payload
+const ARM_SLOT = {HEAD:1,NECK:2,SHOULDER:3,SHIRT:4,CHEST:5,WAIST:6,LEGS:7,FEET:8,WRIST:9,HANDS:10,FINGER_1:11,FINGER_2:12,
+  TRINKET_1:13,TRINKET_2:14,BACK:15,MAIN_HAND:16,OFF_HAND:17,RANGED:18,TABARD:19};
+const ARM_Q = {POOR:0,COMMON:1,UNCOMMON:2,RARE:3,EPIC:4,LEGENDARY:5,ARTIFACT:6,HEIRLOOM:7};
+const armoryTime = a => Math.floor((+a?.character?.lastUpdatedTimestamp?.epoch || 0) / 1000);
+// Armory item -> addon item record (fake tooltip lines), so compactItem/parseTip score it like addon gear.
+function armoryItem(v){
+  const t = v.inventory_type?.type || "", req = v.requirements?.level;
+  const tip = [v.binding?.name, `${v.inventory_type?.name||""}\t${v.item_subclass?.name||""}`,
+    v.weapon?.damage?.display_string, v.weapon?.dps?.display_string,
+    v.armor?.value ? `${v.armor.value} Armor` : null, ...(v.stats||[]).map(s=>s.display?.display_string), req?.display_string];
+  return compactItem({id: v.item?.id ?? v.id, name: v.name, q: ARM_Q[v.quality?.type] ?? 1, ilvl: v.level?.value, req: req?.value,
+    type: v.item_class?.name, sub: v.item_subclass?.name, loc: "INVTYPE_" + (t==="TWOHWEAPON" ? "2HWEAPON" : t),
+    sell: v.sell_price?.value, bound: v.binding?.type==="ON_ACQUIRE", tip: tip.filter(Boolean)});
+}
+// Apply the Armory to character c if it's newer than what the state holds. Mutates state only;
+// callers render/save. Returns a short message when it changed something, else "".
+function mergeArmory(c){
+  const a = armory[CHARS[c].cls], ch = a && a.character; if(!ch || !ch.level) return "";
+  const st = states[c], at = armoryTime(a), g0 = st.game;
+  const addonT = g0 ? (g0.addonTime ?? (g0.armoryTime ? 0 : g0.time) ?? 0) : 0;
+  if(!at || at <= addonT || (g0 && g0.armoryTime === at)) return "";
+  const g = g0 || {level:0, cls:CHARS[c].cls, race:"", zone:"", subzone:"", money:0, quests:null, xp:0, xpMax:0, time:0,
+    demons:[], profs:{}, talents:null, spells:null, bags:null, gear:null, invTime:0, bank:null, addonTime:0};
+  if(ch.level !== g.level){ g.xp = 0; g.xpMax = 0; }   // addon XP belongs to the old level
+  g.level = ch.level; g.race = ch.race?.name || g.race;
+  const profs = {...(g.profs||{})};   // keep addon-only skill lines (weapon skills, languages)
+  for(const p of [...(ch.professions?.primaries||[]), ...(ch.professions?.secondaries||[])]){
+    const t = (p.tiers||[])[0]; if(t) profs[p.name] = +t.skillPoints||0; }
+  g.profs = profs;
+  if(Array.isArray(ch.specs) && ch.specs.length){
+    const ranks = {}; let spent = 0;
+    const tabs = ch.specs.map(s=>{ spent += +s.spentPoints||0; (s.talents||[]).forEach(t=>{ ranks[t.name] = +t.rank||0; });
+      return {name:s.name, spent:+s.spentPoints||0}; });
+    // Classic-style talents: first point at level 10, one per level after (Armory doesn't report unspent).
+    g.talents = {tabs, ranks, free: Math.max(0, ch.level - 9 - spent)};
+  }
+  const gear = {};
+  for(const v of Object.values(ch.gear||{})){ const n = ARM_SLOT[v.slot?.type]; const it = n && armoryItem(v); if(it) gear[n] = it; }
+  if(Object.keys(gear).length){ g.gear = gear; g.invTime = at; }
+  g.time = at; g.armoryTime = at;
+  st.game = g;
+  if(!st.charName) st.charName = [ch.name, ch.surname].filter(Boolean).join(" ");
+  st.level = Math.max(1, Math.min(60, ch.level));
+  // Same ticks applySnap does from a snapshot.
+  CHARS[c].prof.forEach(([p,r,id])=>{ if((+profs[p]||0) >= r) st.checks[id] = true; });
+  if(ch.level >= 60) st.checks["ms-60"] = true;
+  if(c === "wl" && (+g.talents?.ranks?.["Improved Corruption"] || 0) >= 5) st.checks["ms-impcorr"] = true;
+  return `level ${ch.level}, ${Object.keys(gear).length} gear slots, talents and professions.`;
+}
+let armoryFetched = "";
+async function autoFetchArmory(){
+  try{
+    const r = await fetch("sync/armory.json", {cache:"no-store"}); if(!r.ok) return;
+    const a = await r.json(), cls = a.character?.class?.enum; if(!cls) return;
+    const fresh = a.fetched !== armoryFetched; armoryFetched = a.fetched; armory[cls] = a;
+    // Merge on every poll, not only on a new file: cloud state can load after the first fetch and replace it.
+    let changed = false;
+    for(const [c,def] of Object.entries(CHARS)) if(def.cls === cls){
+      const m = mergeArmory(c);
+      if(m){ changed = true; scheduleSave(c); if(c === CHAR) setImportMsg("From the Armory: " + m); }
+    }
+    // A new file re-renders everything too: talent rows use Armory icons/tooltips for Forever-only talents.
+    if(changed && !ZONES[state.game?.zone]) followLevel();
+    if(changed || fresh) renderAll();
+  }catch(e){}
+}
+// Panel for the Armory-only data: stats, reputation, PvP, pets. Shows the active character's class only.
+function renderArmory(){
+  const el = $("#armoryBody"); if(!el) return;
+  const a = armory[CHARS[CHAR].cls], ch = a && a.character;
+  if(!ch){ el.innerHTML = `<p class="muted">No Armory data for the ${esc(CHARS[CHAR].label)} yet. It's only on the GitHub site, and the sync Action covers one character (set in <code class="path">.github/workflows/armory-sync.yml</code>).</p>`; return; }
+  const fmt = v => !v || v.value==null ? null : v.type==="PERCENTAGE" ? (+v.value).toFixed(2)+"%" : v.type==="DECIMAL" ? (+v.value).toFixed(1) : String(Math.round(+v.value));
+  const NICE = {CRITICALSTRIKE:"Crit", ATTACKPOWER:"Attack power", ATTACKSPEED:"Attack speed", ATTACKDPS:"Melee DPS",
+    SPELLPOWER:"Spell power", MANAREGEN:"Mana regen", ITEMLEVEL:"Equipped item level", MOVEMENTSPEED:"Move speed"};
+  const nice = e => NICE[e] || e.charAt(0) + e.slice(1).toLowerCase();
+  // Zero/empty stats (haste, mastery, parry… don't exist at these levels) are noise; skip them.
+  const groups = (ch.stats?.groups||[]).map(gr=>{
+    const items = (gr.stats||[]).map(s=>[nice(s.enum), fmt(s.value)]).filter(([,v])=>v && !/^0(\.0+)?%?$/.test(v));
+    return items.length ? `<div style="grid-column:1/-1"><span><b style="display:inline;font-size:.8rem">${esc(gr.name)}</b> · ${items.map(([k,v])=>`${esc(k)} ${esc(v)}`).join(" · ")}</span></div>` : "";
+  }).join("");
+  const reps = (a.reputations?.reputations||[]).flatMap(gr=>(gr.reputations||[]).map(r=>{
+    const pct = r.max ? 100 : r.maxValue ? Math.round(100*r.value/r.maxValue) : 0;
+    return `<div><b style="font-size:.95rem">${esc(r.name)}</b><span>${esc(r.standing)} · ${r.max ? "max" : `${r.value} / ${r.maxValue}`}</span><div class="xpbar"><i style="width:${pct}%"></i></div></div>`;
+  })).join("");
+  const pets = a.pets?.pets || [], got = pets.filter(p=>p.collected);
+  const link = "https://worldofwarcraft.blizzard.com/en-gb" + (ch.url || "");
+  el.innerHTML = `
+    <div class="gamecard">
+      <div><b>${esc([ch.name, ch.surname].filter(Boolean).join(" "))}</b><span>${esc(ch.level)} ${esc(ch.race?.name||"")} ${esc(ch.class?.name||"")}</span></div>
+      <div><b>${esc(ch.averageItemLevel ?? "—")}</b><span>Average item level</span></div>
+      <div><b>${esc(ch.pvp?.honorableKills?.value ?? 0)}</b><span>Honorable kills</span></div>
+      <div><b>${got.length} / ${pets.length}</b><span>Companion pets</span></div>
+      <div><b>${esc(ago(armoryTime(a)))}</b><span>Armory last updated</span></div>
+      ${groups}
+    </div>
+    ${reps ? `<h3 style="margin:var(--s4) 0 var(--s2)">Reputation</h3><div class="gamecard">${reps}</div>` : ""}
+    <p class="muted" style="margin-top:var(--s2)">${got.length ? "Pets: " + got.map(p=>esc(p.name)).join(", ") + " · " : ""}<a href="${esc(link)}" target="_blank" rel="noopener">Open on the Armory</a> · checked ${esc(ago(Math.floor(Date.parse(a.fetched)/1000)))}</p>`;
 }
 
 // ---------- item worth ----------
@@ -1505,7 +1638,7 @@ const STAT_RX = [
   [/damage done by Shadow spells and effects by up to (\d+)/i,"shadow"],[/^\+(\d+) Shadow Spell Damage/i,"shadow"],
   [/damage done by Fire spells and effects by up to (\d+)/i,"fire"],[/^\+(\d+) Fire Spell Damage/i,"fire"],
   [/damage done by Holy spells and effects by up to (\d+)/i,"holy"],
-  [/healing done by spells and effects by up to (\d+)/i,"heal"],[/^\+(\d+) Healing/i,"heal"],
+  [/healing done by spells and effects by up to (\d+)/i,"heal"],[/^\+(\d+) (?:Spell )?Healing/i,"heal"],   // "Spell Healing": Armory wording
   [/critical strike with spells by (\d+)%/i,"scrit"],[/chance to hit with spells by (\d+)%/i,"shit"],
   [/chance to get a critical strike by (\d+)%/i,"crit"],[/chance to hit by (\d+)%/i,"hit"],
   [/\+(\d+) (?:ranged )?Attack Power/i,"ap"],[/Restores (\d+) mana per 5 sec/i,"mp5"],[/Restores (\d+) health per 5 sec/i,"hp5"],
@@ -1757,6 +1890,107 @@ function pumpIcons(){
         pumpIcons();
       });
   }
+}
+
+// ---------- spell icons + tooltips ----------
+// Spell IDs per rank ([rank1, rank2, …]) for the trainer and talent lists. Generated once from wago.tools
+// Classic Era 1.15.9 DB2 tables (SpellName + Spell "Rank N" + warlock SkillLineAbility); regenerate if
+// TRAIN_WL/TALENTS_WL gain names. Forever renamed some curses to "Bane": those borrow the Classic spell
+// (same icon; Wowhead's text still says Curse). Forever-only talents have no ID; the Armory fills those in.
+const SPELL_IDS = {"Corruption":[172,6222,6223,7648,11671,11672,25311],"Curse of Weakness":[702,1108,6205,7646,11707,11708],"Life Tap":[1454,1455,1456,11687,11688,11689],"Shadow Bolt":[686,695,705,1088,1106,7641,11659,11660,11661,25307],"Fear":[5782,6213,6215],"Drain Soul":[1120,8288,8289,11675],"Create Healthstone":[5699],"Demon Skin":[687,696],"Immolate":[348,707,1094,2941,11665,11667,11668,25309],"Health Funnel":[755,3698,3699,3700,11693,11694,11695],"Curse of Recklessness":[704,7658,7659,11717],"Drain Life":[689,699,709,7651,11699,11700],"Unending Breath":[5697],"Create Soulstone":[20755],"Searing Pain":[5676,17919,17920,17921,17922,17923],"Curse of the Elements":[1490,11721,11722],"Demon Armor":[706,1086,11733,11734,11735],"Ritual of Summoning":[698],"Rain of Fire":[5740,6219,11677,11678],"Eye of Kilrogg":[126],"Drain Mana":[5138,6226,11703,11704],"Sense Demons":[5500],"Shadowburn":[17877,18867,18868,18869,18870,18871],"Curse of Tongues":[1714,11719],"Detect Invisibility":[2970],"Banish":[710,18647],"Create Firestone":[17951],"Subjugate Demon":[1098,11725,11726],"Hellfire":[1949,11683,11684],"Shadow Ward":[6229,11739,11740,28610],"Conflagrate":[17962,18930,18931,18932],"Create Spellstone":[2362],"Siphon Life":[18265,18879,18880,18881],"Howl of Terror":[5484,17928],"Death Coil":[6789,17925,17926],"Soul Fire":[6353,17924],"Incinerate":[412758],"Ritual of Doom":[18540],"Improved Corruption":[17810,17811,17812,17813,17814],"Suppression":[18174,18175,18176,18177,18178],"Unholy Power":[18769,18770,18771,18772,18773],"Improved Life Tap":[18182,18183],"Nightfall":[18094,18095],"Shadow Mastery":[18271,18272,18273,18274,18275],"Demonic Embrace":[18697,18698,18699,18700,18701],"Demonic Sacrifice":[18788],"Curse of Agony":[980,1014,6217,11711,11712,11713],"Curse of Doom":[603],"Improved Curse of Agony":[18827,18829,18830]};
+const SPELL_ALIAS = {"Bane of Agony":"Curse of Agony","Bane of Doom":"Curse of Doom","Improved Bane of Agony":"Improved Curse of Agony"};
+function spellId(name, rank = 1){
+  const r = SPELL_IDS[name] || SPELL_IDS[SPELL_ALIAS[name]]; if(!r) return 0;
+  return r[rank-1] || r[r.length-1] || 0;
+}
+// Same Wowhead endpoint as item icons; it also returns tooltip HTML. Icon names persist in localStorage,
+// tooltip HTML only in memory (it's big and re-fetched on demand).
+const SPELL_ICON_KEY = "fg-spell-icons";
+let spellIconCache = (()=>{ try{ return JSON.parse(localStorage.getItem(SPELL_ICON_KEY)||"{}")||{}; }catch(e){ return {}; } })();
+const spellTipCache = {}, spellWant = new Set(), spellWaiters = {}; let spellBusy = 0;
+function spellIcon(id){
+  if(!id) return "";
+  const n = spellIconCache[id];
+  if(n) return `<img class="wi si" src="https://wow.zamimg.com/images/wow/icons/medium/${esc(n)}.jpg" alt="" loading="lazy">`;
+  if(n === "") return "";
+  loadSpell(id);
+  return `<span class="si ph" data-sid-ph="${id}"></span>`;
+}
+function loadSpell(id, cb){
+  if(cb) (spellWaiters[id] = spellWaiters[id] || []).push(cb);
+  spellWant.add(id); pumpSpells();
+}
+function pumpSpells(){
+  while(spellBusy < 4 && spellWant.size){
+    const id = spellWant.values().next().value; spellWant.delete(id); spellBusy++;
+    fetch(`https://nether.wowhead.com/classic/tooltip/spell/${id}?dataEnv=4&locale=0`)
+      .then(r=>r.ok ? r.json() : {}).then(j=>{ spellIconCache[id] = (j && j.icon) || ""; spellTipCache[id] = j && j.tooltip ? cleanTip(j.tooltip) : ""; })
+      .catch(()=>{ spellIconCache[id] = ""; spellTipCache[id] = ""; })
+      .finally(()=>{
+        spellBusy--;
+        try{ localStorage.setItem(SPELL_ICON_KEY, JSON.stringify(spellIconCache)); }catch(e){}
+        document.querySelectorAll(`.si.ph[data-sid-ph="${id}"]`).forEach(el=>{ if(spellIconCache[id]) el.outerHTML = spellIcon(id); else el.remove(); });
+        (spellWaiters[id]||[]).forEach(f=>f()); delete spellWaiters[id];
+        pumpSpells();
+      });
+  }
+}
+// Wowhead tooltip HTML is third-party: keep layout tags + class only, unwrap everything else (links, scripts).
+function cleanTip(html){
+  const d = new DOMParser().parseFromString(String(html), "text/html");
+  const OK = new Set(["TABLE","TBODY","TR","TD","TH","B","BR","SPAN","DIV","SMALL","I"]);
+  const walk = el => { for(const n of [...el.children]){ walk(n);
+    if(!OK.has(n.tagName)){ n.replaceWith(...n.childNodes); continue; }
+    for(const a of [...n.attributes]) if(a.name !== "class") n.removeAttribute(a.name); } };
+  walk(d.body); return d.body.innerHTML;
+}
+// Talent from the Armory (Forever-only talents have no Classic ID). Returns {icon, rank, desc} or null.
+function armoryTalent(name){
+  const ch = armory[CHARS[CHAR].cls]?.character;
+  for(const s of ch?.specs || []) for(const t of s.talents || []) if(t.name === name) return {icon:t.icon?.url, rank:t.rank, desc:t.description};
+  return null;
+}
+// Icon for a name in the plan lists: Wowhead by ID, else the Armory's icon, else nothing.
+function planIcon(name, rank){
+  const id = spellId(name, rank); if(id) return spellIcon(id);
+  const at = armoryTalent(name); return at && at.icon ? `<img class="wi si" src="${esc(at.icon)}" alt="" loading="lazy">` : "";
+}
+// One shared floating tooltip. Targets carry data-sid (Wowhead spell id) or data-atal (Armory talent name).
+// Hover/focus shows it; tap toggles it on touch screens.
+function initSpellTips(){
+  const tip = document.createElement("div"); tip.id = "sptip"; tip.setAttribute("role","tooltip"); tip.hidden = true;
+  document.body.appendChild(tip);
+  let cur = null;
+  const place = el => {
+    const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+    let x = Math.min(Math.max(8, r.left), innerWidth - w - 8), y = r.bottom + 6;
+    if(y + h > innerHeight - 8) y = Math.max(8, r.top - h - 6);
+    tip.style.left = x + "px"; tip.style.top = y + "px";
+  };
+  const fill = el => {
+    const id = +el.dataset.sid, at = el.dataset.atal && armoryTalent(el.dataset.atal);
+    if(id && spellTipCache[id] === undefined){ tip.innerHTML = `<span class="muted">Loading…</span>`; loadSpell(id, ()=>{ if(cur === el){ fill(el); place(el); } }); return; }
+    if(id && spellTipCache[id]) tip.innerHTML = spellTipCache[id] + (el.dataset.alias ? `<div class="tipnote">Forever name: ${esc(el.dataset.alias)}</div>` : "");
+    else if(at) tip.innerHTML = `<b class="tiphead">${esc(el.dataset.atal)}</b><div>Rank ${esc(at.rank)}</div><div class="tipdesc">${esc(at.desc||"")}</div><div class="tipnote">From your Armory</div>`;
+    else tip.innerHTML = `<span class="muted">No tooltip for this one yet (Forever-only).</span>`;
+    if(el.dataset.why) tip.insertAdjacentHTML("beforeend", `<div class="tipnote">${esc(el.dataset.why)}</div>`);
+  };
+  const show = el => { cur = el; tip.hidden = false; fill(el); place(el); };
+  const hide = () => { cur = null; tip.hidden = true; };
+  const target = e => e.target.closest && e.target.closest("[data-sid],[data-atal]");
+  document.addEventListener("pointerover", e => { if(e.pointerType === "touch") return; const el = target(e); if(el && el !== cur) show(el); else if(!el && cur) hide(); });
+  document.addEventListener("focusin", e => { const el = target(e); if(el) show(el); });
+  document.addEventListener("focusout", hide);
+  document.addEventListener("click", e => { const el = target(e); if(el){ cur === el ? hide() : show(el); } else if(cur) hide(); });
+  addEventListener("scroll", () => { if(cur) hide(); }, {passive:true});
+}
+// Attributes that make a plan entry hoverable/focusable for the tooltip.
+function tipAttrs(name, rank){
+  // Armory first: it carries Forever's real talent text (Forever reworked talents, e.g. Suppression is
+  // +hit/-threat there but -resist in Classic). Wowhead's Classic tooltip is the fallback.
+  if(armoryTalent(name)) return ` data-atal="${esc(name)}" tabindex="0"`;
+  const id = spellId(name, rank);
+  return id ? ` data-sid="${id}"${SPELL_ALIAS[name] ? ` data-alias="${esc(name)}"` : ""} tabindex="0"` : "";
 }
 
 function renderItems(){
@@ -2456,7 +2690,7 @@ function renderTalents(){
     const total = real ? (+real[name]||0) : rankOf(name);
     const pips = "●".repeat(Math.min(max,total)) + "○".repeat(Math.max(0,max-total));
     const html = `<li class="${cls}"><span class="tlv">${a===b?a:a+"–"+b}</span>`+
-      `<span><span class="tname">${name}</span><span class="ttree">${tree}</span><span class="tdesc">${desc}</span></span>`+
+      `<span><span class="tname"${tipAttrs(name,1)}>${planIcon(name,1)}${name}</span><span class="ttree">${tree}</span><span class="tdesc">${desc}</span></span>`+
       `<span class="pips" title="${total}/${max}">${pips} ${total}/${max}</span></li>`;
     const group = behind ? "near" : (b < L && have===n) ? "done" : a > L+NEAR ? "far" : "near";
     return {html, group};
@@ -2501,9 +2735,11 @@ function renderTraining(){
   const rows = lvls.map(v=>{
     let miss = false;
     const sp = TRAIN_WL[v].split("|").map(s=>{ const why=trainSkip(s), st=status(s), label=s.replace(/ 1$/,"").replace(/ (\d+)$/," (rank $1)");
-      if(why) return `<span class="sp skip" title="${why}">${label}</span>`;
-      if(st==="no" && v<=Math.min(L, (state.game && state.game.level) || L)){ miss = true; missing.push(label); return `<span class="sp miss">${label}</span>`; }
-      return `<span class="sp${st==="have"?" have":""}">${label}</span>`; }).join("");
+      const nm=s.replace(/ \d+$/,""), rk=+(/ (\d+)$/.exec(s)||[0,1])[1], ic=planIcon(nm,rk), ta=tipAttrs(nm,rk);
+      // Skip reason rides in the rich tooltip (data-why); plain title only when there's no tooltip target.
+      if(why) return `<span class="sp skip"${ta ? ta+` data-why="${esc(why)}"` : ` title="${why}"`}>${ic}${label}</span>`;
+      if(st==="no" && v<=Math.min(L, (state.game && state.game.level) || L)){ miss = true; missing.push(label); return `<span class="sp miss"${ta}>${ic}${label}</span>`; }
+      return `<span class="sp${st==="have"?" have":""}"${ta}>${ic}${label}</span>`; }).join("");
     const cls = v===cur ? "now" : v===nxt ? "soon" : v<L ? "done" : "";
     const html = `<li class="${cls}${miss?" miss-row":""}"><span class="tlv">Lv ${v}</span><span>${sp}</span></li>`;
     const group = miss ? "near" : v < (cur||0) ? "done" : v > L+NEAR+1 ? "far" : "near";
@@ -2614,7 +2850,7 @@ document.addEventListener("click", e => {
   if(sec && sec.classList.contains("fold")) setFold(id, true);
 });
 
-function renderAll(){ renderBar(); renderGame(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderItems();
+function renderAll(){ renderBar(); renderGame(); renderArmory(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderItems();
   const nb=$("#notesBox"); if(document.activeElement!==nb) nb.value = state.notes||"";
   applyFolds(); }
 
@@ -2725,9 +2961,9 @@ function tick(){
 }
 tick(); setInterval(tick,1000);
 
-initItems(); loadLocal(); setChar(CHAR); addKitIcons(); initRealMap(); initCloud(); autoFetchSV();
+initItems(); loadLocal(); setChar(CHAR); addKitIcons(); initRealMap(); initCloud(); autoFetchSV(); autoFetchArmory(); initSpellTips();
 // Re-check the synced file every minute while the tab is visible, and when you come back to it.
 // Safe to repeat: applySnap ignores snapshots that aren't newer. On the Claude artifact the fetch just fails quietly.
-setInterval(()=>{ if(document.visibilityState==="visible") autoFetchSV(); }, 60000);
-document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible") autoFetchSV(); });
+setInterval(()=>{ if(document.visibilityState==="visible"){ autoFetchSV(); autoFetchArmory(); } }, 60000);
+document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible"){ autoFetchSV(); autoFetchArmory(); } });
 </script>
