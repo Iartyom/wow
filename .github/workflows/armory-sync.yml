@@ -1,0 +1,42 @@
+# Hourly Forever Armory pull -> docs/sync/armory.json (see tools/armory-fetch.mjs). No secrets needed:
+# the Armory profile is public. The Armory itself only refreshes after you log out.
+name: Armory sync
+
+on:
+  schedule:
+    - cron: "17 * * * *"   # off the hour; GitHub queues :00 jobs heavily
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: armory-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Fetch Armory profile
+        env:
+          ARMORY_REGION: eu
+          ARMORY_SLUG: dark-bober
+        run: node tools/armory-fetch.mjs
+
+      # Rebase before push: tools/sync.ps1 pushes to main from the PC, so the two can race.
+      - name: Commit if changed
+        run: |
+          git add docs/sync/armory.json
+          if git diff --cached --quiet; then echo "Nothing to commit."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git commit -m "sync: armory profile"
+          git pull --rebase --quiet origin main
+          git push

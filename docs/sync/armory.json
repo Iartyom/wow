@@ -1,0 +1,2225 @@
+{
+ "fetched": "2026-11-10T17:10:01.068Z",
+ "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/dark-bober",
+ "character": {
+  "avatar": {
+   "url": "https://render.worldofwarcraft.com/forever-eu/character/180/11422388-avatar.jpg"
+  },
+  "averageItemLevel": 10,
+  "class": {
+   "id": 9,
+   "name": "Warlock",
+   "enum": "WARLOCK",
+   "slug": "warlock"
+  },
+  "faction": {
+   "id": 1,
+   "name": "Horde",
+   "enum": "HORDE",
+   "slug": "horde"
+  },
+  "gear": {
+   "back": {
+    "id": 4701,
+    "item": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/4701?namespace=static-forever-eu"
+     },
+     "id": 4701
+    },
+    "slot": {
+     "type": "BACK",
+     "name": "Back"
+    },
+    "quantity": 1,
+    "context": 1,
+    "quality": {
+     "type": "UNCOMMON",
+     "name": "Uncommon"
+    },
+    "name": "Inscribed Cloak",
+    "media": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/4701?namespace=static-forever-eu"
+     },
+     "id": 4701,
+     "content": {
+      "_links": {
+       "self": {
+        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/4701?namespace=static-forever-eu"
+       }
+      },
+      "assets": [
+       {
+        "key": "icon",
+        "value": "https://render.worldofwarcraft.com/forever-eu/icons/56/133763.jpg"
+       }
+      ]
+     }
+    },
+    "item_class": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/4?namespace=static-forever-eu"
+     },
+     "name": "Armor",
+     "id": 4
+    },
+    "item_subclass": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/4/item-subclass/1?namespace=static-forever-eu"
+     },
+     "name": "Cloth",
+     "id": 1
+    },
+    "inventory_type": {
+     "type": "CLOAK",
+     "name": "Back"
+    },
+    "binding": {
+     "type": "ON_EQUIP",
+     "name": "Binds when equipped"
+    },
+    "armor": {
+     "value": 15
+    },
+    "stats": [
+     {
+      "type": {
+       "type": "STAMINA",
+       "name": "Stamina"
+      },
+      "value": 2,
+      "display": {
+       "display_string": "+2 Stamina",
+       "color": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+       }
+      }
+     }
+    ],
+    "sell_price": {
+     "value": 252,
+     "display_strings": {
+      "header": "Sell Price:",
+      "gold": "0",
+      "silver": "2",
+      "copper": "52"
+     }
+    },
+    "requirements": {
+     "level": {
+      "value": 11,
+      "display_string": "Requires Level 11"
+     }
+    },
+    "level": {
+     "value": 16,
+     "display_string": "Item Level 16"
+    },
+    "is_subclass_hidden": true
+   },
+   "chest": {
+    "id": 6465,
+    "item": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/6465?namespace=static-forever-eu"
+     },
+     "id": 6465
+    },
+    "slot": {
+     "type": "CHEST",
+     "name": "Chest"
+    },
+    "quantity": 1,
+    "context": 1,
+    "quality": {
+     "type": "RARE",
+     "name": "Rare"
+    },
+    "name": "Robe of the Moccasin",
+    "media": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/6465?namespace=static-forever-eu"
+     },
+     "id": 6465,
+     "content": {
+      "_links": {
+       "self": {
+        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/6465?namespace=static-forever-eu"
+       }
+      },
+      "assets": [
+       {
+        "key": "icon",
+        "value": "https://render.worldofwarcraft.com/forever-eu/icons/56/132677.jpg"
+       }
+      ]
+     }
+    },
+    "item_class": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/4?namespace=static-forever-eu"
+     },
+     "name": "Armor",
+     "id": 4
+    },
+    "item_subclass": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/4/item-subclass/1?namespace=static-forever-eu"
+     },
+     "name": "Cloth",
+     "id": 1
+    },
+    "inventory_type": {
+     "type": "ROBE",
+     "name": "Chest"
+    },
+    "binding": {
+     "type": "ON_ACQUIRE",
+     "name": "Binds when picked up"
+    },
+    "armor": {
+     "value": 40
+    },
+    "stats": [
+     {
+      "type": {
+       "type": "STRENGTH",
+       "name": "Strength"
+      },
+      "value": 3,
+      "display": {
+       "display_string": "+3 Strength",
+       "color": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+       }
+      }
+     },
+     {
+      "type": {
+       "type": "SPELL_DAMAGE_DONE",
+       "name": "Spell Damage"
+      },
+      "value": 3,
+      "display": {
+       "display_string": "+3 Spell Damage",
+       "color": {
+        "r": 0,
+        "g": 255,
+        "b": 0,
+        "a": 1
+       }
+      },
+      "is_equip_bonus": true
+     },
+     {
+      "type": {
+       "type": "SPELL_HEALING_DONE",
+       "name": "Spell Healing"
+      },
+      "value": 9,
+      "display": {
+       "display_string": "+9 Spell Healing",
+       "color": {
+        "r": 0,
+        "g": 255,
+        "b": 0,
+        "a": 1
+       }
+      },
+      "is_equip_bonus": true
+     },
+     {
+      "type": {
+       "type": "SPIRIT",
+       "name": "Spirit"
+      },
+      "value": 10,
+      "display": {
+       "display_string": "+10 Spirit",
+       "color": {
+        "r": 0,
+        "g": 255,
+        "b": 0,
+        "a": 1
+       }
+      },
+      "is_equip_bonus": true
+     }
+    ],
+    "sell_price": {
+     "value": 903,
+     "display_strings": {
+      "header": "Sell Price:",
+      "gold": "0",
+      "silver": "9",
+      "copper": "3"
+     }
+    },
+    "requirements": {
+     "level": {
+      "value": 17,
+      "display_string": "Requires Level 17"
+     }
+    },
+    "level": {
+     "value": 22,
+     "display_string": "Item Level 22"
+    },
+    "durability": {
+     "value": 69,
+     "display_string": "Durability 69 / 70"
+    }
+   },
+   "foot": {
+    "id": 14174,
+    "item": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/14174?namespace=static-forever-eu"
+     },
+     "id": 14174
+    },
+    "slot": {
+     "type": "FEET",
+     "name": "Feet"
+    },
+    "quantity": 1,
+    "context": 0,
+    "bonus_list": [
+     12719
+    ],
+    "quality": {
+     "type": "UNCOMMON",
+     "name": "Uncommon"
+    },
+    "name": "Buccaneer's Boots of the Whale",
+    "media": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/14174?namespace=static-forever-eu"
+     },
+     "id": 14174,
+     "content": {
+      "_links": {
+       "self": {
+        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/14174?namespace=static-forever-eu"
+       }
+      },
+      "assets": [
+       {
+        "key": "icon",
+        "value": "https://render.worldofwarcraft.com/forever-eu/icons/56/132539.jpg"
+       }
+      ]
+     }
+    },
+    "item_class": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/4?namespace=static-forever-eu"
+     },
+     "name": "Armor",
+     "id": 4
+    },
+    "item_subclass": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/4/item-subclass/1?namespace=static-forever-eu"
+     },
+     "name": "Cloth",
+     "id": 1
+    },
+    "inventory_type": {
+     "type": "FEET",
+     "name": "Feet"
+    },
+    "binding": {
+     "type": "ON_EQUIP",
+     "name": "Binds when equipped"
+    },
+    "armor": {
+     "value": 22
+    },
+    "stats": [
+     {
+      "type": {
+       "type": "STAMINA",
+       "name": "Stamina"
+      },
+      "value": 3,
+      "display": {
+       "display_string": "+3 Stamina",
+       "color": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+       }
+      }
+     },
+     {
+      "type": {
+       "type": "SPIRIT",
+       "name": "Spirit"
+      },
+      "value": 3,
+      "display": {
+       "display_string": "+3 Spirit",
+       "color": {
+        "r": 0,
+        "g": 255,
+        "b": 0,
+        "a": 1
+       }
+      },
+      "is_equip_bonus": true
+     }
+    ],
+    "sell_price": {
+     "value": 368,
+     "display_strings": {
+      "header": "Sell Price:",
+      "gold": "0",
+      "silver": "3",
+      "copper": "68"
+     }
+    },
+    "requirements": {
+     "level": {
+      "value": 14,
+      "display_string": "Requires Level 14"
+     }
+    },
+    "level": {
+     "value": 19,
+     "display_string": "Item Level 19"
+    },
+    "durability": {
+     "value": 22,
+     "display_string": "Durability 22 / 30"
+    }
+   },
+   "hand": {
+    "id": 6541,
+    "item": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/6541?namespace=static-forever-eu"
+     },
+     "id": 6541
+    },
+    "slot": {
+     "type": "HANDS",
+     "name": "Hands"
+    },
+    "quantity": 1,
+    "context": 1,
+    "bonus_list": [
+     12731
+    ],
+    "quality": {
+     "type": "UNCOMMON",
+     "name": "Uncommon"
+    },
+    "name": "Willow Gloves of Stamina",
+    "media": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/6541?namespace=static-forever-eu"
+     },
+     "id": 6541,
+     "content": {
+      "_links": {
+       "self": {
+        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/6541?namespace=static-forever-eu"
+       }
+      },
+      "assets": [
+       {
+        "key": "icon",
+        "value": "https://render.worldofwarcraft.com/forever-eu/icons/56/132957.jpg"
+       }
+      ]
+     }
+    },
+    "item_class": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/4?namespace=static-forever-eu"
+     },
+     "name": "Armor",
+     "id": 4
+    },
+    "item_subclass": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/4/item-subclass/1?namespace=static-forever-eu"
+     },
+     "name": "Cloth",
+     "id": 1
+    },
+    "inventory_type": {
+     "type": "HAND",
+     "name": "Hands"
+    },
+    "binding": {
+     "type": "ON_EQUIP",
+     "name": "Binds when equipped"
+    },
+    "armor": {
+     "value": 18
+    },
+    "stats": [
+     {
+      "type": {
+       "type": "STAMINA",
+       "name": "Stamina"
+      },
+      "value": 3,
+      "display": {
+       "display_string": "+3 Stamina",
+       "color": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+       }
+      }
+     }
+    ],
+    "sell_price": {
+     "value": 163,
+     "display_strings": {
+      "header": "Sell Price:",
+      "gold": "0",
+      "silver": "1",
+      "copper": "63"
+     }
+    },
+    "requirements": {
+     "level": {
+      "value": 11,
+      "display_string": "Requires Level 11"
+     }
+    },
+    "level": {
+     "value": 16,
+     "display_string": "Item Level 16"
+    },
+    "durability": {
+     "value": 13,
+     "display_string": "Durability 13 / 18"
+    }
+   },
+   "leftFinger": {
+    "id": 279867,
+    "item": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/279867?namespace=static-forever-eu"
+     },
+     "id": 279867
+    },
+    "slot": {
+     "type": "FINGER_1",
+     "name": "Ring 1"
+    },
+    "quantity": 1,
+    "context": 11,
+    "quality": {
+     "type": "UNCOMMON",
+     "name": "Uncommon"
+    },
+    "name": "Slain Baron's Signet",
+    "media": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/279867?namespace=static-forever-eu"
+     },
+     "id": 279867,
+     "content": {
+      "_links": {
+       "self": {
+        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/279867?namespace=static-forever-eu"
+       }
+      },
+      "assets": [
+       {
+        "key": "icon",
+        "value": "https://render.worldofwarcraft.com/forever-eu/icons/56/133361.jpg"
+       }
+      ]
+     }
+    },
+    "item_class": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/4?namespace=static-forever-eu"
+     },
+     "name": "Armor",
+     "id": 4
+    },
+    "item_subclass": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/4/item-subclass/0?namespace=static-forever-eu"
+     },
+     "name": "Miscellaneous",
+     "id": 0
+    },
+    "inventory_type": {
+     "type": "FINGER",
+     "name": "Finger"
+    },
+    "binding": {
+     "type": "ON_ACQUIRE",
+     "name": "Binds when picked up"
+    },
+    "stats": [
+     {
+      "type": {
+       "type": "STAMINA",
+       "name": "Stamina"
+      },
+      "value": 3,
+      "display": {
+       "display_string": "+3 Stamina",
+       "color": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+       }
+      }
+     },
+     {
+      "type": {
+       "type": "DEFENSE_SKILL_RATING",
+       "name": "Defense"
+      },
+      "value": 1,
+      "display": {
+       "display_string": "+1 Defense",
+       "color": {
+        "r": 0,
+        "g": 255,
+        "b": 0,
+        "a": 1
+       }
+      },
+      "is_equip_bonus": true
+     }
+    ],
+    "sell_price": {
+     "value": 815,
+     "display_strings": {
+      "header": "Sell Price:",
+      "gold": "0",
+      "silver": "8",
+      "copper": "15"
+     }
+    },
+    "level": {
+     "value": 23,
+     "display_string": "Item Level 23"
+    },
+    "is_subclass_hidden": true
+   },
+   "leg": {
+    "id": 281283,
+    "item": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/281283?namespace=static-forever-eu"
+     },
+     "id": 281283
+    },
+    "slot": {
+     "type": "LEGS",
+     "name": "Legs"
+    },
+    "quantity": 1,
+    "context": 11,
+    "quality": {
+     "type": "UNCOMMON",
+     "name": "Uncommon"
+    },
+    "name": "Patchwing Pants",
+    "media": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/281283?namespace=static-forever-eu"
+     },
+     "id": 281283,
+     "content": {
+      "_links": {
+       "self": {
+        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/281283?namespace=static-forever-eu"
+       }
+      },
+      "assets": [
+       {
+        "key": "icon",
+        "value": "https://render.worldofwarcraft.com/forever-eu/icons/56/134582.jpg"
+       }
+      ]
+     }
+    },
+    "item_class": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/4?namespace=static-forever-eu"
+     },
+     "name": "Armor",
+     "id": 4
+    },
+    "item_subclass": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/4/item-subclass/1?namespace=static-forever-eu"
+     },
+     "name": "Cloth",
+     "id": 1
+    },
+    "inventory_type": {
+     "type": "LEGS",
+     "name": "Legs"
+    },
+    "binding": {
+     "type": "ON_ACQUIRE",
+     "name": "Binds when picked up"
+    },
+    "armor": {
+     "value": 18
+    },
+    "stats": [
+     {
+      "type": {
+       "type": "INTELLECT",
+       "name": "Intellect"
+      },
+      "value": 2,
+      "display": {
+       "display_string": "+2 Intellect",
+       "color": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+       }
+      }
+     }
+    ],
+    "sell_price": {
+     "value": 123,
+     "display_strings": {
+      "header": "Sell Price:",
+      "gold": "0",
+      "silver": "1",
+      "copper": "23"
+     }
+    },
+    "level": {
+     "value": 11,
+     "display_string": "Item Level 11"
+    },
+    "durability": {
+     "value": 27,
+     "display_string": "Durability 27 / 35"
+    }
+   },
+   "neck": {
+    "id": 281265,
+    "item": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/281265?namespace=static-forever-eu"
+     },
+     "id": 281265
+    },
+    "slot": {
+     "type": "NECK",
+     "name": "Neck"
+    },
+    "quantity": 1,
+    "context": 11,
+    "quality": {
+     "type": "UNCOMMON",
+     "name": "Uncommon"
+    },
+    "name": "Roadwatcher's Confidence",
+    "media": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/281265?namespace=static-forever-eu"
+     },
+     "id": 281265,
+     "content": {
+      "_links": {
+       "self": {
+        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/281265?namespace=static-forever-eu"
+       }
+      },
+      "assets": [
+       {
+        "key": "icon",
+        "value": "https://render.worldofwarcraft.com/forever-eu/icons/56/133288.jpg"
+       }
+      ]
+     }
+    },
+    "item_class": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/4?namespace=static-forever-eu"
+     },
+     "name": "Armor",
+     "id": 4
+    },
+    "item_subclass": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/4/item-subclass/0?namespace=static-forever-eu"
+     },
+     "name": "Miscellaneous",
+     "id": 0
+    },
+    "inventory_type": {
+     "type": "NECK",
+     "name": "Neck"
+    },
+    "binding": {
+     "type": "ON_ACQUIRE",
+     "name": "Binds when picked up"
+    },
+    "stats": [
+     {
+      "type": {
+       "type": "SPIRIT",
+       "name": "Spirit"
+      },
+      "value": 3,
+      "display": {
+       "display_string": "+3 Spirit",
+       "color": {
+        "r": 0,
+        "g": 255,
+        "b": 0,
+        "a": 1
+       }
+      },
+      "is_equip_bonus": true
+     }
+    ],
+    "sell_price": {
+     "value": 565,
+     "display_strings": {
+      "header": "Sell Price:",
+      "gold": "0",
+      "silver": "5",
+      "copper": "65"
+     }
+    },
+    "level": {
+     "value": 20,
+     "display_string": "Item Level 20"
+    },
+    "is_subclass_hidden": true
+   },
+   "ranged": {
+    "id": 5252,
+    "item": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/5252?namespace=static-forever-eu"
+     },
+     "id": 5252
+    },
+    "slot": {
+     "type": "RANGED",
+     "name": "Ranged"
+    },
+    "quantity": 1,
+    "context": 11,
+    "quality": {
+     "type": "UNCOMMON",
+     "name": "Uncommon"
+    },
+    "name": "Wand of Decay",
+    "media": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/5252?namespace=static-forever-eu"
+     },
+     "id": 5252,
+     "content": {
+      "_links": {
+       "self": {
+        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/5252?namespace=static-forever-eu"
+       }
+      },
+      "assets": [
+       {
+        "key": "icon",
+        "value": "https://render.worldofwarcraft.com/forever-eu/icons/56/135466.jpg"
+       }
+      ]
+     }
+    },
+    "item_class": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/2?namespace=static-forever-eu"
+     },
+     "name": "Weapon",
+     "id": 2
+    },
+    "item_subclass": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/2/item-subclass/19?namespace=static-forever-eu"
+     },
+     "name": "Wand",
+     "id": 19
+    },
+    "inventory_type": {
+     "type": "RANGEDRIGHT",
+     "name": "Ranged"
+    },
+    "binding": {
+     "type": "ON_ACQUIRE",
+     "name": "Binds when picked up"
+    },
+    "weapon": {
+     "damage": {
+      "min_value": 16,
+      "max_value": 31,
+      "display_string": "16 - 31 Shadow Damage",
+      "damage_class": {
+       "type": "SHADOW",
+       "name": "Shadow"
+      }
+     },
+     "attack_speed": {
+      "value": 1500,
+      "display_string": "Speed 1.50"
+     },
+     "dps": {
+      "value": 15.666665,
+      "display_string": "(15.7 damage per second)"
+     }
+    },
+    "stats": [
+     {
+      "type": {
+       "type": "INTELLECT",
+       "name": "Intellect"
+      },
+      "value": 2,
+      "display": {
+       "display_string": "+2 Intellect",
+       "color": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+       }
+      }
+     }
+    ],
+    "sell_price": {
+     "value": 1175,
+     "display_strings": {
+      "header": "Sell Price:",
+      "gold": "0",
+      "silver": "11",
+      "copper": "75"
+     }
+    },
+    "level": {
+     "value": 21,
+     "display_string": "Item Level 21"
+    },
+    "durability": {
+     "value": 40,
+     "display_string": "Durability 40 / 40"
+    }
+   },
+   "waist": {
+    "id": 3374,
+    "item": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/3374?namespace=static-forever-eu"
+     },
+     "id": 3374
+    },
+    "slot": {
+     "type": "WAIST",
+     "name": "Waist"
+    },
+    "quantity": 1,
+    "quality": {
+     "type": "POOR",
+     "name": "Poor"
+    },
+    "name": "Calico Belt",
+    "media": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/3374?namespace=static-forever-eu"
+     },
+     "id": 3374,
+     "content": {
+      "_links": {
+       "self": {
+        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/3374?namespace=static-forever-eu"
+       }
+      },
+      "assets": [
+       {
+        "key": "icon",
+        "value": "https://render.worldofwarcraft.com/forever-eu/icons/56/132495.jpg"
+       }
+      ]
+     }
+    },
+    "item_class": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/4?namespace=static-forever-eu"
+     },
+     "name": "Armor",
+     "id": 4
+    },
+    "item_subclass": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/4/item-subclass/1?namespace=static-forever-eu"
+     },
+     "name": "Cloth",
+     "id": 1
+    },
+    "inventory_type": {
+     "type": "WAIST",
+     "name": "Waist"
+    },
+    "armor": {
+     "value": 13
+    },
+    "sell_price": {
+     "value": 45,
+     "display_strings": {
+      "header": "Sell Price:",
+      "gold": "0",
+      "silver": "0",
+      "copper": "45"
+     }
+    },
+    "requirements": {
+     "level": {
+      "value": 9,
+      "display_string": "Requires Level 9"
+     }
+    },
+    "level": {
+     "value": 14,
+     "display_string": "Item Level 14"
+    },
+    "durability": {
+     "value": 12,
+     "display_string": "Durability 12 / 18"
+    }
+   },
+   "weapon": {
+    "id": 3184,
+    "item": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/3184?namespace=static-forever-eu"
+     },
+     "id": 3184
+    },
+    "slot": {
+     "type": "MAIN_HAND",
+     "name": "Main Hand"
+    },
+    "quantity": 1,
+    "context": 1,
+    "bonus_list": [
+     12917
+    ],
+    "quality": {
+     "type": "UNCOMMON",
+     "name": "Uncommon"
+    },
+    "name": "Hook Dagger of Magic",
+    "media": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/3184?namespace=static-forever-eu"
+     },
+     "id": 3184,
+     "content": {
+      "_links": {
+       "self": {
+        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/3184?namespace=static-forever-eu"
+       }
+      },
+      "assets": [
+       {
+        "key": "icon",
+        "value": "https://render.worldofwarcraft.com/forever-eu/icons/56/135637.jpg"
+       }
+      ]
+     }
+    },
+    "item_class": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/2?namespace=static-forever-eu"
+     },
+     "name": "Weapon",
+     "id": 2
+    },
+    "item_subclass": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/2/item-subclass/15?namespace=static-forever-eu"
+     },
+     "name": "Dagger",
+     "id": 15
+    },
+    "inventory_type": {
+     "type": "WEAPON",
+     "name": "One-Hand"
+    },
+    "binding": {
+     "type": "ON_EQUIP",
+     "name": "Binds when equipped"
+    },
+    "weapon": {
+     "damage": {
+      "min_value": 7,
+      "max_value": 13,
+      "display_string": "7 - 13 Damage",
+      "damage_class": {
+       "type": "PHYSICAL",
+       "name": "Physical"
+      }
+     },
+     "attack_speed": {
+      "value": 1500,
+      "display_string": "Speed 1.50"
+     },
+     "dps": {
+      "value": 6.666666,
+      "display_string": "(6.7 damage per second)"
+     }
+    },
+    "stats": [
+     {
+      "type": {
+       "type": "INTELLECT",
+       "name": "Intellect"
+      },
+      "value": 3,
+      "display": {
+       "display_string": "+3 Intellect",
+       "color": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+       }
+      }
+     },
+     {
+      "type": {
+       "type": "SPELL_POWER",
+       "name": "Spell Power"
+      },
+      "value": 14,
+      "display": {
+       "display_string": "+14 Spell Power",
+       "color": {
+        "r": 0,
+        "g": 255,
+        "b": 0,
+        "a": 1
+       }
+      },
+      "is_equip_bonus": true
+     }
+    ],
+    "sell_price": {
+     "value": 1394,
+     "display_strings": {
+      "header": "Sell Price:",
+      "gold": "0",
+      "silver": "13",
+      "copper": "94"
+     }
+    },
+    "requirements": {
+     "level": {
+      "value": 15,
+      "display_string": "Requires Level 15"
+     }
+    },
+    "level": {
+     "value": 20,
+     "display_string": "Item Level 20"
+    },
+    "durability": {
+     "value": 40,
+     "display_string": "Durability 40 / 40"
+    }
+   },
+   "wrist": {
+    "id": 251486,
+    "item": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/251486?namespace=static-forever-eu"
+     },
+     "id": 251486
+    },
+    "slot": {
+     "type": "WRIST",
+     "name": "Wrist"
+    },
+    "quantity": 1,
+    "context": 11,
+    "quality": {
+     "type": "UNCOMMON",
+     "name": "Uncommon"
+    },
+    "name": "Tabitha's Cuffs",
+    "media": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/251486?namespace=static-forever-eu"
+     },
+     "id": 251486,
+     "content": {
+      "_links": {
+       "self": {
+        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/251486?namespace=static-forever-eu"
+       }
+      },
+      "assets": [
+       {
+        "key": "icon",
+        "value": "https://render.worldofwarcraft.com/forever-eu/icons/56/132609.jpg"
+       }
+      ]
+     }
+    },
+    "item_class": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/4?namespace=static-forever-eu"
+     },
+     "name": "Armor",
+     "id": 4
+    },
+    "item_subclass": {
+     "key": {
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item-class/4/item-subclass/1?namespace=static-forever-eu"
+     },
+     "name": "Cloth",
+     "id": 1
+    },
+    "inventory_type": {
+     "type": "WRIST",
+     "name": "Wrist"
+    },
+    "binding": {
+     "type": "ON_ACQUIRE",
+     "name": "Binds when picked up"
+    },
+    "armor": {
+     "value": 17
+    },
+    "stats": [
+     {
+      "type": {
+       "type": "STAMINA",
+       "name": "Stamina"
+      },
+      "value": 4,
+      "display": {
+       "display_string": "+4 Stamina",
+       "color": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+       }
+      }
+     },
+     {
+      "type": {
+       "type": "SPELL_POWER",
+       "name": "Spell Power"
+      },
+      "value": 3,
+      "display": {
+       "display_string": "+3 Spell Power",
+       "color": {
+        "r": 0,
+        "g": 255,
+        "b": 0,
+        "a": 1
+       }
+      },
+      "is_equip_bonus": true
+     }
+    ],
+    "sell_price": {
+     "value": 458,
+     "display_strings": {
+      "header": "Sell Price:",
+      "gold": "0",
+      "silver": "4",
+      "copper": "58"
+     }
+    },
+    "level": {
+     "value": 24,
+     "display_string": "Item Level 24"
+    },
+    "durability": {
+     "value": 16,
+     "display_string": "Durability 16 / 20"
+    }
+   }
+  },
+  "gender": {
+   "id": 0,
+   "name": "Male",
+   "enum": "MALE",
+   "slug": "male"
+  },
+  "isRemix": false,
+  "lastUpdatedTimestamp": {
+   "epoch": 1794260251000,
+   "iso8601": "2026-11-09T21:37:31Z"
+  },
+  "level": 19,
+  "media": {
+   "main-sd-raw": {
+    "url": "https://render.worldofwarcraft.com/forever-eu/character/180/11422388-main-sd-raw.png"
+   },
+   "avatar-sd": {
+    "url": "https://render.worldofwarcraft.com/forever-eu/character/180/11422388-avatar-sd.jpg"
+   },
+   "main-raw": {
+    "url": "https://render.worldofwarcraft.com/forever-eu/character/180/11422388-main-raw.png"
+   },
+   "avatar": {
+    "url": "https://render.worldofwarcraft.com/forever-eu/character/180/11422388-avatar.jpg"
+   }
+  },
+  "name": "Dark",
+  "professions": {
+   "primaries": [
+    {
+     "description": "Higher alchemy skill allows you to learn higher level alchemy recipes.  Alchemy recipes can be found on trainers around the world as well as from quests and monsters.",
+     "icon": {
+      "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/136240.jpg"
+     },
+     "id": 171,
+     "name": "Alchemy",
+     "tiers": [
+      {
+       "id": 2937,
+       "maxSkillPoints": 75,
+       "name": "Alchemy",
+       "skillPoints": 21
+      }
+     ]
+    },
+    {
+     "description": "Higher herbalism skill allows you to harvest more difficult herbs around the world.  If you cannot harvest a specific herb, then increase your skill by harvesting easier to gather herbs in lower level areas.",
+     "icon": {
+      "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/136246.jpg"
+     },
+     "id": 182,
+     "name": "Herbalism",
+     "tiers": [
+      {
+       "id": 2944,
+       "maxSkillPoints": 75,
+       "name": "Herbalism",
+       "skillPoints": 41
+      }
+     ]
+    }
+   ],
+   "secondaries": [
+    {
+     "description": "Higher cooking skill allows you to learn higher level cooking recipes.  Recipes can be found on trainers around the world as well as from quests and as drops from monsters.",
+     "icon": {
+      "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/133971.jpg"
+     },
+     "id": 185,
+     "name": "Cooking",
+     "tiers": [
+      {
+       "id": 2939,
+       "maxSkillPoints": 75,
+       "name": "Cooking",
+       "skillPoints": 1
+      }
+     ]
+    },
+    {
+     "description": "Higher first aid skill allows you to learn higher level first aid abilities.  First aid abilities can be found on trainers around the world as well as from quests and as drops from monsters.",
+     "icon": {
+      "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/135966.jpg"
+     },
+     "id": 129,
+     "name": "First Aid",
+     "tiers": [
+      {
+       "id": 2942,
+       "maxSkillPoints": 75,
+       "name": "First Aid",
+       "skillPoints": 53
+      }
+     ]
+    }
+   ]
+  },
+  "pvp": {
+   "honorableKills": {
+    "tier": 0,
+    "value": 75
+   },
+   "rank": {
+    "value": 0
+   },
+   "region": "eu"
+  },
+  "race": {
+   "id": 5,
+   "name": "Undead",
+   "enum": "UNDEAD",
+   "slug": "undead"
+  },
+  "region": "eu",
+  "ruleset": {
+   "name": "PvP",
+   "rulesetId": 1,
+   "slug": "pvp"
+  },
+  "slug": "dark-bober",
+  "specs": [
+   {
+    "active": true,
+    "icon": {
+     "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/136145.jpg"
+    },
+    "id": "affliction",
+    "name": "Affliction",
+    "spentPoints": 9,
+    "talents": [
+     {
+      "cast": "Passive",
+      "description": "Improves your chance to hit by 4% and reduces all threat you generate by 16%.",
+      "icon": {
+       "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/136230.jpg"
+      },
+      "id": 135456,
+      "name": "Suppression",
+      "rank": 4
+     },
+     {
+      "cast": "Passive",
+      "description": "Reduces the casting time of your Corruption spell by 2 sec and increases the damage it deals by 10%.",
+      "icon": {
+       "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/136118.jpg"
+      },
+      "id": 135455,
+      "name": "Improved Corruption",
+      "rank": 5
+     }
+    ]
+   }
+  ],
+  "stats": {
+   "basic": {
+    "primary": [
+     {
+      "enum": "HEALTH",
+      "slug": "health",
+      "value": {
+       "type": "WHOLE",
+       "value": 486
+      }
+     },
+     {
+      "enum": "MANA",
+      "slug": "mana",
+      "value": {
+       "type": "WHOLE",
+       "value": 782
+      }
+     },
+     {
+      "enum": "ITEMLEVEL",
+      "slug": "item-level",
+      "value": {
+       "type": "WHOLE",
+       "value": 12
+      }
+     },
+     {
+      "details": {
+       "base": {
+        "type": "PERCENTAGE",
+        "value": 0
+       },
+       "bonus": {
+        "type": "PERCENTAGE",
+        "value": 0
+       },
+       "effective": {
+        "type": "PERCENTAGE",
+        "value": 0
+       },
+       "rating": {
+        "type": "DECIMAL",
+        "value": 0
+       },
+       "type": "RATED"
+      },
+      "enum": "MOVEMENTSPEED",
+      "slug": "movement-speed",
+      "value": {
+       "type": "DECIMAL",
+       "value": 0
+      }
+     }
+    ],
+    "secondary": [
+     {
+      "enum": "DAMAGE",
+      "slug": "damage",
+      "value": {
+       "max": {
+        "type": "WHOLE",
+        "value": 14.928572
+       },
+       "min": {
+        "type": "WHOLE",
+        "value": 8.928572
+       },
+       "type": "RANGE"
+      }
+     },
+     {
+      "enum": "ATTACKPOWER",
+      "slug": "attack-power",
+      "value": {
+       "type": "WHOLE",
+       "value": 18
+      }
+     },
+     {
+      "enum": "ATTACKSPEED",
+      "slug": "attack-speed",
+      "value": {
+       "type": "DECIMAL",
+       "value": 2
+      }
+     }
+    ]
+   },
+   "groups": [
+    {
+     "name": "General",
+     "stats": [
+      {
+       "enum": "HEALTH",
+       "slug": "health",
+       "value": {
+        "type": "WHOLE",
+        "value": 486
+       }
+      },
+      {
+       "enum": "MANA",
+       "slug": "mana",
+       "value": {
+        "type": "WHOLE",
+        "value": 782
+       }
+      },
+      {
+       "enum": "ITEMLEVEL",
+       "slug": "item-level",
+       "value": {
+        "type": "WHOLE",
+        "value": 12
+       }
+      },
+      {
+       "details": {
+        "base": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "bonus": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "effective": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "rating": {
+         "type": "DECIMAL",
+         "value": 0
+        },
+        "type": "RATED"
+       },
+       "enum": "MOVEMENTSPEED",
+       "slug": "movement-speed",
+       "value": {
+        "type": "DECIMAL",
+        "value": 0
+       }
+      }
+     ]
+    },
+    {
+     "name": "Attributes",
+     "stats": [
+      {
+       "details": {
+        "base": {
+         "type": "WHOLE",
+         "value": 25
+        },
+        "bonus": {
+         "type": "WHOLE",
+         "value": 3
+        },
+        "effective": {
+         "type": "WHOLE",
+         "value": 28
+        },
+        "rating": {
+         "type": "WHOLE",
+         "value": 28
+        },
+        "type": "ENHANCED"
+       },
+       "enum": "STRENGTH",
+       "slug": "strength",
+       "value": {
+        "type": "WHOLE",
+        "value": 28
+       }
+      },
+      {
+       "details": {
+        "base": {
+         "type": "WHOLE",
+         "value": 25
+        },
+        "bonus": {
+         "type": "WHOLE",
+         "value": 0
+        },
+        "effective": {
+         "type": "WHOLE",
+         "value": 25
+        },
+        "rating": {
+         "type": "WHOLE",
+         "value": 25
+        },
+        "type": "ENHANCED"
+       },
+       "enum": "AGILITY",
+       "slug": "agility",
+       "value": {
+        "type": "WHOLE",
+        "value": 25
+       }
+      },
+      {
+       "details": {
+        "base": {
+         "type": "WHOLE",
+         "value": 40
+        },
+        "bonus": {
+         "type": "WHOLE",
+         "value": 7
+        },
+        "effective": {
+         "type": "WHOLE",
+         "value": 47
+        },
+        "rating": {
+         "type": "WHOLE",
+         "value": 47
+        },
+        "type": "ENHANCED"
+       },
+       "enum": "INTELLECT",
+       "slug": "intellect",
+       "value": {
+        "type": "WHOLE",
+        "value": 47
+       }
+      },
+      {
+       "details": {
+        "base": {
+         "type": "WHOLE",
+         "value": 32
+        },
+        "bonus": {
+         "type": "WHOLE",
+         "value": 15
+        },
+        "effective": {
+         "type": "WHOLE",
+         "value": 47
+        },
+        "rating": {
+         "type": "WHOLE",
+         "value": 47
+        },
+        "type": "ENHANCED"
+       },
+       "enum": "STAMINA",
+       "slug": "stamina",
+       "value": {
+        "type": "WHOLE",
+        "value": 47
+       }
+      }
+     ]
+    },
+    {
+     "name": "Enhancements",
+     "stats": [
+      {
+       "details": {
+        "base": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "bonus": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "effective": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "rating": {
+         "type": "DECIMAL",
+         "value": 0
+        },
+        "type": "RATED"
+       },
+       "enum": "CRITICALSTRIKE",
+       "slug": "critical-strike",
+       "value": {
+        "type": "PERCENTAGE",
+        "value": 1.9575
+       }
+      },
+      {
+       "details": {
+        "base": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "bonus": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "effective": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "rating": {
+         "type": "DECIMAL",
+         "value": 0
+        },
+        "type": "RATED"
+       },
+       "enum": "HASTE",
+       "slug": "haste",
+       "value": {
+        "type": "PERCENTAGE",
+        "value": 0
+       }
+      },
+      {
+       "details": {
+        "base": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "bonus": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "effective": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "rating": {
+         "type": "DECIMAL",
+         "value": 0
+        },
+        "type": "RATED"
+       },
+       "enum": "MASTERY",
+       "slug": "mastery",
+       "value": {
+        "type": "PERCENTAGE",
+        "value": 0
+       }
+      },
+      {
+       "enum": "BONUSARMOR",
+       "slug": "bonus-armor",
+       "value": {
+        "type": "WHOLE",
+        "value": 0
+       }
+      },
+      {
+       "details": {
+        "base": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "bonus": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "effective": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "rating": {
+         "type": "DECIMAL",
+         "value": 0
+        },
+        "type": "RATED"
+       },
+       "enum": "LEECH",
+       "slug": "leech",
+       "value": {
+        "type": "DECIMAL"
+       }
+      },
+      {
+       "enum": "VERSATILITY",
+       "slug": "versatility",
+       "value": {
+        "type": "WHOLE",
+        "value": 0
+       }
+      },
+      {
+       "details": {
+        "base": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "bonus": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "effective": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "rating": {
+         "type": "DECIMAL",
+         "value": 0
+        },
+        "type": "RATED"
+       },
+       "enum": "AVOIDANCE",
+       "slug": "avoidance",
+       "value": {
+        "type": "DECIMAL",
+        "value": 0
+       }
+      }
+     ]
+    },
+    {
+     "name": "Attack",
+     "stats": [
+      {
+       "enum": "DAMAGE",
+       "slug": "damage",
+       "value": {
+        "max": {
+         "type": "WHOLE",
+         "value": 14.928572
+        },
+        "min": {
+         "type": "WHOLE",
+         "value": 8.928572
+        },
+        "type": "RANGE"
+       }
+      },
+      {
+       "enum": "ATTACKPOWER",
+       "slug": "attack-power",
+       "value": {
+        "type": "WHOLE",
+        "value": 18
+       }
+      },
+      {
+       "enum": "ATTACKSPEED",
+       "slug": "attack-speed",
+       "value": {
+        "type": "DECIMAL",
+        "value": 2
+       }
+      },
+      {
+       "enum": "ATTACKDPS",
+       "slug": "attack-dps",
+       "value": {
+        "type": "DECIMAL",
+        "value": 7.952381
+       }
+      }
+     ]
+    },
+    {
+     "name": "Spell",
+     "stats": [
+      {
+       "enum": "SPELLPOWER",
+       "slug": "spell-power",
+       "value": {
+        "type": "WHOLE",
+        "value": 20
+       }
+      },
+      {
+       "enum": "MANAREGEN",
+       "slug": "mana-regen",
+       "value": {
+        "type": "DECIMAL",
+        "value": 71
+       }
+      }
+     ]
+    },
+    {
+     "name": "Defense",
+     "stats": [
+      {
+       "details": {
+        "base": {
+         "type": "WHOLE",
+         "value": 0
+        },
+        "bonus": {
+         "type": "WHOLE",
+         "value": 193
+        },
+        "effective": {
+         "type": "WHOLE",
+         "value": 193
+        },
+        "rating": {
+         "type": "WHOLE",
+         "value": 193
+        },
+        "type": "ENHANCED"
+       },
+       "enum": "ARMOR",
+       "slug": "armor",
+       "value": {
+        "type": "WHOLE",
+        "value": 193
+       }
+      },
+      {
+       "details": {
+        "base": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "bonus": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "effective": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "rating": {
+         "type": "DECIMAL",
+         "value": 0
+        },
+        "type": "RATED"
+       },
+       "enum": "DODGE",
+       "slug": "dodge",
+       "value": {
+        "type": "PERCENTAGE",
+        "value": 4.2774997
+       }
+      },
+      {
+       "details": {
+        "base": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "bonus": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "effective": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "rating": {
+         "type": "DECIMAL",
+         "value": 0
+        },
+        "type": "RATED"
+       },
+       "enum": "PARRY",
+       "slug": "parry",
+       "value": {
+        "type": "PERCENTAGE",
+        "value": 0
+       }
+      },
+      {
+       "details": {
+        "base": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "bonus": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "effective": {
+         "type": "PERCENTAGE",
+         "value": 0
+        },
+        "rating": {
+         "type": "DECIMAL",
+         "value": 0
+        },
+        "type": "RATED"
+       },
+       "enum": "BLOCK",
+       "slug": "block",
+       "value": {
+        "type": "PERCENTAGE",
+        "value": 0
+       }
+      }
+     ]
+    }
+   ],
+   "overview": [
+    {
+     "enum": "HEALTH",
+     "slug": "health",
+     "value": {
+      "type": "WHOLE",
+      "value": 486
+     }
+    },
+    {
+     "enum": "MANA",
+     "slug": "mana",
+     "value": {
+      "type": "WHOLE",
+      "value": 782
+     }
+    },
+    {
+     "details": {
+      "base": {
+       "type": "WHOLE",
+       "value": 25
+      },
+      "bonus": {
+       "type": "WHOLE",
+       "value": 3
+      },
+      "effective": {
+       "type": "WHOLE",
+       "value": 28
+      },
+      "rating": {
+       "type": "WHOLE",
+       "value": 28
+      },
+      "type": "ENHANCED"
+     },
+     "enum": "STRENGTH",
+     "slug": "strength",
+     "value": {
+      "type": "WHOLE",
+      "value": 28
+     }
+    },
+    {
+     "details": {
+      "base": {
+       "type": "WHOLE",
+       "value": 40
+      },
+      "bonus": {
+       "type": "WHOLE",
+       "value": 7
+      },
+      "effective": {
+       "type": "WHOLE",
+       "value": 47
+      },
+      "rating": {
+       "type": "WHOLE",
+       "value": 47
+      },
+      "type": "ENHANCED"
+     },
+     "enum": "INTELLECT",
+     "slug": "intellect",
+     "value": {
+      "type": "WHOLE",
+      "value": 47
+     }
+    },
+    {
+     "details": {
+      "base": {
+       "type": "WHOLE",
+       "value": 25
+      },
+      "bonus": {
+       "type": "WHOLE",
+       "value": 0
+      },
+      "effective": {
+       "type": "WHOLE",
+       "value": 25
+      },
+      "rating": {
+       "type": "WHOLE",
+       "value": 25
+      },
+      "type": "ENHANCED"
+     },
+     "enum": "AGILITY",
+     "slug": "agility",
+     "value": {
+      "type": "WHOLE",
+      "value": 25
+     }
+    },
+    {
+     "details": {
+      "base": {
+       "type": "WHOLE",
+       "value": 32
+      },
+      "bonus": {
+       "type": "WHOLE",
+       "value": 15
+      },
+      "effective": {
+       "type": "WHOLE",
+       "value": 47
+      },
+      "rating": {
+       "type": "WHOLE",
+       "value": 47
+      },
+      "type": "ENHANCED"
+     },
+     "enum": "STAMINA",
+     "slug": "stamina",
+     "value": {
+      "type": "WHOLE",
+      "value": 47
+     }
+    },
+    {
+     "details": {
+      "base": {
+       "type": "PERCENTAGE",
+       "value": 0
+      },
+      "bonus": {
+       "type": "PERCENTAGE",
+       "value": 0
+      },
+      "effective": {
+       "type": "PERCENTAGE",
+       "value": 0
+      },
+      "rating": {
+       "type": "DECIMAL",
+       "value": 0
+      },
+      "type": "RATED"
+     },
+     "enum": "CRITICALSTRIKE",
+     "slug": "critical-strike",
+     "value": {
+      "type": "PERCENTAGE",
+      "value": 1.9575
+     }
+    },
+    {
+     "details": {
+      "base": {
+       "type": "WHOLE",
+       "value": 48
+      },
+      "bonus": {
+       "type": "WHOLE",
+       "value": 16
+      },
+      "effective": {
+       "type": "WHOLE",
+       "value": 64
+      },
+      "rating": {
+       "type": "WHOLE",
+       "value": 64
+      },
+      "type": "ENHANCED"
+     },
+     "enum": "SPIRIT",
+     "slug": "spirit",
+     "value": {
+      "type": "WHOLE",
+      "value": 64
+     }
+    }
+   ]
+  },
+  "surname": "Bober",
+  "url": "/forever/eu/armory/character/dark-bober/",
+  "render": {
+   "staticFallback": {
+    "url": "https://render.worldofwarcraft.com/shadow/profile-background/warlock-undead-male.jpg"
+   },
+   "foregroundFallback": {
+    "url": "https://render.worldofwarcraft.com/shadow/profile-raw/undead-male.png"
+   },
+   "background": {
+    "url": "https://render.worldofwarcraft.com/profile-backgrounds/v2/armory_bg_race_undead.jpg",
+    "color": null
+   },
+   "shadow": {
+    "url": "https://render.worldofwarcraft.com/profile-foreground/foreground-shadow.png"
+   },
+   "foreground": {
+    "url": "https://render.worldofwarcraft.com/forever-eu/character/180/11422388-main-raw.png"
+   },
+   "foregroundSd": {
+    "url": "https://render.worldofwarcraft.com/forever-eu/character/180/11422388-main-sd-raw.png"
+   }
+  },
+  "achievementUrl": "/forever/eu/armory/character/dark-bober/achievements",
+  "isOutdated": false,
+  "showRangedSlot": true
+ }
+}
