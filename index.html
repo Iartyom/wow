@@ -402,13 +402,41 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 .statgrid label,.calcslot{display:flex;flex-direction:column;gap:2px;font-size:.78rem;color:var(--muted)}
 .calcslot{max-width:16rem}
 .tnext b.up{color:var(--fel)} .tnext b.down{color:var(--warn)}
-.itable td{vertical-align:top}
-.itable .isub{display:block;font-size:.78rem;color:var(--muted)}
-.itable .vd{font-weight:700}
 .ahin{width:7.5rem}
-tr.v-equip .vd{color:var(--fel)} tr.v-give .vd{color:var(--gold)} tr.v-later .vd{color:var(--void)}
-tr.v-ah .vd{color:var(--gold)} tr.v-junk td{opacity:.6}
-tr.v-equip td:first-child{box-shadow:inset 3px 0 0 var(--fel)}
+/* Bag grid: 40px icon framed in its quality color, verdict letter under it. The letter carries the
+   verdict on its own (color only reinforces it), so it reads for colorblind users too. */
+.bagtop{display:flex;justify-content:space-between;align-items:center;gap:var(--s2);flex-wrap:wrap}
+#bagBox .ifilters{margin:var(--s3) 0 var(--s2)}
+#itemSum{font-size:.85rem;margin:0 0 var(--s2)}
+.bgrid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:8px 6px}
+.bgrid li{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0}
+.bgrid li.empty{grid-column:1/-1;align-items:flex-start;color:var(--muted)}
+.btile{position:relative;display:block;width:40px;height:40px;border:2px solid var(--q,#555);border-radius:4px;background:#0a0a0a;overflow:hidden;text-decoration:none;box-shadow:0 2px 4px rgba(0,0,0,.6)}
+.btile .ii{position:absolute;inset:0;width:100%;height:100%;margin:0;border-radius:0}
+.btile .bab{position:absolute;inset:0;display:grid;place-items:center;font:600 .72rem var(--f-mono);color:var(--q,#ccc)}
+.btile .bn{position:absolute;right:1px;bottom:0;font:700 .7rem var(--f-mono);color:#fff;text-shadow:0 0 2px #000,0 0 2px #000,1px 1px 0 #000}
+.bl{font:700 .78rem/1 var(--f-mono);color:var(--muted)}
+.v-equip .bl,.bl.v-equip{color:var(--fel)} .v-later .bl,.bl.v-later{color:var(--void)} .v-give .bl,.bl.v-give{color:var(--gold)}
+.v-ah .bl,.bl.v-ah{color:var(--gold)} .v-keep .bl,.bl.v-keep,.v-use .bl,.bl.v-use{color:var(--fg)}
+.bgrid li.v-equip .btile{box-shadow:0 0 0 2px var(--fel),0 0 10px var(--fel)}
+.bgrid li.v-junk .btile{opacity:.55}
+.blegend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.78rem;color:var(--muted);margin:var(--s3) 0 var(--s2)}
+.blegend b{font-family:var(--f-mono);margin-right:3px}
+/* Try-an-item modal */
+.calcdlg{width:min(640px,calc(100vw - 32px));max-height:calc(100dvh - 32px);padding:var(--s4);background:var(--surface);color:var(--fg);border:1px solid var(--bronze,var(--line));box-shadow:0 10px 40px #000}
+.calcdlg::backdrop{background:rgba(0,0,0,.65)}
+.dlghead{display:flex;justify-content:space-between;align-items:center;gap:var(--s2)}
+.dlghead h3{margin:0}
+.dlghead .btn{padding:4px 10px}
+.calcsearch{display:flex;flex-direction:column;gap:2px;font-size:.78rem;color:var(--muted);margin-bottom:var(--s2)}
+.calcsearch input{font:inherit;font-size:1rem;background:var(--surface-2);color:var(--fg);border:1px solid var(--line);padding:6px 10px}
+.calchits{list-style:none;margin:0 0 var(--s3);padding:0;max-height:15rem;overflow-y:auto}
+.calchits:empty{display:none}
+.calchits button{display:flex;align-items:center;width:100%;gap:6px;text-align:left;font:inherit;font-size:.9rem;background:none;border:0;border-bottom:1px dotted var(--line);color:inherit;padding:4px 2px;cursor:pointer}
+.calchits button:hover,.calchits button:focus-visible{background:var(--surface-2)}
+.calchits .isub{margin-left:auto;font-size:.75rem;color:var(--muted);white-space:nowrap}
+.calchits li.note{font-size:.85rem;color:var(--muted);padding:4px 2px}
+.itt.inline{position:static;display:block;max-width:none;pointer-events:auto;margin-bottom:var(--s3)}
 .weights summary{cursor:pointer;font-family:var(--f-mono);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 /* level gates on the spec cards: future lines dim with their level, reached-but-unlearned lines get a warning */
 li[data-lv].lk,li[data-lvmax].lk{opacity:.42}
@@ -714,24 +742,36 @@ section:not(.fold) .foldwhy{display:none}
         <p class="muted" id="gearMiss"></p>
         <ul class="gearlist" id="gearList"></ul>
       </article>
-      <article class="card" id="calcBox">
-        <span class="tag">Try an item</span>
-        <p class="muted">Looking at a quest reward or something on the AH? Type its stats to see if it's an upgrade.</p>
+      <!-- Bags as an icon grid (letter = verdict, hover/tap for the why). Replaced the wide table to save room. -->
+      <article class="card" id="bagBox">
+        <div class="bagtop"><span class="tag">In your bags</span>
+          <button type="button" class="btn" id="calcOpen" aria-haspopup="dialog">Try an item…</button></div>
+        <div class="filters ifilters" role="group" aria-label="Filter items">
+          <button type="button" data-f="bags" aria-pressed="true">Bags</button>
+          <button type="button" data-f="up" aria-pressed="false">Upgrades</button>
+          <button type="button" data-f="sell" aria-pressed="false">To sell</button>
+          <button type="button" data-f="bank" aria-pressed="false">Bank</button>
+        </div>
+        <p class="muted" id="itemSum"></p>
+        <ul class="bgrid" id="itemBody"></ul>
+        <p class="blegend" id="bagLegend"></p>
+        <p class="muted" style="font-size:.8rem">Hover or tap an item for the reason. Soulbound items can only go to a vendor. "Give" needs the other character's addon data too.</p>
+      </article>
+    </div>
+    <div class="ahcheck" id="ahCheck" hidden></div>
+    <dialog class="calcdlg" id="calcDlg" aria-labelledby="calcTitle">
+      <div class="dlghead"><h3 id="calcTitle">Try an item</h3><button type="button" class="btn" id="calcClose" aria-label="Close">✕</button></div>
+      <p class="muted">Quest reward, drop or AH listing: find it by name, or pick a slot and type its stats.</p>
+      <label class="calcsearch"><span>Search by name</span>
+        <input id="calcQ" type="search" autocomplete="off" spellcheck="false" placeholder="e.g. Robe of the Moccasin" aria-controls="calcHits"></label>
+      <ul class="calchits" id="calcHits" aria-label="Matching items"></ul>
+      <div id="calcPick"></div>
+      <div id="calcBox">
         <label class="calcslot"><span>Slot</span><select id="calcSlot"></select></label>
         <div class="statgrid" id="calcStats"></div>
         <p class="tnext" id="calcOut"></p>
-      </article>
-    </div>
-    <div class="filters ifilters" role="group" aria-label="Filter items" style="margin-top:var(--s4)">
-      <button type="button" data-f="bags" aria-pressed="true">Bags</button>
-      <button type="button" data-f="up" aria-pressed="false">Upgrades</button>
-      <button type="button" data-f="sell" aria-pressed="false">To sell</button>
-      <button type="button" data-f="bank" aria-pressed="false">Bank</button>
-    </div>
-    <p class="muted" id="itemSum" style="margin-bottom:var(--s3)"></p>
-    <div class="ahcheck" id="ahCheck" hidden></div>
-    <div class="tablebox"><table class="itable"><thead><tr><th>Item</th><th>Points vs worn</th><th>Vendor</th><th>AH (each)</th><th>Verdict</th></tr></thead><tbody id="itemBody"></tbody></table></div>
-    <p class="muted" style="margin-top:var(--s3)">AH prices fill in by themselves if <b>Auctionator</b> is installed and you've scanned. Otherwise type one into the box (for example <code>1g 20s</code>), and it's remembered. Soulbound items can only go to a vendor. "Give" needs the other character's addon data too.</p>
+      </div>
+    </dialog>
     <details class="card weights" style="margin-top:var(--s4)">
       <summary>Stat weights <span class="badge unv">guess</span></summary>
       <p class="muted">How many points one of each stat is worth for this character. The defaults are my estimate for leveling, not simulation output: Warlock favours Shadow damage and wand DPS, Paladin favours two-hander DPS and Strength. Change any number and every verdict updates.</p>
@@ -923,7 +963,7 @@ section:not(.fold) .foldwhy{display:none}
           <li data-lv="10" data-spell="Summon Voidwalker"><b>Voidwalker:</b> Torment on (its taunt). Suffering by hand when adds show up. Sacrifice only when you're about to die, then heal it back with Consume Shadows.</li>
           <li data-lv="20" data-spell="Summon Succubus|Summon Incubus"><b>Succubus:</b> Seduction autocast off. Seduce first, DoT later: damage breaks it.</li>
           <li data-lv="30" data-spell="Summon Felhunter"><b>Felhunter:</b> Spell Lock by hand to interrupt casters.</li>
-          <li><b>Grimoires</b> teach the demon that's out right now, so summon the right one before you use one.</li>
+          <li><b>Grimoires</b> are how your demons learn new ranks. Your trainer only teaches <i>you</i>. The demon trainer (the vendor next to your warlock trainer) sells books such as <i>Grimoire of Firebolt (Rank 2)</i>. Summon the demon the book is for, then right-click the book: it teaches whichever demon is out, and won't work with the wrong one.</li>
           <li data-lv="10">Every demon except the Imp costs a <b>Soul Shard</b> to summon.</li>
         </ul>
       </article>
@@ -1150,7 +1190,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-10T18:04:31Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-10T18:18:00Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -1759,6 +1799,9 @@ function parseTip(lines){
     const cm = /^Classes: (.*)$/.exec(L); if(cm) classes = cm[1];
     const dm = /\((\d+(?:\.\d+)?) damage per second\)/.exec(L); if(dm) st.dps = +dm[1];
     if(/^Use:/.test(L)) continue;                      // on-use effects aren't passive stats
+    // Forever's split wording carries two numbers in one line, which the one-capture STAT_RX can't take.
+    const hd = /healing done by up to (\d+) and damage done by up to (\d+)/i.exec(L);
+    if(hd){ st.heal = (st.heal||0) + (+hd[1]); st.sp = (st.sp||0) + (+hd[2]); continue; }
     for(const [rx,k] of STAT_RX){ const m = rx.exec(L); if(m){ st[k] = (st[k]||0) + (+m[1]); break; } }
   }
   return {st, unusable, bop, quest, classes, lvlRed};
@@ -1938,14 +1981,16 @@ function itemCardHTML(it){
   if(it.un) lines.push(`<div style="color:#ff2020">You can't use this yet (red text in the game tooltip)</div>`);
   if(it.ilvl) lines.push(`<div class="itt-dim">Item Level ${it.ilvl}</div>`);
   const per = it.sell ? fmtCoin(it.sell) : "no sell price";
-  lines.push(`<div class="itt-dim">Vendor: ${per}${it.n>1 && it.sell?` each · ${fmtCoin(it.sell*it.n)} for ${it.n}`:""}</div>`);
+  // A searched item (Try-an-item) has no sell price or bag verdict of its own, so skip both lines.
+  const searched = typeof calcItem !== "undefined" && it === calcItem;
+  if(!searched) lines.push(`<div class="itt-dim">Vendor: ${per}${it.n>1 && it.sell?` each · ${fmtCoin(it.sell*it.n)} for ${it.n}`:""}</div>`);
   const ah = (state.ah && state.ah[it.id]) || it.ah;
   if(ah) lines.push(`<div class="itt-dim">AH: ${fmtCoin(ah)} each</div>`);
   // Page's own read on it.
   const sc = itemScore(it, CHAR), me = equipped ? null : upgradeFor(it, CHAR);
   const extra = [];
   if(slot) extra.push(`Points for you: <b>${sc}</b>` + (me!==null ? ` (${me>0?"+":""}${me} vs what you wear)` : equipped ? " (equipped)" : ""));
-  if(!equipped){ const v = verdict(it); extra.push(`<b>${esc(v.label)}</b>: ${esc(v.why)}`); }
+  if(!equipped && !searched){ const v = verdict(it); extra.push(`<b>${esc(v.label)}</b>: ${esc(v.why)}`); }
   if(extra.length) lines.push(`<div class="itt-ours">${extra.join("<br>")}</div>`);
   return lines.join("");
 }
@@ -1974,6 +2019,9 @@ function itemCardHTML(it){
 })();
 
 let iFilter = "bags";
+// Verdict key -> the letter under a bag tile, and its legend word.
+const VLETTER = {equip:"E", give:"G", later:"L", ah:"A", vendor:"V", use:"U", keep:"K", junk:"X"};
+const VNAME = {equip:"Equip", give:"Give", later:"Later", ah:"Auction", vendor:"Vendor", use:"Use", keep:"Keep", junk:"No value"};
 /* Paints the Item worth section: equipped gear (with empty slots), the item list with verdicts, weights. */
 
 // Item icons. The addon only knows numeric texture ids, so the icon *name* comes from Wowhead's
@@ -2114,8 +2162,8 @@ function renderItems(){
   const g = state.game, inv = g && g.bags;
   const sum = $("#itemSum"), gearEl = $("#gearList");
   if(!inv){
-    box.innerHTML = `<tr><td colspan="5" class="muted">No inventory yet. Update the addon (version 0.2), log in, then <kbd>/reload</kbd>. Your bags, gear and bank (after you open it once) show up here.</td></tr>`;
-    sum.textContent = ""; gearEl.innerHTML = ""; renderCalc(); renderWeights(); return;
+    box.innerHTML = `<li class="empty">No inventory yet. Update the addon (version 0.2), log in, then <kbd>/reload</kbd>. Your bags, gear and bank (after you open it once) show up here.</li>`;
+    sum.textContent = ""; gearEl.innerHTML = ""; $("#bagLegend").innerHTML = ""; renderCalc(); renderWeights(); return;
   }
   // Equipped gear: achieved slots, plus what's missing.
   const gear = g.gear || {};
@@ -2132,16 +2180,17 @@ function renderItems(){
   const order = {equip:0, give:1, later:2, ah:3, vendor:4, use:5, keep:6, junk:7};
   rows.sort((a,b)=>(order[a.v.k]-order[b.v.k]) || (b.v.val-a.v.val));
   const shown = iFilter==="up" ? rows.filter(r=>/equip|later|give/.test(r.v.k)) : iFilter==="sell" ? rows.filter(r=>/ah|vendor|junk/.test(r.v.k)) : rows;
+  // One tile per stack. It's a Wowhead link, so initItemCard's hover card (stats + verdict + why) works
+  // on it unchanged; the 2-letter abbreviation shows until (or if never) the icon loads.
   box.innerHTML = shown.length ? shown.map(({it,v})=>{
-    const ahv = (state.ah && state.ah[it.id]) || "";
-    const ahCell = (it.bound || it.bop) ? `<span class="muted">soulbound</span>`
-      : `<input class="ahin" data-ah="${it.id}" value="${ahv?esc(fmtCoin(ahv)):""}" placeholder="${it.ah?esc(fmtCoin(it.ah)):"AH price"}" aria-label="Auction price for one ${esc(it.name)}">`;
-    const me = upgradeFor(it, CHAR);
-    return `<tr class="v-${v.k}"><td>${itemIcon(it.id)}<a href="https://www.wowhead.com/classic/item=${it.id}" target="_blank" rel="noopener" style="color:${QCOL[it.q]||""}">${esc(it.name)}</a>${it.n>1?` <span class="muted">×${it.n}</span>`:""}`+
-      `<span class="isub">${esc([it.sub!==it.type?it.sub:"", it.req>1?"lvl "+it.req:"", it.ilvl?"ilvl "+it.ilvl:""].filter(Boolean).join(" · "))}</span></td>`+
-      `<td class="mono">${me===null?"—":(me>0?"+":"")+me}</td><td class="mono">${fmtCoin(it.sell*it.n)}</td><td>${ahCell}</td>`+
-      `<td><span class="vd">${esc(v.label)}</span><span class="isub">${esc(v.why)}</span></td></tr>`;
-  }).join("") : `<tr><td colspan="5" class="muted">${iFilter==="bank" ? "No bank data yet: open your bank once with the addon running." : "Nothing in this filter."}</td></tr>`;
+    const abbr = it.name.split(/\s+/).filter(w=>/^[A-Z]/.test(w)).slice(0,2).map(w=>w[0]).join("") || it.name.slice(0,2);
+    return `<li class="v-${v.k}"><a class="btile" href="https://www.wowhead.com/classic/item=${it.id}" target="_blank" rel="noopener" style="--q:${QCOL[it.q]||"#555"}"`+
+      ` aria-label="${esc(it.name)}${it.n>1?" ×"+it.n:""}: ${esc(v.label)}, ${esc(v.why)}"><span class="bab" aria-hidden="true">${esc(abbr)}</span>${itemIcon(it.id)}`+
+      `${it.n>1?`<span class="bn" aria-hidden="true">${it.n}</span>`:""}</a><b class="bl" aria-hidden="true">${VLETTER[v.k]||"?"}</b></li>`;
+  }).join("") : `<li class="empty">${iFilter==="bank" ? "No bank data yet: open your bank once with the addon running." : "Nothing in this filter."}</li>`;
+  // Legend lists only the letters actually on screen, with counts.
+  const seen = Object.keys(order).filter(k=>shown.some(r=>r.v.k===k));
+  $("#bagLegend").innerHTML = seen.map(k=>`<span><b class="bl v-${k}">${VLETTER[k]}</b>${VNAME[k]} ${shown.filter(r=>r.v.k===k).length}</span>`).join("");
 
   const tot = k=>rows.filter(r=>r.v.k===k);
   const cash = rows.filter(r=>/ah|vendor|use/.test(r.v.k)).reduce((s,r)=>s+r.v.val,0);
@@ -2152,14 +2201,76 @@ function renderItems(){
 }
 
 // Manual calculator: pick a slot, type stats, see the score and the delta against what you wear.
+// When an item is picked from the name search it's kept whole here (all parsed stats, class/armor type),
+// so the result isn't limited to the calculator's input boxes. Typing in a box drops it (manual mode).
+let calcItem = null;
 function renderCalc(){
   const out = $("#calcOut"); if(!out) return;
-  const loc = $("#calcSlot").value, st = {};
-  document.querySelectorAll("#calcStats input").forEach(i=>{ const v=+i.value; if(v) st[i.dataset.k]=v; });
-  const it = {loc, st, type:"", sub:"", req:0};
+  let it = calcItem;
+  if(!it){
+    const st = {};
+    document.querySelectorAll("#calcStats input").forEach(i=>{ const v=+i.value; if(v) st[i.dataset.k]=v; });
+    it = {loc:$("#calcSlot").value, st, type:"", sub:"", req:0};
+  }
   const sc = itemScore(it, CHAR), base = state.game && state.game.gear ? slotBase(it, CHAR) : null;
+  const no = calcItem ? cantUse(it, CHAR, false) : null;
   out.innerHTML = `Score <b>${sc}</b>` + (base===null ? (state.game && state.game.gear ? " · can't compare (an off-hand needs a one-handed weapon)" : " · load the addon file to compare with your gear")
-    : ` · you wear <b>${Math.round(base*10)/10}</b> there · <b class="${sc-base>0?"up":"down"}">${sc-base>0?"+":""}${Math.round((sc-base)*10)/10}</b>`);
+    : ` · you wear <b>${Math.round(base*10)/10}</b> there · <b class="${sc-base>0?"up":"down"}">${sc-base>0?"+":""}${Math.round((sc-base)*10)/10}</b>`)
+    + (no ? ` · <b class="down">you can't wear it: ${esc(no)}</b>` : "");
+}
+
+// ---- Try-an-item search ----
+// Name index (docs/data/items.json, built by tools/item-index.mjs from Classic Era DB2) loads on first open.
+// Picking a hit fetches that item's Wowhead tooltip and parses it with the same parser the addon data uses.
+let itemIndex = null, itemIndexP = null;
+function loadItemIndex(){
+  return itemIndexP || (itemIndexP = fetch("data/items.json").then(r=>{ if(!r.ok) throw 0; return r.json(); })
+    .then(j=>{ itemIndex = j; return j; }).catch(()=>{ itemIndexP = null; return null; }));
+}
+// Wowhead tooltip HTML -> addon-style lines ("Wrist\tCloth" for the two-column row) for parseTip.
+function wowheadLines(html){
+  const s = String(html||"").replace(/<td>([^]*?)<\/td>\s*<th>([^]*?)<\/th>/g, (_,a,b)=>a+"\t"+b)
+    .replace(/<!--[^]*?-->/g, "").replace(/<br\s*\/?>|<\/(?:div|tr|table|td|th)>/gi, "\n").replace(/<[^>]+>/g, "");
+  const t = document.createElement("textarea"); t.innerHTML = s;   // decodes &lt; etc. without running anything
+  return t.value.split("\n").map(x=>x.trim()).filter(Boolean);
+}
+function searchItems(q){
+  q = q.trim().toLowerCase(); if(q.length < 2 || !itemIndex) return [];
+  const starts = [], has = [];
+  for(const r of itemIndex.items){ const n = r[1].toLowerCase(); if(n.startsWith(q)) starts.push(r); else if(n.includes(q)) has.push(r); }
+  return starts.concat(has).slice(0, 40);
+}
+async function renderHits(){
+  const ul = $("#calcHits"), q = $("#calcQ").value;
+  if(q.trim().length < 2){ ul.innerHTML = ""; return; }
+  if(!itemIndex){
+    ul.innerHTML = `<li class="note">Loading item list…</li>`;
+    if(!await loadItemIndex()){ ul.innerHTML = `<li class="note">Item list unavailable here (it works on the GitHub site). Use the slot and stat boxes below.</li>`; return; }
+    if($("#calcQ").value !== q) return;   // user kept typing; that input event re-renders
+  }
+  const hits = searchItems(q), ix = itemIndex;
+  ul.innerHTML = hits.length ? hits.map(r=>`<li><button type="button" data-pick="${r[0]}">${itemIcon(r[0])}<span style="color:${QCOL[r[2]]||""}">${esc(r[1])}</span>`+
+    `<span class="isub">${esc(ix.sub[r[7]])} · ${esc(ix.inv[r[3]].toLowerCase().replace("2hweapon","two-hand").replace("rangedright","wand/ranged"))}${r[4]>1?" · lvl "+r[4]:""}</span></button></li>`).join("")
+    : `<li class="note">No wearable item matches. Forever-only items aren't in this Classic list; type the stats below instead.</li>`;
+}
+async function pickItem(id){
+  const r = itemIndex && itemIndex.items.find(x=>x[0]===id); if(!r) return;
+  const box = $("#calcPick"); box.innerHTML = `<p class="muted">Loading ${esc(r[1])}…</p>`;
+  let lines = []; const own = itemById(id);
+  if(!own) try{ const j = await (await fetch(`https://nether.wowhead.com/classic/tooltip/item/${id}?dataEnv=4&locale=0`)).json(); lines = wowheadLines(j.tooltip); }
+  catch(e){ box.innerHTML = `<p class="muted">Couldn't reach Wowhead for its stats. Type them below instead.</p>`; return; }
+  const inv = itemIndex.inv[r[3]];
+  // Prefer your own copy (bags/bank/gear): that's Forever's real tooltip. Wowhead is Classic Era and
+  // Forever changed some items (e.g. Robe of the Moccasin is blue with spell damage in Forever).
+  calcItem = own ? {...own, n:1} : compactItem({id, name:r[1], q:r[2], req:r[4], ilvl:r[5], type:r[6]==="W"?"Weapon":"Armor", sub:itemIndex.sub[r[7]], loc:"INVTYPE_"+inv, tip:lines});
+  // Mirror it into the manual form so the numbers are visible and editable.
+  const sel = $("#calcSlot"), norm = {ROBE:"CHEST", WEAPONMAINHAND:"WEAPON", WEAPONOFFHAND:"WEAPON", RANGED:"RANGEDRIGHT", THROWN:"RANGEDRIGHT"}[inv] || inv;
+  if([...sel.options].some(o=>o.value==="INVTYPE_"+norm)) sel.value = "INVTYPE_"+norm;
+  document.querySelectorAll("#calcStats input").forEach(i=>{ i.value = calcItem.st[i.dataset.k] || ""; });
+  box.innerHTML = `<div class="itt inline">${itemCardHTML(calcItem)}</div>`+
+    `<p class="muted" style="font-size:.8rem">${own ? "Stats from your own copy (Forever)." : "Stats from Wowhead Classic: Forever changed some items, so check the in-game tooltip."}</p>`+
+    (/random enchantment/i.test(lines.join(" ")) ? `<p class="muted">This one rolls random stats ("of the Owl" etc.): type the stats of the one you're looking at below.</p>` : "");
+  $("#calcHits").innerHTML = ""; renderCalc();
 }
 function renderWeights(){
   const el = $("#weightGrid"); if(!el) return;
@@ -2176,7 +2287,26 @@ function initItems(){
   $("#calcStats").innerHTML = [["sta","Stamina"],["int","Intellect"],["spi","Spirit"],["str","Strength"],["agi","Agility"],["sp","Spell dmg"],["shadow","Shadow dmg"],
     ["crit","Crit %"],["hit","Hit %"],["ap","Attack pwr"],["mp5","Mana/5"],["armor","Armor"],["dps","Weapon DPS"]]
     .map(([k,l])=>`<label><span>${l}</span><input type="number" min="0" step="any" data-k="${k}" inputmode="decimal"></label>`).join("");
-  $("#calcBox").addEventListener("input", renderCalc);
+  // Editing the form by hand switches back to manual mode (drops the searched item).
+  $("#calcBox").addEventListener("input", ()=>{ if(calcItem){ calcItem = null; $("#calcPick").innerHTML = ""; } renderCalc(); });
+  const dlg = $("#calcDlg");
+  $("#calcOpen").addEventListener("click", ()=>{
+    if(dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
+    loadItemIndex(); $("#calcQ").focus();
+  });
+  const close = ()=>{ if(dlg.close) dlg.close(); else dlg.removeAttribute("open"); };
+  $("#calcClose").addEventListener("click", close);
+  dlg.addEventListener("click", e=>{ if(e.target === dlg) close(); });   // click on the backdrop
+  $("#calcQ").addEventListener("input", renderHits);
+  $("#calcHits").addEventListener("click", e=>{ const b = e.target.closest("[data-pick]"); if(b) pickItem(+b.dataset.pick); });
+  // Touch: the first tap on a bag tile shows its hover card instead of leaving for Wowhead; a second tap opens it.
+  let tapped = null;
+  $("#itemBody").addEventListener("pointerdown", e=>{ e.pointerType === "touch" || (tapped = null); });
+  $("#itemBody").addEventListener("click", e=>{
+    const a = e.target.closest(".btile"); if(!a) return;
+    if(matchMedia("(hover: none)").matches && tapped !== a){ e.preventDefault(); tapped = a;
+      const r = a.getBoundingClientRect(); a.dispatchEvent(new MouseEvent("mouseover", {bubbles:true, clientX:r.right, clientY:r.top})); }
+  });
   $("#weightGrid").addEventListener("input", e=>{
     const k = e.target.dataset.w; if(!k) return;
     state.weights = {...(state.weights||{}), [k]: +e.target.value||0};
