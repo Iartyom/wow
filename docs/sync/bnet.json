@@ -1,0 +1,27 @@
+{
+ "fetched": "2026-11-10T17:04:40.339Z",
+ "region": "us",
+ "namespace": "profile-forever-us",
+ "endpoints": {
+  "summary": {
+   "status": 404,
+   "data": null
+  },
+  "equipment": {
+   "status": 404,
+   "data": null
+  },
+  "statistics": {
+   "status": 404,
+   "data": null
+  },
+  "specializations": {
+   "status": 404,
+   "data": null
+  },
+  "professions": {
+   "status": 404,
+   "data": null
+  }
+ }
+}
