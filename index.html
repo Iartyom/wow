@@ -479,7 +479,18 @@ section:not(.fold) .foldwhy{display:none}
 .alegend{display:flex;gap:var(--s4);flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
 .alegend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 .alegend i.b,.abar i.b{background:#9078d6}.alegend i.g,.abar i.g{background:#6fa832}
-.abars{margin-top:var(--s2)}
+.abars{margin-top:var(--s2);min-width:0}
+/* Spider chart beside the bars; stacks on narrow screens. Gridlines recessive, data polygons on top. */
+.astatviz{display:grid;grid-template-columns:minmax(280px,400px) 1fr;gap:var(--s5);align-items:center}
+@media (max-width:760px){.astatviz{grid-template-columns:1fr}.aradar{max-width:400px;margin:0 auto}}
+.aradar{width:100%;height:auto;display:block;overflow:visible}
+.aradar .rg{fill:none;stroke:var(--line);stroke-width:1}.aradar .rs{stroke:var(--line);stroke-width:1}
+.aradar .rgl{fill:var(--muted);font:11px var(--f-mono);opacity:.8}
+.aradar .rl{fill:currentColor;font-size:14px}.aradar .rl .rv{fill:var(--muted);font-family:var(--f-mono)}
+.aradar .rp-t{fill:#6fa832;fill-opacity:.18;stroke:#6fa832;stroke-width:2;stroke-linejoin:round}
+.aradar .rp-b{fill:#9078d6;fill-opacity:.35;stroke:#9078d6;stroke-width:2;stroke-linejoin:round}
+.aradar .rd{fill:#6fa832;stroke:var(--surface);stroke-width:2}
+.aradar .rv-hit{cursor:help;outline:none}.aradar .rv-hit:hover .rd,.aradar .rv-hit:focus-visible .rd{r:6;stroke:#fff}
 .abar{display:grid;grid-template-columns:minmax(70px,90px) 1fr auto;gap:var(--s3);align-items:center;padding:5px 4px;border-radius:4px;cursor:help}
 .abar:hover,.abar:focus-visible{background:var(--surface-2);outline:none}
 .abar .an{font-size:.85rem}
@@ -1139,7 +1150,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-10T17:32:28Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-10T18:01:36Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -1594,6 +1605,39 @@ const STAT_ICON = {
   SPIRIT:["#8fb4f0",`<path d="M12 3l2 7 7 2-7 2-2 7-2-7-7-2 7-2z"/>`],
   _:["#9a9888",`<circle cx="12" cy="12" r="6"/>`]
 };
+// Spider chart of the primary attributes: base polygon inside the with-gear polygon, one radial scale
+// (all five are plain points, so a shared scale is honest). Shows the build's *shape*; the bars beside
+// it carry exact values. Each vertex is a hover/focus target using the shared tooltip (data-tiphtml).
+// Input: Armory overview entries with details.base/bonus. Output: SVG markup ("" if < 3 axes).
+function attrRadar(attrs){
+  const ORDER = ["STRENGTH","AGILITY","STAMINA","INTELLECT","SPIRIT"];   // in-game character sheet order
+  const ax = ORDER.map(e=>attrs.find(s=>s.enum===e)).filter(Boolean);
+  if(ax.length < 3) return "";
+  const vals = ax.map(s=>{ const b=+s.details.base.value||0, g=+s.details.bonus.value||0; return {n:s.enum.charAt(0)+s.enum.slice(1).toLowerCase(), b, g, t:b+g}; });
+  // Four rings: pick the ring spacing as a round number (multiple of 5) so the labels read 20/40/60/80.
+  const top = Math.max(...vals.map(v=>v.t)), q = Math.max(5, Math.ceil(top/4/5)*5), max = q*4;
+  const cx = 160, cy = 150, R = 100, N = vals.length;
+  const pt = (i, v) => { const a = -Math.PI/2 + 2*Math.PI*i/N, r = R*v/max; return [cx + r*Math.cos(a), cy + r*Math.sin(a)]; };
+  const poly = key => vals.map((v,i)=>pt(i, v[key]).map(n=>n.toFixed(1)).join(",")).join(" ");
+  const rings = [.25,.5,.75,1].map(f=>`<polygon class="rg" points="${vals.map((_,i)=>pt(i, max*f).map(n=>n.toFixed(1)).join(",")).join(" ")}"/>`
+    + `<text class="rgl" x="${cx+4}" y="${(cy - R*f + 10).toFixed(1)}">${Math.round(max*f)}</text>`).join("");
+  const spokes = vals.map((_,i)=>{ const [x,y] = pt(i, max); return `<line class="rs" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`; }).join("");
+  const labels = vals.map((v,i)=>{
+    const [x,y] = pt(i, max*1.17), anchor = Math.abs(x-cx) < 8 ? "middle" : x > cx ? "start" : "end";
+    return `<text class="rl" x="${x.toFixed(1)}" y="${(y+4).toFixed(1)}" text-anchor="${anchor}">${esc(v.n)} <tspan class="rv">${v.t}</tspan></text>`;
+  }).join("");
+  const dots = vals.map((v,i)=>{
+    const [x,y] = pt(i, v.t), tipHtml = `<b class="tiphead">${esc(v.n)} ${v.t}</b><div>Base (race and level): ${v.b}</div><div>From gear: +${v.g}</div>`;
+    // Visible 8px marker + a larger invisible hit circle so the target is easy to hover or tap.
+    return `<g class="rv-hit" tabindex="0" data-tiphtml="${esc(tipHtml)}"><circle class="rd" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="14" fill="transparent"/></g>`;
+  }).join("");
+  const desc = vals.map(v=>`${v.n} ${v.b} base + ${v.g} gear = ${v.t}`).join("; ");
+  // viewBox is wider than the plot (x −40…360) so side labels like "Intellect 47" never clip.
+  return `<svg class="aradar" viewBox="-40 0 400 300" role="img" aria-label="Attribute spider chart: ${esc(desc)}">`
+    + rings + spokes
+    + `<polygon class="rp-t" points="${poly("t")}"/><polygon class="rp-b" points="${poly("b")}"/>`
+    + labels + dots + `</svg>`;
+}
 // Panel for the Armory-only data: stats, reputation, PvP, pets. Shows the active character's class only.
 function renderArmory(){
   const el = $("#armoryBody"); if(!el) return;
@@ -1609,7 +1653,10 @@ function renderArmory(){
     return `<div class="astat"><span class="ic" style="color:${ic[0]}"><svg viewBox="0 0 24 24" aria-hidden="true">${ic[1]}</svg></span><div><b>${esc(v)}</b><span>${esc(nice(s.enum))}</span></div></div>`; }).join("");
   // Base vs gear: one shared scale (largest total), base segment + 2px gap + gear segment. Numbers are
   // printed on every row, so the bars never carry meaning by color alone; hover/focus repeats them.
-  const attrs = ov.filter(s=>s.details?.type==="ENHANCED" && s.details.base && s.details.bonus);
+  // Character-sheet order, shared by the bars and the spider chart so rows and spokes line up.
+  const AORD = ["STRENGTH","AGILITY","STAMINA","INTELLECT","SPIRIT"];
+  const attrs = ov.filter(s=>s.details?.type==="ENHANCED" && s.details.base && s.details.bonus)
+    .sort((x,y)=>(AORD.indexOf(x.enum)+99)%99 - (AORD.indexOf(y.enum)+99)%99);
   const top = Math.max(1, ...attrs.map(s=>+s.details.effective?.value || +s.value?.value || 0));
   const bars = attrs.map(s=>{
     const b = +s.details.base.value||0, g = +s.details.bonus.value||0, t = b+g, n = nice(s.enum);
@@ -1618,6 +1665,7 @@ function renderArmory(){
       + `<span class="trk"><i class="b${g>0?"":" end"}" style="width:${(100*b/top).toFixed(1)}%"></i>${g>0?`<i class="g" style="width:${(100*g/top).toFixed(1)}%"></i>`:""}</span>`
       + `<span class="av">${b}${g>0?` <em>+${g}</em>`:""} = <b>${t}</b></span></div>`;
   }).join("");
+  const radar = attrRadar(attrs);
   // Zero/empty stats (haste, mastery, parry… don't exist at these levels) are noise; skip them.
   // Attributes are already in the tiles and bars above, so only the combat groups stay as text.
   const groups = (ch.stats?.groups||[]).filter(gr=>/^(Attack|Spell|Defense)$/.test(gr.name)).map(gr=>{
@@ -1641,7 +1689,7 @@ function renderArmory(){
     ${tiles ? `<div class="astats">${tiles}</div>` : ""}
     ${bars ? `<h3 style="margin:var(--s5) 0 var(--s2)">Attributes: base vs gear</h3>
       <div class="alegend"><span><i class="b"></i>Base (race and level)</span><span><i class="g"></i>From gear</span></div>
-      <div class="abars">${bars}</div>` : ""}
+      <div class="astatviz">${radar}<div class="abars">${bars}</div></div>` : ""}
     ${groups ? `<div class="gamecard" style="margin-top:var(--s4)">${groups}</div>` : ""}
     ${reps ? `<h3 style="margin:var(--s4) 0 var(--s2)">Reputation</h3><div class="gamecard">${reps}</div>` : ""}
     <p class="muted" style="margin-top:var(--s2)">${got.length ? "Pets: " + got.map(p=>esc(p.name)).join(", ") + " · " : ""}<a href="${esc(link)}" target="_blank" rel="noopener">Open on the Armory</a> · checked ${esc(ago(Math.floor(Date.parse(a.fetched)/1000)))}</p>`;
