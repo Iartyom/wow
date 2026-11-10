@@ -1151,7 +1151,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-10T18:01:36Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-10T18:04:31Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -1649,8 +1649,9 @@ function renderArmory(){
     SPELLPOWER:"Spell power", MANAREGEN:"Mana regen", ITEMLEVEL:"Equipped item level", MOVEMENTSPEED:"Move speed"};
   const nice = e => NICE[e] || e.charAt(0) + e.slice(1).toLowerCase();
   // Headline tiles, laid out like the Armory's own stat strip (ring icon + value + caps label).
+  // The five attributes are left out: the spider chart and bars below already show them.
   const ov = ch.stats?.overview || [];
-  const tiles = ov.map(s=>{ const ic = STAT_ICON[s.enum] || STAT_ICON._; const v = fmt(s.value); if(v==null) return "";
+  const tiles = ov.filter(s=>!["STRENGTH","AGILITY","STAMINA","INTELLECT","SPIRIT"].includes(s.enum)).map(s=>{ const ic = STAT_ICON[s.enum] || STAT_ICON._; const v = fmt(s.value); if(v==null) return "";
     return `<div class="astat"><span class="ic" style="color:${ic[0]}"><svg viewBox="0 0 24 24" aria-hidden="true">${ic[1]}</svg></span><div><b>${esc(v)}</b><span>${esc(nice(s.enum))}</span></div></div>`; }).join("");
   // Base vs gear: one shared scale (largest total), base segment + 2px gap + gear segment. Numbers are
   // printed on every row, so the bars never carry meaning by color alone; hover/focus repeats them.
@@ -1779,7 +1780,9 @@ function itemScore(it, c, w = weightsFor(c)){
   if(!it) return 0;
   let s = 0;
   for(const [k,v] of Object.entries(it.st||{})){
-    if(k==="dps") s += v * ((LOC_SLOTS[it.loc]||[])[0]===18 ? w.rdps : w.mdps);
+    // Ranged-slot DPS only counts for wands: bows/guns/crossbows are hunter/warrior weapons a caster
+    // can't shoot, and scoring their DPS at wand weight inflated a Light Bow to ~20 points.
+    if(k==="dps") s += v * ((LOC_SLOTS[it.loc]||[])[0]===18 ? (/^Wands?$/.test(it.sub) ? w.rdps : 0)   /* addon says "Wands", Armory "Wand" */ : w.mdps);
     else s += v * (w[k]||0);
   }
   return Math.round(s*10)/10;
@@ -1837,13 +1840,19 @@ function verdict(it){
   const sellable = !it.bound && !it.bop;
   const sell = ()=> sellable && ahPer && ahNet > vendor*1.3 + 500
       ? {k:"ah", label:"Auction", why:`about ${fmtCoin(ahNet)} after the 5% cut and ${fmtCoin(AH_FEE)} fee, vs ${fmtCoin(vendor)} at a vendor`, val:ahNet}
-      : vendor ? {k:"vendor", label:"Vendor", why:`${fmtCoin(vendor)} at any merchant`+(sellable && !ahPer ? "; add an AH price to compare" : ""), val:vendor}
+      : vendor ? {k:"vendor", label:"Vendor", why:`${fmtCoin(vendor)} at any merchant`, val:vendor}
       : {k:"junk", label:"No value", why:"can't be sold; destroy it when you need the space", val:0};
   if(KEEP_IDS[it.id]) return {k:"keep", label:"Keep", why:KEEP_IDS[it.id], val:0};
   if(it.quest || it.type==="Quest") return {k:"keep", label:"Quest item", why:"used by a quest; keep it", val:0};
   const me = upgradeFor(it, c), why = cantUse(it, c, true);
   if(me!==null && me>0.5){
-    if(!why) return {k:"equip", label:"Equip", why:`+${me} points over your ${SLOT_NAMES[(LOC_SLOTS[it.loc]||[])[0]]||"gear"}`, val:0, me};
+    if(!why){
+      // Name the slot it actually replaces: for rings/trinkets that's the weaker (or empty) one of the pair.
+      const gear = (state.game && state.game.gear) || {}, slots = LOC_SLOTS[it.loc] || [];
+      const empty = slots.find(s=>!gear[s]);
+      const target = empty || (slots.length===2 ? (itemScore(gear[slots[0]],c) <= itemScore(gear[slots[1]],c) ? slots[0] : slots[1]) : slots[0]);
+      return {k:"equip", label:"Equip", why: empty ? `fills your empty ${SLOT_NAMES[target]||"slot"} (+${me} points)` : `+${me} points over your ${SLOT_NAMES[target]||"gear"}`, val:0, me};
+    }
     if(/^level|^plate/.test(why) && it.req <= lvl+8) return {k:"later", label:"Keep for later", why:`+${me} points once you reach ${why}`, val:0, me};
   }
   if(!it.bound && states[o].game){
@@ -1877,8 +1886,12 @@ function ahLookup(it, v){
     return {rank: it.n >= 5 ? 2 : 3, why:"crafting material; levelers buy these for their professions", min};
   return null;
 }
+// Switched off (Nov 10): Forever's fresh-server economy has almost no buyers for low-level items, so the
+// "look these up at the AH" list was noise. Flip to true to bring it back; ahLookup() is unchanged.
+const AH_LOOKUP_ON = false;
 function renderAhCheck(inv){
   const el = $("#ahCheck"); if(!el) return;
+  if(!AH_LOOKUP_ON){ el.hidden = true; el.innerHTML = ""; return; }
   const list = (inv||[]).map(it=>({it, a:ahLookup(it, verdict(it))})).filter(x=>x.a)
     .sort((x,y)=>x.a.rank-y.a.rank || y.it.sell*y.it.n - x.it.sell*x.it.n);
   el.hidden = !list.length; if(!list.length){ el.innerHTML = ""; return; }
