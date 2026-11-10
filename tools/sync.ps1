@@ -45,7 +45,7 @@ function Sync-Once {
   if (-not $NoPush) {
     git -C $repo add docs | Out-Null
     git -C $repo commit -m "sync: level $lvl" | Out-Null
-    # The Battle.net Action also commits to main hourly; rebase first or this push gets rejected.
+    # The Armory sync Action also commits to main hourly; rebase first or this push gets rejected.
     git -C $repo pull --rebase --autostash --quiet
     git -C $repo push --quiet
     Write-Host "Pushed. The site updates in about a minute."

@@ -25,8 +25,8 @@ A second character, an **Undead Retribution Paladin** who levels alongside the w
 
 On the Claude artifact version, use **Load GrimoireSync.lua** on the page instead.
 
-### Battle.net API (later)
-Blizzard's Profile API has no Forever namespace yet. Once it does, a small proxy (such as a Cloudflare Worker holding the API client secret) can feed the page directly from your Battle.net account.
+### Armory sync
+The **Armory sync** GitHub Action (`.github/workflows/armory-sync.yml`) runs hourly. It reads the public Forever Armory page for the character and writes `docs/sync/armory.json`, which includes level, gear, specs/talents, professions, stats and PvP. It needs no API key. Blizzard's developer API has no Forever namespace yet (it returns 404), so the script parses the profile JSON embedded in the Armory page. The Armory only refreshes after you log out. To change the character, edit `ARMORY_REGION` and `ARMORY_SLUG` in the workflow. The slug is the last part of the Armory URL.
 
 ## Credits
 The world maps are hotlinked from [Warcraft Wiki](https://warcraft.wiki.gg/wiki/Forever_map_comparison) and © Blizzard Entertainment. They are not stored in this repo. Content is based on beta-era data, so check it against live game info after the Nov 4, 2026 launch.
