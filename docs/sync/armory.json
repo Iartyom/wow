@@ -1,5 +1,5 @@
 {
- "fetched": "2026-11-12T01:34:09.945Z",
+ "fetched": "2026-11-12T18:23:01.467Z",
  "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/dark-bober",
  "character": {
   "avatar": {
@@ -398,8 +398,8 @@
      "display_string": "Item Level 19"
     },
     "durability": {
-     "value": 29,
-     "display_string": "Durability 29 / 30"
+     "value": 30,
+     "display_string": "Durability 30 / 30"
     }
    },
    "hand": {
@@ -1561,8 +1561,8 @@
   },
   "isRemix": false,
   "lastUpdatedTimestamp": {
-   "epoch": 1794438727000,
-   "iso8601": "2026-11-11T23:12:07Z"
+   "epoch": 1794507556000,
+   "iso8601": "2026-11-12T18:19:16Z"
   },
   "level": 21,
   "media": {
@@ -1594,7 +1594,7 @@
        "id": 2937,
        "maxSkillPoints": 75,
        "name": "Alchemy",
-       "skillPoints": 29
+       "skillPoints": 39
       }
      ]
     },
@@ -1610,7 +1610,7 @@
        "id": 2944,
        "maxSkillPoints": 75,
        "name": "Herbalism",
-       "skillPoints": 48
+       "skillPoints": 53
       }
      ]
     }
@@ -1644,7 +1644,7 @@
        "id": 2942,
        "maxSkillPoints": 75,
        "name": "First Aid",
-       "skillPoints": 55
+       "skillPoints": 62
       }
      ]
     }
@@ -2260,7 +2260,7 @@
        "slug": "dodge",
        "value": {
         "type": "PERCENTAGE",
-        "value": 5.3999996
+        "value": 5.4399996
        }
       },
       {
@@ -2532,27 +2532,6 @@
   "region": "eu",
   "reputations": [
    {
-    "id": "horde-forces",
-    "max": false,
-    "name": "Horde Forces",
-    "reputations": [
-     {
-      "id": "the-defilers",
-      "max": false,
-      "maxValue": 3000,
-      "name": "The Defilers",
-      "standing": "Neutral",
-      "standingType": {
-       "id": 3,
-       "name": "Neutral",
-       "enum": "NEUTRAL",
-       "slug": "neutral"
-      },
-      "value": 0
-     }
-    ]
-   },
-   {
     "id": "horde",
     "max": false,
     "name": "Horde",
@@ -2569,7 +2548,7 @@
        "enum": "NEUTRAL",
        "slug": "neutral"
       },
-      "value": 2842
+      "value": 2880
      },
      {
       "id": "orgrimmar",
@@ -2583,7 +2562,7 @@
        "enum": "FRIENDLY",
        "slug": "friendly"
       },
-      "value": 30
+      "value": 67
      },
      {
       "id": "thunder-bluff",
@@ -2597,7 +2576,7 @@
        "enum": "NEUTRAL",
        "slug": "neutral"
       },
-      "value": 1342
+      "value": 1380
      },
      {
       "id": "undercity",
@@ -2611,7 +2590,7 @@
        "enum": "HONORED",
        "slug": "honored"
       },
-      "value": 3142
+      "value": 3292
      }
     ]
    },
