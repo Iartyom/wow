@@ -438,6 +438,10 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 .calchits li.note{font-size:.85rem;color:var(--muted);padding:4px 2px}
 .itt.inline{position:static;display:block;max-width:none;pointer-events:auto;margin-bottom:var(--s3)}
 .weights summary{cursor:pointer;font-family:var(--f-mono);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+/* Gear guide: plain readable lists inside the collapsible card. */
+.gearguide h4{margin:var(--s3) 0 0;font-size:.95rem}
+.gearguide .gglist{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.35rem}
+.gearguide p{margin:0}
 /* level gates on the spec cards: future lines dim with their level, reached-but-unlearned lines get a warning */
 li[data-lv].lk,li[data-lvmax].lk{opacity:.42}
 li .lvtag{font-family:var(--f-mono);font-size:.68rem;margin-left:6px;padding:0 5px;border:1px solid var(--line);border-radius:99px;color:var(--muted);white-space:nowrap}
@@ -777,6 +781,37 @@ section:not(.fold) .foldwhy{display:none}
       <p class="muted">How many points one of each stat is worth for this character. The defaults are my estimate for leveling, not simulation output: Warlock favours Shadow damage and wand DPS, Paladin favours two-hander DPS and Strength. Change any number and every verdict updates.</p>
       <div class="statgrid" id="weightGrid"></div>
       <button type="button" class="btn" id="weightReset" style="margin-top:var(--s3)">Reset to defaults</button>
+    </details>
+    <!-- Warlock gear-shopping guide (Nov 12). Numbers mirror DEFAULT_WEIGHTS.wl; update both together. -->
+    <details class="card weights gearguide" data-only="wl" style="margin-top:var(--s4)">
+      <summary>What gear to look for</summary>
+      <p><b>The wand is your best upgrade.</b> You finish every mob with it, so wand DPS counts more than any armor stat. Each +1 DPS is worth 2.5 points. A wand 5 DPS better than your current one adds about 12 points. Your whole blue chest's +7 Shadow damage is worth 7.</p>
+      <h4>Stats, best first</h4>
+      <ol class="gglist">
+        <li><b>Wand DPS</b>: 2.5 points per DPS. Look at the "(X damage per second)" line.</li>
+        <li><b>Shadow damage or spell damage</b>: 1 point each. Watch for "damage done by Shadow spells" or "damage and healing done by magical spells". Every DoT and Shadow Bolt gets it.</li>
+        <li><b>Spell hit / spell crit</b>: 8 and 6 points per 1%. Rare below level 40, so take them when you see them.</li>
+        <li><b>Stamina</b>: 0.5. Life Tap turns health into mana, so Stamina also means more mana.</li>
+        <li><b>Spirit</b> 0.45, <b>Intellect</b> 0.4. Useful, but you need about two of these to equal one Shadow damage.</li>
+        <li><b>Fire damage</b>: 0.15. It only boosts Immolate and Searing Pain.</li>
+      </ol>
+      <p><b>Worth nothing to you:</b> Strength, Agility, Attack Power, Defense, Dodge, "+healing" and Armor (barely counts). A tooltip full of these is a vendor item, even if it's blue.</p>
+      <h4>Green item names ("… of the X")</h4>
+      <p>A random green's name ending tells you its stats before you open the tooltip.</p>
+      <ul class="gglist">
+        <li><b>Buy or keep:</b> <i>of Shadow Wrath</i> (Shadow damage), <i>of the Whale</i> (Stamina, Spirit), <i>of the Eagle</i> (Stamina, Intellect), <i>of the Owl</i> (Intellect, Spirit).</li>
+        <li><b>Fine if cheap:</b> <i>of Stamina</i>, <i>of Spirit</i>, <i>of Intellect</i>, <i>of Concentration</i> (mana per 5).</li>
+        <li><b>Skip:</b> <i>of the Monkey, Tiger, Bear, Gorilla, Boar, Falcon, Wolf</i>, <i>of Power, Strength, Agility, Defense, Healing</i>, <i>of Fiery/Frozen/Arcane Wrath</i>.</li>
+      </ul>
+      <h4>Auction house</h4>
+      <p><b>Expect almost nothing.</b> Forever is a fresh server, and few players post low-level gear. That's why this page's automatic "look it up at the AH" list is switched off. Check when you're in town, but don't plan around it.</p>
+      <ul class="gglist">
+        <li><b>Search "Wand" first.</b> Enchanters craft wands (Magic and Mystic wands) and sell them. That's the purchase most likely to pay off.</li>
+        <li>Search the suffixes above (<i>Shadow Wrath</i>, <i>Whale</i>, <i>Eagle</i>, <i>Owl</i>), set the level range to your level up to your level +3, and look for <b>Cloth</b> only.</li>
+        <li>Before you buy, put the item into <b>Try an item…</b> above to see how many points it adds over what you wear.</li>
+        <li><b>Price rule:</b> gear gets replaced every 5–8 levels by quest rewards. Don't spend more than about a quarter of your gold on one piece, and keep money back for training and grimoires. A wand is the one exception.</li>
+      </ul>
+      <p class="muted">These weights are my leveling estimate, not a simulation. Forever has changed some items (Robe of the Moccasin is one), so always read the tooltip in game.</p>
     </details>
   </div>
 </section>
@@ -1190,7 +1225,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-10T18:18:00Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-12T14:28:33Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
