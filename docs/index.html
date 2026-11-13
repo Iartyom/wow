@@ -1,4 +1,4 @@
-﻿<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
 <title>Forsaken Grimoire</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -457,7 +457,11 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 .ggshop .ggm i{display:block;height:100%;background:var(--warn)}
 .ggshop li.ok .ggm i{background:var(--gold)} .ggshop li.good .ggm i{background:var(--fel)}
 .ggshop li.empty .gn{color:var(--warn);font-style:italic}
-.ggshop .btn{padding:2px 10px;font-size:.78rem;grid-row:span 2}
+.ggshop a.gn{text-decoration:none} .ggshop a.gn:hover{text-decoration:underline}
+.ggshop .ggw{grid-column:2;font-size:.72rem;color:var(--muted);font-family:var(--f-mono)}
+.ggshop .ggw b{color:var(--fg)} .ggshop .ggw em{font-style:normal;text-transform:uppercase;letter-spacing:.06em}
+.ggw .w-weak,.ggw .w-empty{color:var(--warn)} .ggw .w-ok{color:var(--gold)} .ggw .w-good{color:var(--fel)}
+.ggshop .btn{padding:2px 10px;font-size:.78rem;grid-row:span 3}
 .ggtiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:6px}
 .ggtile{border:1px solid var(--line);padding:6px 8px;background:var(--surface)}
 .ggtile b{display:block;font-family:var(--f-mono);font-size:1.15rem;color:var(--void)}
@@ -829,7 +833,7 @@ section:not(.fold) .foldwhy{display:none}
       <div class="gg-grid">
         <section class="ggp" aria-labelledby="ggShopH">
           <h4 id="ggShopH">Shop for these first</h4>
-          <p class="muted gg-note">Your weakest slots, judged against what that slot usually gives. Tap <b>Try</b> to check a find.</p>
+          <p class="muted gg-note"><b>Top row = replace first.</b> Points are what the item gives you; higher is better. The bar compares each slot to what that slot usually gives, so a short bar means a weak item for its slot. Tap <b>Try</b> to see if a find beats it.</p>
           <div id="ggLever"></div>
           <ol class="ggshop" id="ggShop"></ol>
         </section>
@@ -1272,7 +1276,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-13T07:04:19Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-13T10:36:22Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -1703,6 +1707,10 @@ async function autoFetchArmory(){
     const r = await fetch("sync/armory.json", {cache:"no-store"}); if(!r.ok) return;
     const a = await r.json(), cls = a.character?.class?.enum; if(!cls) return;
     const fresh = a.fetched !== armoryFetched; armoryFetched = a.fetched; armory[cls] = a;
+    for(const gi of Object.values(a.character?.gear || {})){
+      const u = (gi.media?.content?.assets || []).find(x=>x.key==="icon")?.value || "";
+      const m = /\/(\d+)\.jpg$/.exec(u); if(m) noteTex(gi.id || gi.item?.id, +m[1]);
+    }
     // Merge on every poll, not only on a new file: cloud state can load after the first fetch and replace it.
     let changed = false;
     for(const [c,def] of Object.entries(CHARS)) if(def.cls === cls){
@@ -1894,7 +1902,7 @@ function compactItem(r){
   const p = parseTip(r.tip);
   return {id:+r.id, name:r.name||("Item "+r.id), q:(r.q==null?1:+r.q), ilvl:+r.ilvl||0, req:+r.req||0, type:r.type||"", sub:r.sub||"",
     loc:r.loc||"", sell:+r.sell||0, ah:r.ah?+r.ah:0, n:+r.n||1, bound:!!r.bound, bag:r.bag??null,
-    st:p.st, un:p.unusable, bop:p.bop, quest:p.quest, cls:p.classes};
+    st:p.st, un:p.unusable, bop:p.bop, quest:p.quest, cls:p.classes, tex:+r.tex||0};
 }
 function compactList(a){ return (Array.isArray(a)?a:Object.values(a||{})).map(compactItem).filter(Boolean); }
 
@@ -2112,8 +2120,20 @@ const VNAME = {equip:"Equip", give:"Give", later:"Later", ah:"Auction", vendor:"
 const ICON_KEY = "fg-item-icons";
 let iconCache = (()=>{ try{ return JSON.parse(localStorage.getItem(ICON_KEY)||"{}")||{}; }catch(e){ return {}; } })();
 const iconWant = new Set(); let iconBusy = 0;
+// Icon file ids from Blizzard's own data: the addon's `tex` (0.3.1+) and the Armory's gear media.
+// render.worldofwarcraft.com serves any icon by file id, so this covers Forever-only items too.
+const texById = {};
+function noteTex(id, tex){ if(id && tex) texById[id] = tex; }
+function itemTex(id){
+  if(texById[id]) return texById[id];
+  const g = state.game, pools = g ? [Object.values(g.gear||{}), g.bags||[], (g.bank && g.bank.items)||[]] : [];
+  for(const pool of pools){ const it = pool.find(x=>x && x.id===id && x.tex); if(it) return (texById[id] = it.tex); }
+  return 0;
+}
 function itemIcon(id){
   if(!id) return "";
+  const tex = itemTex(id);
+  if(tex) return `<img class="wi ii" src="https://render.worldofwarcraft.com/forever-eu/icons/56/${tex}.jpg" alt="" loading="lazy">`;
   const n = iconCache[id];
   if(n) return `<img class="wi ii" src="https://wow.zamimg.com/images/wow/icons/medium/${esc(n)}.jpg" alt="" loading="lazy">`;
   if(n === "") return "";   // known miss: no grey box
@@ -2418,10 +2438,12 @@ function renderGearGuide(){
     rows.sort((a,b)=>(rare(a) - rare(b)) || (!!a.it - !!b.it) || a.n-b.n);
     shop.innerHTML = rows.slice(0,7).map(r=>{
       const pct = Math.round(r.n/best*100), cls = !r.it ? "empty" : pct>=70 ? "good" : pct>=40 ? "ok" : "";
-      const name = r.it ? `<span class="gn" style="color:${QCOL[r.it.q]||""}">${itemIcon(r.it.id)}${esc(r.it.name)}</span>` : `<span class="gn">${rare(r) ? "Empty: rare before level 30" : "Empty: anything helps"}</span>`;
+      const word = !r.it ? "empty" : pct>=70 ? "good" : pct>=40 ? "ok" : "weak";
+      const name = r.it ? `<a class="gn" href="https://www.wowhead.com/classic/item=${r.it.id}" target="_blank" rel="noopener" style="color:${QCOL[r.it.q]||""}">${itemIcon(r.it.id)}${esc(r.it.name)}</a>` : `<span class="gn">${rare(r) ? "Empty: rare before level 30" : "Empty: anything helps"}</span>`;
       return `<li class="${cls}"><span class="gs">${SLOT_NAMES[r.s]}</span>${name}`+
         `<button type="button" class="btn" data-ggtry="${r.s}" aria-label="Try an item for ${SLOT_NAMES[r.s]}">Try</button>`+
-        `<span class="ggm" title="${r.sc} points (${pct}% of your best-filled slot)"><i style="width:${Math.max(pct,3)}%"></i></span></li>`;
+        `<span class="ggm" title="${pct}% of your best-filled slot"><i style="width:${Math.max(pct,3)}%"></i></span>`+
+        `<span class="ggw">${r.it ? `<b>${r.sc}</b> pts · ` : ""}<em class="w-${word}">${word}</em></span></li>`;
     }).join("");
   }
 

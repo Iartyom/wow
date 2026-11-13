@@ -285,10 +285,11 @@ end
 
 -- One item record. bound comes from the container API (Soulbound isn't in a hyperlink tooltip).
 local function itemRec(link, count, bound)
-  local name, _, quality, ilvl, reqLevel, itype, subType, _, equipLoc, _, sellPrice = safe(GetItemInfo, link)
+  local name, _, quality, ilvl, reqLevel, itype, subType, _, equipLoc, tex, sellPrice = safe(GetItemInfo, link)
   local id = tonumber(link:match("item:(%d+)"))
   local r = { id = id, n = count or 1, name = name, q = quality, ilvl = ilvl, req = reqLevel,
               type = itype, sub = subType, loc = equipLoc, sell = sellPrice, bound = bound and true or nil,
+              tex = tonumber(tex),   -- icon file id: the page builds the icon URL from it (Wowhead lacks Forever items)
               tip = tipLines(link) }
   -- Auction price per unit (copper) if Auctionator or TSM is installed; both are optional.
   if id and Auctionator and Auctionator.API and Auctionator.API.v1 then

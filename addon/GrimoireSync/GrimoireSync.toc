@@ -2,7 +2,7 @@
 ## Title: Grimoire Sync
 ## Notes: Records level, zone, gold, demons, professions, talents, spells and inventory for the Forsaken Grimoire guide page.
 ## Author: Art
-## Version: 0.3.0
+## Version: 0.3.1
 ## SavedVariables: GrimoireSyncDB
 
 GrimoireSync.lua
