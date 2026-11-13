@@ -438,10 +438,49 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 .calchits li.note{font-size:.85rem;color:var(--muted);padding:4px 2px}
 .itt.inline{position:static;display:block;max-width:none;pointer-events:auto;margin-bottom:var(--s3)}
 .weights summary{cursor:pointer;font-family:var(--f-mono);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-/* Gear guide: plain readable lists inside the collapsible card. */
-.gearguide h4{margin:var(--s3) 0 0;font-size:.95rem}
-.gearguide .gglist{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.35rem}
-.gearguide p{margin:0}
+/* Gear guide: three panels (shop / stat value / name checker), stacking on narrow screens. */
+.gguide .gg-sub{font-size:.8rem}
+.gg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:var(--s3)}
+.ggp{background:var(--surface-2);border:1px solid var(--line);padding:var(--s3);display:flex;flex-direction:column;gap:var(--s2);min-width:0}
+.ggp h4{margin:0;font-family:var(--f-display);font-size:1.05rem;color:var(--gold);font-weight:400}
+.gg-note{font-size:.8rem;margin:0}
+.gglist{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.35rem}
+.gg-lever{border:1px solid var(--fel-dim);background:rgba(155,212,74,.06);padding:var(--s2) var(--s3);font-size:.9rem}
+.gg-lever b.big{font-family:var(--f-mono);color:var(--fel)}
+.ggshop{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.ggshop li{display:grid;grid-template-columns:4.6rem minmax(0,1fr) auto;gap:2px var(--s2);align-items:center;font-size:.88rem}
+.ggshop .gs{font-family:var(--f-mono);font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.ggshop .gn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ggshop .gn .ii{width:18px;height:18px;vertical-align:-4px;margin-right:4px}
+.ggshop .ggm{grid-column:2;height:5px;background:var(--line);border-radius:3px;overflow:hidden}
+.ggshop .ggm i{display:block;height:100%;background:var(--warn)}
+.ggshop li.ok .ggm i{background:var(--gold)} .ggshop li.good .ggm i{background:var(--fel)}
+.ggshop li.empty .gn{color:var(--warn);font-style:italic}
+.ggshop .btn{padding:2px 10px;font-size:.78rem;grid-row:span 2}
+.ggtiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:6px}
+.ggtile{border:1px solid var(--line);padding:6px 8px;background:var(--surface)}
+.ggtile b{display:block;font-family:var(--f-mono);font-size:1.15rem;color:var(--void)}
+.ggtile span{font-size:.75rem;color:var(--muted)}
+.ggbars{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.ggbars li{display:grid;grid-template-columns:7.2rem minmax(0,1fr) 2.6rem;gap:var(--s2);align-items:center;font-size:.85rem}
+.ggbars .ggm{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.ggbars .ggm i{display:block;height:100%;background:linear-gradient(90deg,var(--void),var(--fel))}
+.ggbars .v{font-family:var(--f-mono);font-size:.78rem;text-align:right;color:var(--muted)}
+.gg-zero{font-size:.8rem;color:var(--muted);margin:0}
+.gg-zero s{opacity:.8}
+.ggchips{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:5px}
+.ggchips button{font:inherit;font-size:.78rem;padding:3px 8px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;border-radius:3px}
+.ggchips button.buy{border-color:var(--fel-dim);color:var(--fel)}
+.ggchips button.ok{border-color:rgba(214,178,94,.45);color:var(--gold)}
+.ggchips button.skip{opacity:.6}
+.ggchips button:hover,.ggchips button:focus-visible{border-color:var(--fel);opacity:1}
+.ggchips button.hit{outline:2px solid var(--fel);outline-offset:1px}
+.ggchips button .pt{font-family:var(--f-mono);font-size:.7rem;opacity:.8;margin-left:4px}
+.gg-verdict{margin:0;min-height:1.4em;font-size:.92rem}
+.gg-verdict .vb{font-family:var(--f-mono);font-size:.72rem;padding:1px 6px;border-radius:3px;margin-right:6px;text-transform:uppercase;letter-spacing:.06em}
+.vb.buy{background:rgba(155,212,74,.15);color:var(--fel)} .vb.ok{background:rgba(214,178,94,.15);color:var(--gold)} .vb.skip{background:rgba(224,136,79,.15);color:var(--warn)}
+.gg-ah summary{cursor:pointer;font-family:var(--f-mono);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:var(--s2)}
+@media (max-width:480px){.ggbars li{grid-template-columns:6rem minmax(0,1fr) 2.4rem}}
 /* level gates on the spec cards: future lines dim with their level, reached-but-unlearned lines get a warning */
 li[data-lv].lk,li[data-lvmax].lk{opacity:.42}
 li .lvtag{font-family:var(--f-mono);font-size:.68rem;margin-left:6px;padding:0 5px;border:1px solid var(--line);border-radius:99px;color:var(--muted);white-space:nowrap}
@@ -782,37 +821,44 @@ section:not(.fold) .foldwhy{display:none}
       <div class="statgrid" id="weightGrid"></div>
       <button type="button" class="btn" id="weightReset" style="margin-top:var(--s3)">Reset to defaults</button>
     </details>
-    <!-- Warlock gear-shopping guide (Nov 12). Numbers mirror DEFAULT_WEIGHTS.wl; update both together. -->
-    <details class="card weights gearguide" data-only="wl" style="margin-top:var(--s4)">
-      <summary>What gear to look for</summary>
-      <p><b>The wand is your best upgrade.</b> You finish every mob with it, so wand DPS counts more than any armor stat. Each +1 DPS is worth 2.5 points. A wand 5 DPS better than your current one adds about 12 points. Your whole blue chest's +7 Shadow damage is worth 7.</p>
-      <h4>Stats, best first</h4>
-      <ol class="gglist">
-        <li><b>Wand DPS</b>: 2.5 points per DPS. Look at the "(X damage per second)" line.</li>
-        <li><b>Shadow damage or spell damage</b>: 1 point each. Watch for "damage done by Shadow spells" or "damage and healing done by magical spells". Every DoT and Shadow Bolt gets it.</li>
-        <li><b>Spell hit / spell crit</b>: 8 and 6 points per 1%. Rare below level 40, so take them when you see them.</li>
-        <li><b>Stamina</b>: 0.5. Life Tap turns health into mana, so Stamina also means more mana.</li>
-        <li><b>Spirit</b> 0.45, <b>Intellect</b> 0.4. Useful, but you need about two of these to equal one Shadow damage.</li>
-        <li><b>Fire damage</b>: 0.15. It only boosts Immolate and Searing Pain.</li>
-      </ol>
-      <p><b>Worth nothing to you:</b> Strength, Agility, Attack Power, Defense, Dodge, "+healing" and Armor (barely counts). A tooltip full of these is a vendor item, even if it's blue.</p>
-      <h4>Green item names ("… of the X")</h4>
-      <p>A random green's name ending tells you its stats before you open the tooltip.</p>
-      <ul class="gglist">
-        <li><b>Buy or keep:</b> <i>of Shadow Wrath</i> (Shadow damage), <i>of the Whale</i> (Stamina, Spirit), <i>of the Eagle</i> (Stamina, Intellect), <i>of the Owl</i> (Intellect, Spirit).</li>
-        <li><b>Fine if cheap:</b> <i>of Stamina</i>, <i>of Spirit</i>, <i>of Intellect</i>, <i>of Concentration</i> (mana per 5).</li>
-        <li><b>Skip:</b> <i>of the Monkey, Tiger, Bear, Gorilla, Boar, Falcon, Wolf</i>, <i>of Power, Strength, Agility, Defense, Healing</i>, <i>of Fiery/Frozen/Arcane Wrath</i>.</li>
-      </ul>
-      <h4>Auction house</h4>
-      <p><b>Expect almost nothing.</b> Forever is a fresh server, and few players post low-level gear. That's why this page's automatic "look it up at the AH" list is switched off. Check when you're in town, but don't plan around it.</p>
-      <ul class="gglist">
-        <li><b>Search "Wand" first.</b> Enchanters craft wands (Magic and Mystic wands) and sell them. That's the purchase most likely to pay off.</li>
-        <li>Search the suffixes above (<i>Shadow Wrath</i>, <i>Whale</i>, <i>Eagle</i>, <i>Owl</i>), set the level range to your level up to your level +3, and look for <b>Cloth</b> only.</li>
-        <li>Before you buy, put the item into <b>Try an item…</b> above to see how many points it adds over what you wear.</li>
-        <li><b>Price rule:</b> gear gets replaced every 5–8 levels by quest rewards. Don't spend more than about a quarter of your gold on one piece, and keep money back for training and grimoires. A wand is the one exception.</li>
-      </ul>
-      <p class="muted">These weights are my leveling estimate, not a simulation. Forever has changed some items (Robe of the Moccasin is one), so always read the tooltip in game.</p>
-    </details>
+    <!-- Gear guide (Nov 13): shopping list, stat value and name checker, all rendered by renderGearGuide()
+         from the synced gear and weightsFor(CHAR), so editing a weight above re-ranks everything. -->
+    <article class="card gguide" id="gearGuide" style="margin-top:var(--s4)">
+      <div class="bagtop"><span class="tag">Gear guide</span><span class="muted gg-sub" id="ggSub"></span></div>
+      <div class="gg-grid">
+        <section class="ggp" aria-labelledby="ggShopH">
+          <h4 id="ggShopH">Shop for these first</h4>
+          <p class="muted gg-note">Your weakest slots, judged against what that slot usually gives. Tap <b>Try</b> to check a find.</p>
+          <div id="ggLever"></div>
+          <ol class="ggshop" id="ggShop"></ol>
+        </section>
+        <section class="ggp" aria-labelledby="ggStatH">
+          <h4 id="ggStatH">What a stat is worth</h4>
+          <div class="ggtiles" id="ggTiles"></div>
+          <ul class="ggbars" id="ggBars"></ul>
+          <p class="gg-zero" id="ggZero"></p>
+        </section>
+        <section class="ggp" aria-labelledby="ggNameH">
+          <h4 id="ggNameH">Check a green's name</h4>
+          <label class="calcsearch"><span>Paste or type a name</span>
+            <input id="ggQ" type="search" autocomplete="off" spellcheck="false" placeholder="e.g. Bandit Gloves of the Whale"></label>
+          <p class="gg-verdict" id="ggVerdict" aria-live="polite"></p>
+          <p class="muted gg-note">Every name ending, ranked for you. Tap one to copy it for the auction house search.</p>
+          <ul class="ggchips" id="ggChips"></ul>
+        </section>
+      </div>
+      <details class="gg-ah">
+        <summary>Auction house tips</summary>
+        <ul class="gglist">
+          <li><b>Expect little.</b> Forever is a fresh server and few players post low-level gear, so check it when you're in town but don't plan around it.</li>
+          <li><b>Search your top item first</b> (the box at the top of the shopping list), then the green endings marked <b>Buy</b>. Set the level range to your level up to your level +3.</li>
+          <li id="ggArmorTip"></li>
+          <li>Before you pay, put the item into <b>Try an item…</b> to see how many points it adds.</li>
+          <li><b>Price rule:</b> quest rewards replace gear every 5–8 levels. Spend at most about a quarter of your gold on one piece, apart from your main weapon or wand, and keep money for training.</li>
+        </ul>
+      </details>
+      <p class="muted gg-note">Weights are my leveling estimate, and the name-ending values are rough averages. Forever changed some items, so read the tooltip in game.</p>
+    </article>
   </div>
 </section>
 
@@ -1225,7 +1271,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-12T14:28:33Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-13T07:04:19Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -2198,7 +2244,7 @@ function renderItems(){
   const sum = $("#itemSum"), gearEl = $("#gearList");
   if(!inv){
     box.innerHTML = `<li class="empty">No inventory yet. Update the addon (version 0.2), log in, then <kbd>/reload</kbd>. Your bags, gear and bank (after you open it once) show up here.</li>`;
-    sum.textContent = ""; gearEl.innerHTML = ""; $("#bagLegend").innerHTML = ""; renderCalc(); renderWeights(); return;
+    sum.textContent = ""; gearEl.innerHTML = ""; $("#bagLegend").innerHTML = ""; renderCalc(); renderWeights(); renderGearGuide(); return;
   }
   // Equipped gear: achieved slots, plus what's missing.
   const gear = g.gear || {};
@@ -2232,7 +2278,7 @@ function renderItems(){
   sum.innerHTML = `<b>${tot("equip").length}</b> to equip now · <b>${tot("later").length}</b> to keep for later · <b>${tot("give").length}</b> for ${esc(charName(partnerOf(CHAR)))} · `+
     `<b>${fmtCoin(cash)}</b> if you sell the rest · scanned ${esc(ago(g.invTime||g.time))}`;
   renderAhCheck(inv);
-  renderCalc(); renderWeights();
+  renderCalc(); renderWeights(); renderGearGuide();
 }
 
 // Manual calculator: pick a slot, type stats, see the score and the delta against what you wear.
@@ -2313,6 +2359,124 @@ function renderWeights(){
   if(el.dataset.char===sig || el.contains(document.activeElement)) return;   // rebuild only on char switch, so typing keeps focus
   el.dataset.char = sig; const w = weightsFor(CHAR);
   el.innerHTML = STAT_DEFS.map(([k,l])=>`<label><span>${l}</span><input type="number" step="0.05" data-w="${k}" value="${w[k]}"></label>`).join("");
+}
+/* ---- Gear guide ----
+   renderGearGuide(): shopping list of weak slots, stat-value bars and a green-name checker, all from
+   weightsFor(CHAR) and the synced gear, so it works for either character and follows weight edits. */
+// Rough share of an item's stat budget each slot gets (Classic itemization). Used to compare slots fairly:
+// a ring with 4 points is as "full" as a chest with 7. Approximate on purpose.
+const SLOT_MOD = {1:1,5:1,7:1,3:.75,6:.75,8:.75,10:.75,2:.56,9:.56,11:.56,12:.56,15:.56,13:.7,14:.7,16:1,17:.56,18:.4};
+// Slot -> the calculator's slot option, so "Try" opens the dialog on the right slot.
+const SLOT_INV = {1:"HEAD",2:"NECK",3:"SHOULDER",5:"CHEST",6:"WAIST",7:"LEGS",8:"FEET",9:"WRIST",10:"HAND",11:"FINGER",12:"FINGER",
+  13:"TRINKET",14:"TRINKET",15:"CLOAK",16:"WEAPON",17:"HOLDABLE",18:"RANGEDRIGHT"};
+// Random-suffix greens, stats per ~10 points of item budget. Spell-school damage costs more budget than a
+// primary stat (about 7 per 10), healing less (about 13), attack power 2 per stat. Rough averages, not exact rolls.
+const SUFFIXES = [
+  ["of Shadow Wrath",{shadow:7}],["of Fiery Wrath",{fire:7}],["of Frozen Wrath",{}],["of Arcane Wrath",{}],["of Nature's Wrath",{}],
+  ["of Holy Wrath",{holy:7}],["of Healing",{heal:13}],
+  ["of the Whale",{sta:5,spi:5}],["of the Eagle",{sta:5,int:5}],["of the Owl",{int:5,spi:5}],["of the Bear",{str:5,sta:5}],
+  ["of the Gorilla",{str:5,int:5}],["of the Boar",{str:5,spi:5}],["of the Monkey",{agi:5,sta:5}],["of the Tiger",{str:5,agi:5}],
+  ["of the Falcon",{agi:5,int:5}],["of the Wolf",{agi:5,spi:5}],
+  ["of Stamina",{sta:10}],["of Intellect",{int:10}],["of Spirit",{spi:10}],["of Strength",{str:10}],["of Agility",{agi:10}],
+  ["of Power",{ap:20}],["of Defense",{}],["of Regeneration",{hp5:3}]
+];
+const STAT_SHORT = {sta:"Stamina",int:"Intellect",spi:"Spirit",str:"Strength",agi:"Agility",shadow:"Shadow dmg",fire:"Fire dmg",holy:"Holy dmg",heal:"Healing",ap:"Attack power",hp5:"Health/5s"};
+// Score each suffix and tier it against the best one for this character: >=60% Buy, >=40% OK, else Skip.
+function suffixRanks(c){
+  const w = weightsFor(c);
+  const list = SUFFIXES.map(([n,st])=>({n, st, v:Object.entries(st).reduce((s,[k,x])=>s+x*(w[k]||0),0)}));
+  const top = Math.max(...list.map(x=>x.v), 0.01);
+  list.forEach(x=>{ x.r = x.v/top; x.tier = x.r>=.6 ? "buy" : x.r>=.4 ? "ok" : "skip"; });
+  return list.sort((a,b)=>b.v-a.v);
+}
+const TIER_WORD = {buy:"Buy", ok:"OK", skip:"Skip"};
+function renderGearGuide(){
+  const box = $("#gearGuide"); if(!box) return;
+  const c = CHAR, w = weightsFor(c), g = state.game, gear = (g && g.gear) || {};
+  const lvl = (g && g.level) || state.level || 1;
+  $("#ggSub").textContent = `${charName(c)} · level ${lvl}`;
+
+  // 1. The big lever: wand for the warlock (ranged slot), main-hand weapon for the paladin.
+  const lev = c==="wl" ? {slot:18, w:w.rdps, what:"wand"} : {slot:16, w:w.mdps, what:"weapon"};
+  const li = gear[lev.slot], dps = li && li.st && li.st.dps;
+  $("#ggLever").innerHTML = !g ? "" : `<p class="gg-lever">Your <b>${lev.what}</b> is the biggest single upgrade: each +1 DPS is worth <b>${lev.w}</b> points. `+
+    (dps ? `${esc(li.name)} does <b class="big">${dps}</b> DPS. Anything above <b class="big">${Math.ceil(dps+1)}</b> DPS is worth buying.`
+         : `You have no ${lev.what} equipped, so any ${lev.what} is a big upgrade.`)+`</p>`;
+
+  // 2. Weakest slots: score / slot share, lowest first. Empty slots lead; a two-hander makes the off hand N/A.
+  const shop = $("#ggShop");
+  if(!g || !g.gear){ shop.innerHTML = `<li class="muted">Sync the addon to see your weak slots.</li>`; }
+  else{
+    const rows = CORE_SLOTS.filter(s=>s!==lev.slot && !(s===17 && isTwoHand(gear[16])) && SLOT_MOD[s]).map(s=>{
+      const it = gear[s], sc = it ? itemScore(it, c) : 0;
+      return {s, it, sc, n: sc/SLOT_MOD[s]};
+    });
+    const best = Math.max(...rows.map(r=>r.n), 1);
+    // Trinkets barely drop before ~30, so an empty trinket slot isn't actionable: sort those last.
+    const rare = r=>!r.it && (r.s===13 || r.s===14) && lvl<30;
+    rows.sort((a,b)=>(rare(a) - rare(b)) || (!!a.it - !!b.it) || a.n-b.n);
+    shop.innerHTML = rows.slice(0,7).map(r=>{
+      const pct = Math.round(r.n/best*100), cls = !r.it ? "empty" : pct>=70 ? "good" : pct>=40 ? "ok" : "";
+      const name = r.it ? `<span class="gn" style="color:${QCOL[r.it.q]||""}">${itemIcon(r.it.id)}${esc(r.it.name)}</span>` : `<span class="gn">${rare(r) ? "Empty: rare before level 30" : "Empty: anything helps"}</span>`;
+      return `<li class="${cls}"><span class="gs">${SLOT_NAMES[r.s]}</span>${name}`+
+        `<button type="button" class="btn" data-ggtry="${r.s}" aria-label="Try an item for ${SLOT_NAMES[r.s]}">Try</button>`+
+        `<span class="ggm" title="${r.sc} points (${pct}% of your best-filled slot)"><i style="width:${Math.max(pct,3)}%"></i></span></li>`;
+    }).join("");
+  }
+
+  // 3. Stat value. Per-% and per-DPS stats can't share a bar scale with per-point stats, so they're tiles.
+  const TILE_KEYS = ["rdps","mdps","scrit","shit","crit","hit"];
+  const tiles = [["rdps","Wand DPS","per 1 DPS"],["mdps","Weapon DPS","per 1 DPS"],["scrit","Spell crit","per 1%"],["shit","Spell hit","per 1%"],
+    ["crit","Crit","per 1%"],["hit","Hit","per 1%"]].filter(([k])=>w[k]>0).sort((a,b)=>w[b[0]]-w[a[0]]);
+  $("#ggTiles").innerHTML = tiles.map(([k,l,u])=>`<div class="ggtile"><b>${w[k]}</b>${l} <span>${u}</span></div>`).join("");
+  const per = STAT_DEFS.filter(([k])=>!TILE_KEYS.includes(k));
+  const pos = per.filter(([k])=>w[k]>0.02).sort((a,b)=>w[b[0]]-w[a[0]]), top = pos.length ? w[pos[0][0]] : 1;
+  $("#ggBars").innerHTML = pos.map(([k,l])=>`<li><span>${l}</span><span class="ggm"><i style="width:${Math.round(w[k]/top*100)}%"></i></span><span class="v">${w[k]}</span></li>`).join("");
+  const zero = per.filter(([k])=>!(w[k]>0.02)).map(([,l])=>l);
+  $("#ggZero").innerHTML = zero.length ? `<b>Worth about nothing:</b> <s>${zero.join("</s>, <s>")}</s>. A tooltip full of these is vendor fodder, even if it's blue.` : "";
+
+  // 4. Suffix chips, best first.
+  const ranks = suffixRanks(c);
+  $("#ggChips").innerHTML = ranks.map(x=>`<li><button type="button" class="${x.tier}" data-ggsuf="${esc(x.n)}" title="${esc(Object.entries(x.st).map(([k,v])=>"+"+v+" "+(STAT_SHORT[k]||k)).join(", ")||"no stats you use")} per ~10 budget">${esc(x.n.replace(/^of (the )?/,""))}<span class="pt">${x.v.toFixed(1)}</span></button></li>`).join("");
+  $("#ggArmorTip").innerHTML = c==="wl" ? "Filter to <b>Cloth</b>: it's the only armor you can wear." : "Before 40 take the best of <b>Mail, Leather or Cloth</b> by points. Plate needs level 40.";
+  checkGreenName();
+}
+// Name checker: find a known ending in the typed name and give its tier, stats and score.
+function checkGreenName(){
+  const inp = $("#ggQ"), out = $("#ggVerdict"); if(!inp || !out) return;
+  const q = inp.value.trim();
+  document.querySelectorAll("#ggChips button.hit").forEach(b=>b.classList.remove("hit"));
+  if(!q){ out.innerHTML = ""; return; }
+  const ranks = suffixRanks(CHAR), low = q.toLowerCase();
+  // Exact ending first; then the bare word ("whale"), so typing just the suffix also works.
+  const x = ranks.find(r=>low.endsWith(r.n.toLowerCase())) || ranks.find(r=>low.includes(r.n.toLowerCase().replace(/^of (the )?/,"")));
+  if(!x){ out.innerHTML = `<span class="vb ok">?</span>No random ending found. For a fixed-stat item, open <b>Try an item…</b> and search it by name.`; return; }
+  const b = [...document.querySelectorAll("#ggChips button")].find(el=>el.dataset.ggsuf===x.n); if(b) b.classList.add("hit");
+  const stats = Object.keys(x.st).map(k=>STAT_SHORT[k]||k).join(" + ") || "stats you don't use";
+  const why = x.tier==="buy" ? "top stats for you" : x.tier==="ok" ? "fine if it's cheap or a big item-level jump" : "most of its stats do nothing for you";
+  out.innerHTML = `<span class="vb ${x.tier}">${TIER_WORD[x.tier]}</span><b>${esc(x.n)}</b>: ${esc(stats)}, ${why} (${Math.round(x.r*100)}% of the best ending).`;
+}
+function initGearGuide(){
+  if(!$("#gearGuide")) return;
+  $("#ggQ").addEventListener("input", checkGreenName);
+  // Chip: copy the ending for the AH search box (clipboard can be blocked in embeds, so it's best effort).
+  $("#ggChips").addEventListener("click", e=>{
+    const b = e.target.closest("[data-ggsuf]"); if(!b) return;
+    const t = b.dataset.ggsuf, pt = b.querySelector(".pt"), was = pt.textContent;
+    try{ navigator.clipboard.writeText(t).then(()=>{ pt.textContent = "copied"; setTimeout(()=>{ pt.textContent = was; }, 1200); }, ()=>{}); }catch(err){}
+    $("#ggQ").value = t; checkGreenName();
+  });
+  // Try: open the calculator on that slot in manual mode.
+  $("#ggShop").addEventListener("click", e=>{
+    const b = e.target.closest("[data-ggtry]"); if(!b) return;
+    const s = +b.dataset.ggtry, sel = $("#calcSlot"), gear = (state.game && state.game.gear) || {};
+    let inv = "INVTYPE_"+SLOT_INV[s];
+    if(s===16 && isTwoHand(gear[16])) inv = "INVTYPE_2HWEAPON";
+    if(s===17 && CHAR==="pal") inv = "INVTYPE_SHIELD";
+    if([...sel.options].some(o=>o.value===inv)) sel.value = inv;
+    calcItem = null; $("#calcPick").innerHTML = ""; document.querySelectorAll("#calcStats input").forEach(i=>{ i.value = ""; });
+    $("#calcOpen").click(); renderCalc();
+  });
 }
 function initItems(){
   $("#calcSlot").innerHTML = Object.entries({INVTYPE_HEAD:"Head",INVTYPE_NECK:"Neck",INVTYPE_SHOULDER:"Shoulder",INVTYPE_CHEST:"Chest",INVTYPE_WAIST:"Waist",
@@ -3242,7 +3406,7 @@ function tick(){
 }
 tick(); setInterval(tick,1000);
 
-initItems(); loadLocal(); setChar(CHAR); addKitIcons(); initRealMap(); initCloud(); autoFetchSV(); autoFetchArmory(); initSpellTips();
+initItems(); initGearGuide(); loadLocal(); setChar(CHAR); addKitIcons(); initRealMap(); initCloud(); autoFetchSV(); autoFetchArmory(); initSpellTips();
 // Re-check the synced file every minute while the tab is visible, and when you come back to it.
 // Safe to repeat: applySnap ignores snapshots that aren't newer. On the Claude artifact the fetch just fails quietly.
 setInterval(()=>{ if(document.visibilityState==="visible"){ autoFetchSV(); autoFetchArmory(); } }, 60000);
