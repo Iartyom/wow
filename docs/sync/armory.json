@@ -1,5 +1,5 @@
 {
- "fetched": "2026-11-13T16:29:51.946Z",
+ "fetched": "2026-11-14T18:12:21.489Z",
  "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/dark-bober",
  "character": {
   "avatar": {
@@ -261,8 +261,8 @@
      "display_string": "Item Level 20"
     },
     "durability": {
-     "value": 70,
-     "display_string": "Durability 70 / 70"
+     "value": 69,
+     "display_string": "Durability 69 / 70"
     }
    },
    "foot": {
@@ -386,8 +386,8 @@
      "display_string": "Item Level 19"
     },
     "durability": {
-     "value": 30,
-     "display_string": "Durability 30 / 30"
+     "value": 28,
+     "display_string": "Durability 28 / 30"
     }
    },
    "hand": {
@@ -508,8 +508,8 @@
      "display_string": "Item Level 23"
     },
     "durability": {
-     "value": 20,
-     "display_string": "Durability 20 / 20"
+     "value": 19,
+     "display_string": "Durability 19 / 20"
     }
    },
    "leftFinger": {
@@ -936,8 +936,8 @@
      "display_string": "Item Level 23"
     },
     "durability": {
-     "value": 45,
-     "display_string": "Durability 45 / 45"
+     "value": 44,
+     "display_string": "Durability 44 / 45"
     }
    },
    "rightFinger": {
@@ -1166,8 +1166,8 @@
      "display_string": "Item Level 24"
     },
     "durability": {
-     "value": 39,
-     "display_string": "Durability 39 / 40"
+     "value": 38,
+     "display_string": "Durability 38 / 40"
     }
    },
    "waist": {
@@ -1534,8 +1534,8 @@
      "display_string": "Item Level 24"
     },
     "durability": {
-     "value": 19,
-     "display_string": "Durability 19 / 20"
+     "value": 18,
+     "display_string": "Durability 18 / 20"
     }
    }
   },
@@ -1547,8 +1547,8 @@
   },
   "isRemix": false,
   "lastUpdatedTimestamp": {
-   "epoch": 1794577539000,
-   "iso8601": "2026-11-13T13:45:39Z"
+   "epoch": 1794660097000,
+   "iso8601": "2026-11-14T12:41:37Z"
   },
   "level": 22,
   "media": {
@@ -1596,7 +1596,7 @@
        "id": 2944,
        "maxSkillPoints": 75,
        "name": "Herbalism",
-       "skillPoints": 68
+       "skillPoints": 75
       }
      ]
     }
@@ -1698,17 +1698,17 @@
     },
     "id": "demonology",
     "name": "Demonology",
-    "spentPoints": 2,
+    "spentPoints": 3,
     "talents": [
      {
       "cast": "Passive",
-      "description": "Increases all damage done by your Imp, Voidwalker, Succubus, Incubus, and Felhunter pets by 4%.",
+      "description": "Increases all damage done by your Imp, Voidwalker, Succubus, Incubus, and Felhunter pets by 6%.",
       "icon": {
        "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/136206.jpg"
       },
       "id": 135437,
       "name": "Unholy Power",
-      "rank": 2
+      "rank": 3
      }
     ]
    }
@@ -2246,7 +2246,7 @@
        "slug": "dodge",
        "value": {
         "type": "PERCENTAGE",
-        "value": 4.7200003
+        "value": 4.8
        }
       },
       {
@@ -2534,7 +2534,7 @@
        "enum": "NEUTRAL",
        "slug": "neutral"
       },
-      "value": 2942
+      "value": 2967
      },
      {
       "id": "orgrimmar",
@@ -2548,7 +2548,7 @@
        "enum": "FRIENDLY",
        "slug": "friendly"
       },
-      "value": 317
+      "value": 417
      },
      {
       "id": "thunder-bluff",
@@ -2562,7 +2562,7 @@
        "enum": "NEUTRAL",
        "slug": "neutral"
       },
-      "value": 1442
+      "value": 1467
      },
      {
       "id": "undercity",
@@ -2576,7 +2576,7 @@
        "enum": "HONORED",
        "slug": "honored"
       },
-      "value": 3355
+      "value": 3380
      }
     ]
    },
