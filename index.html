@@ -1275,7 +1275,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-15T15:03:49Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-15T15:36:56Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -1850,7 +1850,8 @@ const STAT_DEFS = [
 ];
 const DEFAULT_WEIGHTS = {
   // Affliction: shadow damage is king, wand DPS matters while leveling, Stamina feeds Life Tap.
-  wl:{sta:.5,int:.4,spi:.45,str:0,agi:0,sp:1,shadow:1,fire:.15,holy:0,heal:0,scrit:6,shit:8,crit:0,hit:0,ap:0,mp5:1,hp5:.5,armor:.01,mdps:0,rdps:2.5,res:.05},
+  // Wand DPS 1.75 (was 2.5, Nov 15): you wand ~1/3 of a fight, so +1 wand DPS ≈ +0.35 DPS overall, vs ≈0.2 per spell damage.
+  wl:{sta:.5,int:.4,spi:.45,str:0,agi:0,sp:1,shadow:1,fire:.15,holy:0,heal:0,scrit:6,shit:8,crit:0,hit:0,ap:0,mp5:1,hp5:.5,armor:.01,mdps:0,rdps:1.75,res:.05},
   // Retribution with a two-hander: weapon DPS dominates (1 DPS ≈ 14 AP ≈ 7 Strength).
   pal:{sta:.5,int:.25,spi:.1,str:1,agi:.6,sp:.3,shadow:0,fire:0,holy:.3,heal:.05,scrit:2,shit:2,crit:12,hit:12,ap:.5,mp5:.8,hp5:.5,armor:.02,mdps:7,rdps:0,res:.05}
 };
