@@ -1,4 +1,4 @@
-
+﻿
 GrimoireSyncDB = {
 ["last"] = {
 ["talents"] = {
