@@ -1,5 +1,5 @@
 {
- "fetched": "2026-11-15T02:44:49.208Z",
+ "fetched": "2026-11-15T17:47:35.820Z",
  "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/dark-bober",
  "character": {
   "avatar": {
@@ -594,39 +594,42 @@
     }
    },
    "leftFinger": {
-    "id": 279867,
+    "id": 11968,
     "item": {
      "key": {
-      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/279867?namespace=static-forever-eu"
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/11968?namespace=static-forever-eu"
      },
-     "id": 279867
+     "id": 11968
     },
     "slot": {
      "type": "FINGER_1",
      "name": "Ring 1"
     },
     "quantity": 1,
-    "context": 11,
+    "context": 0,
+    "bonus_list": [
+     12719
+    ],
     "quality": {
      "type": "UNCOMMON",
      "name": "Uncommon"
     },
-    "name": "Slain Baron's Signet",
+    "name": "Amber Hoop of the Whale",
     "media": {
      "key": {
-      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/279867?namespace=static-forever-eu"
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/11968?namespace=static-forever-eu"
      },
-     "id": 279867,
+     "id": 11968,
      "content": {
       "_links": {
        "self": {
-        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/279867?namespace=static-forever-eu"
+        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/11968?namespace=static-forever-eu"
        }
       },
       "assets": [
        {
         "key": "icon",
-        "value": "https://render.worldofwarcraft.com/forever-eu/icons/56/133361.jpg"
+        "value": "https://render.worldofwarcraft.com/forever-eu/icons/56/133356.jpg"
        }
       ]
      }
@@ -650,8 +653,8 @@
      "name": "Finger"
     },
     "binding": {
-     "type": "ON_ACQUIRE",
-     "name": "Binds when picked up"
+     "type": "ON_EQUIP",
+     "name": "Binds when equipped"
     },
     "stats": [
      {
@@ -672,12 +675,12 @@
      },
      {
       "type": {
-       "type": "DEFENSE_SKILL_RATING",
-       "name": "Defense"
+       "type": "SPIRIT",
+       "name": "Spirit"
       },
-      "value": 1,
+      "value": 3,
       "display": {
-       "display_string": "+1 Defense",
+       "display_string": "+3 Spirit",
        "color": {
         "r": 0,
         "g": 255,
@@ -689,17 +692,23 @@
      }
     ],
     "sell_price": {
-     "value": 815,
+     "value": 997,
      "display_strings": {
       "header": "Sell Price:",
       "gold": "0",
-      "silver": "8",
-      "copper": "15"
+      "silver": "9",
+      "copper": "97"
+     }
+    },
+    "requirements": {
+     "level": {
+      "value": 21,
+      "display_string": "Requires Level 21"
      }
     },
     "level": {
-     "value": 23,
-     "display_string": "Item Level 23"
+     "value": 26,
+     "display_string": "Item Level 26"
     },
     "is_subclass_hidden": true
    },
@@ -1734,8 +1743,8 @@
   },
   "isRemix": false,
   "lastUpdatedTimestamp": {
-   "epoch": 1794695534000,
-   "iso8601": "2026-11-14T22:32:14Z"
+   "epoch": 1794759838000,
+   "iso8601": "2026-11-15T16:23:58Z"
   },
   "level": 23,
   "media": {
@@ -2374,7 +2383,7 @@
        "slug": "mana-regen",
        "value": {
         "type": "DECIMAL",
-        "value": 77
+        "value": 79
        }
       }
      ]
@@ -2433,7 +2442,7 @@
        "slug": "dodge",
        "value": {
         "type": "PERCENTAGE",
-        "value": 4.8343997
+        "value": 4.7943997
        }
       },
       {
@@ -2653,15 +2662,15 @@
       },
       "bonus": {
        "type": "WHOLE",
-       "value": 20
+       "value": 23
       },
       "effective": {
        "type": "WHOLE",
-       "value": 74
+       "value": 77
       },
       "rating": {
        "type": "WHOLE",
-       "value": 74
+       "value": 77
       },
       "type": "ENHANCED"
      },
@@ -2669,7 +2678,7 @@
      "slug": "spirit",
      "value": {
       "type": "WHOLE",
-      "value": 74
+      "value": 77
      }
     }
    ]
@@ -2704,6 +2713,27 @@
  "reputations": {
   "region": "eu",
   "reputations": [
+   {
+    "id": "horde-forces",
+    "max": false,
+    "name": "Horde Forces",
+    "reputations": [
+     {
+      "id": "warsong-outriders",
+      "max": false,
+      "maxValue": 3000,
+      "name": "Warsong Outriders",
+      "standing": "Neutral",
+      "standingType": {
+       "id": 3,
+       "name": "Neutral",
+       "enum": "NEUTRAL",
+       "slug": "neutral"
+      },
+      "value": 0
+     }
+    ]
+   },
    {
     "id": "horde",
     "max": false,
