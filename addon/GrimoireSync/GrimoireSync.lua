@@ -362,6 +362,46 @@ end
 
 local pendingLevel -- PLAYER_LEVEL_UP passes the new level before UnitLevel updates
 
+-- Where the player stands: uiMapID, its name ("Orgrimmar") and x/y in 0-100 map coords (1 decimal).
+-- nil inside instances, where the map API has no position.
+local function playerPos()
+  if not (C_Map and C_Map.GetBestMapForUnit and C_Map.GetPlayerMapPosition) then return nil end
+  local id = safe(C_Map.GetBestMapForUnit, "player"); if not id then return nil end
+  local p = safe(C_Map.GetPlayerMapPosition, id, "player"); if not p then return nil end
+  local x, y = p.x, p.y
+  if (not x) and p.GetXY then x, y = p:GetXY() end
+  if not x or (x == 0 and y == 0) then return nil end
+  local info = safe(C_Map.GetMapInfo, id)
+  return { map = id, name = info and info.name, x = math.floor(x * 1000 + 0.5) / 10, y = math.floor(y * 1000 + 0.5) / 10 }
+end
+
+-- NPCs you interact with (trainer, vendor, bank, flight master, AH, stable, titled gossip NPCs), so the page
+-- can pin their real Forever positions on the city/zone maps. Account-wide: both characters fill one list.
+local npcTip
+local function npcTitle()
+  if C_TooltipInfo and C_TooltipInfo.GetUnit then
+    local d = safe(C_TooltipInfo.GetUnit, "npc")
+    local l = d and d.lines and d.lines[2]
+    if l and l.leftText then return l.leftText end
+  end
+  npcTip = npcTip or CreateFrame("GameTooltip", "GrimoireSyncNpcTip", nil, "GameTooltipTemplate")
+  npcTip:SetOwner(WorldFrame, "ANCHOR_NONE"); npcTip:ClearLines(); pcall(npcTip.SetUnit, npcTip, "npc")
+  local fs = _G["GrimoireSyncNpcTipTextLeft2"]
+  return fs and fs:GetText()
+end
+local NPC_EVENTS = { TRAINER_SHOW = "t", MERCHANT_SHOW = "v", BANKFRAME_OPENED = "b", TAXIMAP_OPENED = "f",
+                     AUCTION_HOUSE_SHOW = "a", PET_STABLE_SHOW = "s", GOSSIP_SHOW = "n" }
+local function noteNpc(event)
+  local name = safe(UnitName, "npc"); if not name then return end
+  local pos = playerPos(); if not pos or not pos.name then return end   -- you stand next to them: close enough
+  local title = npcTitle()
+  if title and (title:match("^Level ") or title:match("^%?%?")) then title = nil end   -- no <title> line
+  local kind = NPC_EVENTS[event]
+  if kind == "n" and not title then return end   -- plain quest givers would only clutter the map
+  GrimoireSyncDB.npcs = GrimoireSyncDB.npcs or {}
+  GrimoireSyncDB.npcs[name .. "@" .. pos.name] = { name = name, title = title, k = kind, map = pos.name, x = pos.x, y = pos.y, t = time() }
+end
+
 local function snapshot(event)
   local _, classFile = safe(UnitClass, "player")
   local _, raceFile = safe(UnitRace, "player")
@@ -382,6 +422,8 @@ local function snapshot(event)
     xpMax = xpMax,
     zone = safe(GetRealZoneText),
     subzone = safe(GetSubZoneText),
+    pos = playerPos(),
+    npcs = GrimoireSyncDB.npcs,
     money = safe(GetMoney),
     quests = countCompletedQuests(),
     demons = scanDemons(),
@@ -414,6 +456,7 @@ local INV_EVENTS = { BAG_UPDATE_DELAYED = true, PLAYER_EQUIPMENT_CHANGED = true,
                      PLAYERBANKSLOTS_CHANGED = true, AUCTION_HOUSE_CLOSED = true, MERCHANT_CLOSED = true }
 for e in pairs(INV_EVENTS) do pcall(f.RegisterEvent, f, e) end
 pcall(f.RegisterEvent, f, "BANKFRAME_CLOSED")
+for e in pairs(NPC_EVENTS) do pcall(f.RegisterEvent, f, e) end
 pcall(f.RegisterEvent, f, "GET_ITEM_INFO_RECEIVED")
 local bankOpen, invPending = false, false
 -- pcall: one odd item must not throw a Lua error popup from a timer callback.
@@ -429,6 +472,8 @@ local function queueInv()
   if C_Timer and C_Timer.After then C_Timer.After(1, invRescan) else invRescan() end
 end
 f:SetScript("OnEvent", function(_, event, arg1)
+  if NPC_EVENTS[event] then pcall(noteNpc, event) end
+  if event ~= "BANKFRAME_OPENED" and NPC_EVENTS[event] then return end
   if event == "BANKFRAME_CLOSED" then
     if bankOpen then pcall(scanBank) end   -- catch a deposit made in the last second
     bankOpen = false
