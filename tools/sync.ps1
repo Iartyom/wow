@@ -40,7 +40,13 @@ function Sync-Once {
   if ((Test-Path $target) -and ((Get-Content $target -Raw -Encoding UTF8) -eq $text)) { Write-Host "No changes."; return }
   Set-Content $target $text -Encoding UTF8 -NoNewline
   & (Join-Path $PSScriptRoot 'build.ps1')
-  $lvl = ([regex]::Match($text, '\["level"\]\s*=\s*(\d+)')).Groups[1].Value
+  # Character level = the `level` directly inside GrimoireSyncDB.last (brace depth 2). Since addon 0.6 the
+  # quest log also has `level` fields (quest levels), so "first match in the file" is no longer the character.
+  $lvl = ''; $depth = 0
+  foreach ($line in $clean) {
+    if ($depth -eq 2 -and $line -match '^\s*\["level"\]\s*=\s*(\d+)') { $lvl = $Matches[1]; break }
+    $depth += ([regex]::Matches($line, '\{')).Count - ([regex]::Matches($line, '\}')).Count
+  }
   Write-Host "Synced snapshot (level $lvl) from $($sv.FullName)" -ForegroundColor Green
   if (-not $NoPush) {
     git -C $repo add docs | Out-Null
