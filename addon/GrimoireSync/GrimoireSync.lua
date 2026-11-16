@@ -76,13 +76,16 @@ local function scanDemons()
 end
 
 -- Primary + secondary profession ranks from the skill pane (Classic-style API).
+-- Caps go in profMax (separate table so older page versions still read `profs` as name -> rank);
+-- a skill sitting at its cap means "visit the trainer for the next tier".
+local profMax = {}
 local function scanProfessions()
   local out = {}
   local n = safe(GetNumSkillLines) or 0
   for i = 1, n do
     local name, isHeader, _, rank, _, _, maxRank = safe(GetSkillLineInfo, i)
     if name and not isHeader and rank and maxRank and maxRank > 1 then
-      out[name] = rank
+      out[name] = rank; profMax[name] = maxRank
     end
   end
   if next(out) == nil and GetProfessions then
@@ -90,12 +93,61 @@ local function scanProfessions()
     for i = 1, 6 do
       local idx = list[i]
       if idx then
-        local pname, _, rank = safe(GetProfessionInfo, idx)
-        if pname then out[pname] = rank end
+        local pname, _, rank, maxRank = safe(GetProfessionInfo, idx)
+        if pname then out[pname] = rank; profMax[pname] = maxRank end
       end
     end
   end
   return out
+end
+
+-- Recipe difficulty -> one letter. o/y/g give skill (orange always, yellow usually, green rarely), x = grey.
+-- Old API returns strings; C_TradeSkillUI returns Enum.TradeskillRelativeDifficulty (0 optimal .. 3 trivial).
+local DIFF = { optimal = "o", medium = "y", easy = "g", trivial = "x", [0] = "o", [1] = "y", [2] = "g", [3] = "x" }
+local function itemIdOf(link) return link and tonumber(link:match("item:(%d+)")) end
+
+-- Reads the open profession window: every learned recipe with its colour, what it makes and its reagents.
+-- Stored per profession in GrimoireSyncDB.crafts so the page can say what to craft for skill-ups.
+-- Tries the Classic globals first, then C_TradeSkillUI (the Forever client has the C_ table).
+local function scanTradeSkill()
+  local prof, rank, maxRank, list = nil, nil, nil, {}
+  if GetNumTradeSkills and GetTradeSkillLine then
+    prof, rank, maxRank = safe(GetTradeSkillLine)
+    for i = 1, safe(GetNumTradeSkills) or 0 do
+      local name, kind, avail = safe(GetTradeSkillInfo, i)
+      if name and kind ~= "header" and kind ~= "subheader" then
+        local r = {}
+        for j = 1, safe(GetTradeSkillNumReagents, i) or 0 do
+          local rn, _, cnt = safe(GetTradeSkillReagentInfo, i, j)
+          r[#r + 1] = { name = rn, id = itemIdOf(safe(GetTradeSkillReagentItemLink, i, j)), n = cnt }
+        end
+        list[#list + 1] = { name = name, d = DIFF[kind] or kind, can = avail, id = itemIdOf(safe(GetTradeSkillItemLink, i)), r = r }
+      end
+    end
+  end
+  if #list == 0 and C_TradeSkillUI and C_TradeSkillUI.GetAllRecipeIDs then
+    local line = C_TradeSkillUI.GetBaseProfessionInfo and safe(C_TradeSkillUI.GetBaseProfessionInfo)
+    if line then prof, rank, maxRank = line.professionName, line.skillLevel, line.maxSkillLevel end
+    for _, rid in ipairs(safe(C_TradeSkillUI.GetAllRecipeIDs) or {}) do
+      local ri = safe(C_TradeSkillUI.GetRecipeInfo, rid)
+      if ri and ri.learned ~= false then
+        local sch = C_TradeSkillUI.GetRecipeSchematic and safe(C_TradeSkillUI.GetRecipeSchematic, rid, false)
+        local r = {}
+        for _, slot in ipairs((sch and sch.reagentSlotSchematics) or {}) do
+          local rg = slot.reagents and slot.reagents[1]
+          if rg and rg.itemID and slot.reagentType ~= 0 then   -- 0 = optional/modifying slot (retail); Classic has none
+            r[#r + 1] = { id = rg.itemID, name = safe(GetItemInfo, rg.itemID), n = slot.quantityRequired }
+          end
+        end
+        local d = ri.relativeDifficulty; if d == nil then d = ri.difficulty end
+        list[#list + 1] = { name = ri.name, d = DIFF[d] or tostring(d), can = ri.numAvailable,
+                            id = sch and sch.outputItemID, r = r }
+      end
+    end
+  end
+  if not prof or #list == 0 then return end
+  GrimoireSyncDB.crafts = GrimoireSyncDB.crafts or {}
+  GrimoireSyncDB.crafts[prof] = { rank = rank, max = maxRank, t = time(), list = list }
 end
 
 -- One-off API probe: which talent/profession functions exist on this client and what they return.
@@ -428,6 +480,8 @@ local function snapshot(event)
     quests = countCompletedQuests(),
     demons = scanDemons(),
     profs = scanProfessions(),
+    profMax = profMax,
+    crafts = GrimoireSyncDB.crafts,
     talents = scanTalents(),
     spells = scanSpells(),
     time = time(),
@@ -457,6 +511,9 @@ local INV_EVENTS = { BAG_UPDATE_DELAYED = true, PLAYER_EQUIPMENT_CHANGED = true,
 for e in pairs(INV_EVENTS) do pcall(f.RegisterEvent, f, e) end
 pcall(f.RegisterEvent, f, "BANKFRAME_CLOSED")
 for e in pairs(NPC_EVENTS) do pcall(f.RegisterEvent, f, e) end
+-- Profession window: LIST_UPDATE fires again once recipes load and after each craft (colours change).
+local CRAFT_EVENTS = { TRADE_SKILL_SHOW = true, TRADE_SKILL_LIST_UPDATE = true, TRADE_SKILL_UPDATE = true }
+for e in pairs(CRAFT_EVENTS) do pcall(f.RegisterEvent, f, e) end
 pcall(f.RegisterEvent, f, "GET_ITEM_INFO_RECEIVED")
 local bankOpen, invPending = false, false
 -- pcall: one odd item must not throw a Lua error popup from a timer callback.
@@ -472,6 +529,7 @@ local function queueInv()
   if C_Timer and C_Timer.After then C_Timer.After(1, invRescan) else invRescan() end
 end
 f:SetScript("OnEvent", function(_, event, arg1)
+  if CRAFT_EVENTS[event] then pcall(scanTradeSkill); pcall(snapshot, event); return end
   if NPC_EVENTS[event] then pcall(noteNpc, event) end
   if event ~= "BANKFRAME_OPENED" and NPC_EVENTS[event] then return end
   if event == "BANKFRAME_CLOSED" then

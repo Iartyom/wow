@@ -438,6 +438,19 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 .calchits li.note{font-size:.85rem;color:var(--muted);padding:4px 2px}
 .itt.inline{position:static;display:block;max-width:none;pointer-events:auto;margin-bottom:var(--s3)}
 .weights summary{cursor:pointer;font-family:var(--f-mono);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+/* Profession helper: one panel per profession, reusing the gear guide's panel styles. */
+.pfbar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.pfbar i{display:block;height:100%;background:var(--fel)}
+.pfbar.cap i{background:var(--warn)}
+.pfmsg{font-size:.88rem;margin:0}
+.pfmsg.warn{border:1px solid var(--warn);padding:var(--s2);background:rgba(220,120,60,.07)}
+.pflist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px;font-size:.85rem}
+.pflist li{display:flex;flex-wrap:wrap;gap:2px 6px;align-items:baseline}
+.pflist .ii{width:16px;height:16px;vertical-align:-3px;margin-right:3px}
+.pflist .isub{flex-basis:100%;font-size:.75rem;color:var(--muted)}
+.pfd{font-family:var(--f-mono);font-size:.68rem;padding:0 5px;border:1px solid currentColor;text-transform:uppercase}
+.pfd.o{color:#ff8040} .pfd.y{color:#e0d020} .pfd.g{color:#40c040} .pfd.x{color:#9d9d9d}
+.pfn{margin-left:auto;font-family:var(--f-mono);font-size:.78rem}
 /* Gear guide: three panels (shop / stat value / name checker), stacking on narrow screens. */
 .gguide .gg-sub{font-size:.8rem}
 .gg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:var(--s3)}
@@ -1181,6 +1194,12 @@ section:not(.fold) .foldwhy{display:none}
 <section id="extras">
   <div class="wrap">
     <header><p class="eyebrow">Chapter VII</p><h2>Professions, gold &amp; addons</h2></header>
+    <!-- Profession helper (Nov 16): renderProfs() from the synced skills, bags/bank and (addon 0.5+) the
+         recipe list read from each profession window. -->
+    <article class="card gguide" id="profHelper" style="margin-bottom:var(--s4)">
+      <div class="bagtop"><span class="tag">Profession helper</span><span class="muted gg-sub" id="pfSub"></span></div>
+      <div class="gg-grid" id="pfGrid"></div>
+    </article>
     <div class="grid">
       <article class="card" data-only="pal">
         <span class="tag">Professions</span>
@@ -1285,7 +1304,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-15T19:14:02Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-16T11:52:35Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -1608,7 +1627,8 @@ function applySnap(c, s, source){
     bags: inv ? compactList(inv.bags) : null, gear: inv ? gear : null, invTime: inv ? +inv.time||0 : 0,
     bank: bank ? {time:+bank.time||0, items:compactList(bank.items)} : null, addonTime:+s.time||0,
     addonGear: inv ? gear : null,
-    pos: objOrNull(s.pos), npcs: objOrNull(s.npcs)};   // addon 0.4+: where you stood, NPCs you talked to   // kept apart from `gear`, which an Armory merge may replace
+    // addon 0.4+: where you stood, NPCs you talked to. 0.5+: skill caps and recipes from profession windows.
+    pos: objOrNull(s.pos), npcs: objOrNull(s.npcs), profMax: objOrNull(s.profMax), crafts: objOrNull(s.crafts)};
   // 0.2+ files keep the character name in `who` (items use `name`); older files used `name`.
   const who = s.who || (!inv && s.name); if(who) st.charName = String(who);
   st.level = Math.max(1, Math.min(60, Math.round(s.level)));
@@ -2412,6 +2432,126 @@ function renderWeights(){
   el.dataset.char = sig; const w = weightsFor(CHAR);
   el.innerHTML = STAT_DEFS.map(([k,l])=>`<label><span>${l}</span><input type="number" step="0.05" data-w="${k}" value="${w[k]}"></label>`).join("");
 }
+/* ---- Profession helper ----
+   renderProfs(): one panel per profession: skill vs cap (train the next tier when capped), what to gather
+   next, and for crafting skills which known recipes still give skill and how many you can make from
+   bags + bank. Recipes come from addon 0.5's profession-window scan; node levels are Classic values. */
+// Trainer tiers (Classic): name, cap, skill needed to learn it, character level needed.
+const PROF_TIERS = [["Apprentice",75,0,5],["Journeyman",150,50,10],["Expert",225,125,20],["Artisan",300,200,35]];
+const GATHER_NODES = {
+  Herbalism:[["Peacebloom",1],["Silverleaf",1],["Earthroot",15],["Mageroyal",50],["Briarthorn",70],["Stranglekelp",85],["Bruiseweed",100],
+    ["Wild Steelbloom",115],["Grave Moss",120],["Kingsblood",125],["Liferoot",150],["Fadeleaf",160],["Goldthorn",170],["Khadgar's Whisker",185],
+    ["Wintersbite",195],["Firebloom",205],["Purple Lotus",210],["Arthas' Tears",220],["Sungrass",230],["Blindweed",235],["Ghost Mushroom",245],
+    ["Gromsblood",250],["Golden Sansam",260],["Dreamfoil",270],["Mountain Silversage",280],["Plaguebloom",285],["Icecap",290],["Black Lotus",300]],
+  Mining:[["Copper Vein",1],["Tin Vein",65],["Silver Vein",75],["Iron Deposit",125],["Gold Vein",155],["Mithril Deposit",175],
+    ["Truesilver Deposit",230],["Small Thorium Vein",245],["Rich Thorium Vein",275]]
+};
+// Secondary skills learn Expert/Artisan from a book or quest, not the trainer (Classic).
+const PROF_BOOK = {"First Aid":1, Cooking:1, Fishing:1};
+const PROF_GATHER = {Herbalism:1, Mining:1, Skinning:1};
+const PROF_CRAFT = /^(Alchemy|Blacksmithing|Enchanting|Engineering|Leatherworking|Tailoring|Jewelcrafting|First Aid|Cooking)$/;
+// Skill gained per craft by colour: orange always 1, yellow and green are chances (rough Classic averages).
+const DIFF_GAIN = {o:1, y:.6, g:.2, x:0}, DIFF_WORD = {o:"orange", y:"yellow", g:"green", x:"grey"};
+const arrOf = v => Array.isArray(v) ? v : Object.values(v||{});   // Lua arrays can arrive as {1:..,2:..}
+// Cap from the addon (0.5+) when known; otherwise the smallest tier cap at or above the skill (a guess).
+function profCap(name, rank){
+  const m = state.game && state.game.profMax && +state.game.profMax[name];
+  if(m) return {cap:m, known:true};
+  const t = PROF_TIERS.find(t=>rank <= t[1]) || PROF_TIERS[3];
+  return {cap:t[1], known:false};
+}
+// Item counts from bags + bank, by id and by name (C_ API reagents may lack a name, old-API ones an id).
+function ownedCounts(){
+  const g = state.game || {}, byId = {}, byName = {};
+  for(const it of [...(g.bags||[]), ...((g.bank && g.bank.items)||[])]){
+    byId[it.id] = (byId[it.id]||0) + (it.n||1); byName[it.name] = (byName[it.name]||0) + (it.n||1);
+  }
+  return {of: r => (r.id && byId[r.id]) || byName[r.name] || 0};
+}
+// True when a profession wants a trainer visit (within 5 of its cap) or a known recipe still gives skill
+// and you own its reagents. Drives the Chapter VII fold.
+function profNeedsYou(){
+  const g = state.game; if(!g || !g.profs) return false;
+  const own = ownedCounts();
+  return Object.entries(g.profs).some(([name, rank])=>{
+    if(!(PROF_GATHER[name] || PROF_CRAFT.test(name))) return false;
+    rank = +rank||0; const {cap} = profCap(name, rank);
+    if(cap < 300 && rank >= 5 && cap - rank <= 5) return true;
+    const c = g.crafts && g.crafts[name];
+    return !!c && arrOf(c.list).some(r=>(r.d==="o"||r.d==="y") && arrOf(r.r).length && arrOf(r.r).every(x=>own.of(x) >= (x.n||1)));
+  });
+}
+function renderProfs(){
+  const box = $("#profHelper"); if(!box) return;
+  const g = state.game, grid = $("#pfGrid");
+  // Skills still at 1 (Cooking you never used) are hidden unless their recipes were scanned.
+  const profs = Object.entries((g && g.profs) || {}).filter(([k,v])=>(PROF_GATHER[k] || PROF_CRAFT.test(k) || k==="Fishing") && (+v > 1 || (g.crafts && g.crafts[k])));
+  $("#pfSub").textContent = g ? `${charName(CHAR)} · level ${g.level}` : "";
+  if(!profs.length){ grid.innerHTML = `<p class="muted">Sync the addon to see your professions here.</p>`; return; }
+  const lvl = g.level||1, own = ownedCounts(), crafts = g.crafts || {};
+  // Reagents of recipes that still give skill: those herbs are "keep", the rest of the pile can be sold.
+  const wanted = new Set();
+  for(const c of Object.values(crafts)) for(const r of arrOf(c.list))
+    if(r.d==="o" || r.d==="y") for(const x of arrOf(r.r)) wanted.add(x.name);
+  grid.innerHTML = profs.sort((a,b)=>b[1]-a[1]).map(([name, rank])=>{
+    rank = +rank||0;
+    const {cap, known} = profCap(name, rank), atCap = rank >= cap && cap < 300;
+    const next = PROF_TIERS.find(t=>t[1] > cap);
+    let msg = "";
+    if(atCap && next){
+      const how = PROF_BOOK[name] && next[1] > 150 ? `for ${esc(name)}, <b>${next[0]}</b> comes from a book or quest, not the trainer` : `train <b>${next[0]}</b> at a ${esc(name)} trainer`;
+      msg = `<p class="pfmsg warn"><b>${known?"Capped":"Probably capped"} at ${cap}.</b> Picks and crafts give no skill until you raise the cap: ${how}`+
+        (lvl >= next[3] ? "" : ` once you're level ${next[3]}`)+`. That lifts it to ${next[1]}.</p>`;
+    } else if(next && cap - rank <= 15){
+      msg = `<p class="pfmsg">${cap-rank} points to the ${cap} cap. Train <b>${next[0]}</b> next time you pass a trainer${lvl<next[3]?` (needs level ${next[3]})`:""}.</p>`;
+    }
+    let body = "";
+    const nodes = GATHER_NODES[name];
+    if(nodes){
+      // Node colours (Classic): orange to +25 over its level, yellow to +50, green to +100, then grey (no skill).
+      const ok = nodes.filter(n=>n[1] <= rank), soon = nodes.filter(n=>n[1] > rank).slice(0,3);
+      const skillUp = ok.filter(n=>rank < n[1]+100).map(n=>n[0]);
+      body += `<p class="pfmsg">Still gives skill: <b>${esc(skillUp.slice(-4).join(", ")||"nothing you can pick")}</b>.`+
+        (soon.length ? ` Unlocks next: ${soon.map(n=>`${esc(n[0])} <span class="mono">${n[1]}</span>`).join(", ")}.` : "")+`</p>`;
+      if(name==="Herbalism"){
+        const herbs = [...(g.bags||[]), ...((g.bank && g.bank.items)||[])].filter(it=>it.sub==="Herb")
+          .reduce((m,it)=>{ m[it.name] = m[it.name] || {...it, n:0}; m[it.name].n += it.n||1; return m; }, {});
+        const list = Object.values(herbs).sort((a,b)=>b.n-a.n);
+        if(list.length) body += `<p class="muted gg-note">Herbs you own (bags + bank)${wanted.size?". <b>Keep</b> means a recipe that still gives skill uses it":""}:</p><ul class="pflist">`+
+          list.map(it=>`<li><a href="https://www.wowhead.com/classic/item=${it.id}" target="_blank" rel="noopener">${itemIcon(it.id)}${esc(it.name)}</a>`+
+            `<span class="pfn">×${it.n}${wanted.size ? (wanted.has(it.name)?" · keep":" · sell") : ""}</span></li>`).join("")+`</ul>`;
+      }
+    } else if(name==="Skinning"){
+      body += `<p class="pfmsg">You can skin mobs up to about level <b>${rank<100 ? Math.floor(rank/10)+10 : Math.floor(rank/5)}</b>.</p>`;
+    }
+    if(PROF_CRAFT.test(name)){
+      const c = crafts[name];
+      if(!c) body += `<p class="muted gg-note">Open your ${esc(name)} window once in game (needs addon 0.5), then /reload. This panel then lists the recipes that still give skill and how many you can make from bags and bank.</p>`;
+      else{
+        const list = arrOf(c.list).map(r=>{
+          const reag = arrOf(r.r);
+          const make = reag.length ? Math.min(...reag.map(x=>Math.floor(own.of(x)/(x.n||1)))) : 0;
+          const short = reag.filter(x=>own.of(x) < (x.n||1)).map(x=>x.name||("item "+x.id));
+          return {...r, reag, make, short};
+        }).filter(r=>r.d!=="x").sort((a,b)=>(DIFF_GAIN[b.d]-DIFF_GAIN[a.d]) || b.make-a.make);
+        // Recipes share reagents, so summing them overstates; capped by room to the skill cap. Rough on purpose.
+        const gain = Math.min(list.reduce((s,r)=>s + r.make*(DIFF_GAIN[r.d]||0), 0), Math.max(0, cap-rank));
+        const age = Math.round((Date.now()/1000 - (c.t||0))/3600);
+        body += `<p class="muted gg-note">Recipes that still give skill, best first. Colours are from the last time you opened the window${age>=1?` (${age<48?age+" h":Math.round(age/24)+" days"} ago)`:""}; they fade as your skill rises.`+
+          (gain>=1 ? ` What you own is worth up to about <b>+${Math.round(gain)}</b> skill.` : "")+`</p>`;
+        body += list.length ? `<ul class="pflist">`+list.slice(0,8).map(r=>`<li><span class="pfd ${esc(r.d)}">${DIFF_WORD[r.d]||esc(r.d)}</span>`+
+          (r.id ? `<a href="https://www.wowhead.com/classic/item=${r.id}" target="_blank" rel="noopener">${itemIcon(r.id)}${esc(r.name)}</a>` : esc(r.name))+
+          `<span class="pfn">${r.make ? "make "+r.make : "—"}</span>`+
+          `<span class="isub">${r.reag.map(x=>`${x.n||1}× ${esc(x.name||"item "+x.id)} (have ${own.of(x)})`).join(", ")}${r.short.length?` · <b>short:</b> ${esc(r.short.join(", "))}`:""}</span></li>`).join("")+`</ul>`
+          : `<p class="pfmsg">Every recipe you know is grey. Learn new ones at the trainer${atCap?" after training the next tier":""}.</p>`;
+      }
+    }
+    const pct = Math.min(100, Math.round(rank/cap*100));
+    return `<section class="ggp" aria-label="${esc(name)}"><h4>${esc(name)} <span class="mono" style="font-size:.85rem;color:var(--fg)">${rank} / ${cap}${known?"":"?"}</span></h4>`+
+      `<div class="pfbar${atCap?" cap":""}" title="${rank} of ${cap}"><i style="width:${pct}%"></i></div>${msg}${body}</section>`;
+  }).join("");
+}
+
 /* ---- Gear guide ----
    renderGearGuide(): shopping list of weak slots, stat-value bars and a green-name checker, all from
    weightsFor(CHAR) and the synced gear, so it works for either character and follows weight edits. */
@@ -3334,7 +3474,8 @@ const FOLD_RULES = {
     });
     return [!!due, "next class quest is more than " + NEAR + " levels away"];
   },
-  extras:  () => [false, "reference, open when you train or sell"],
+  // Opens when the profession helper has something to do: a skill at/near its cap, or skill-ups you can craft now.
+  extras:  () => [profNeedsYou(), "professions fine for now; reference, open when you train or sell"],
   notes:   () => [!!(state.notes || "").trim(), "empty"],
   setup:   () => [!state.game, "addon already connected"],
   sources: () => [false, "reference"]
@@ -3383,7 +3524,7 @@ document.addEventListener("click", e => {
   if(sec && sec.classList.contains("fold")) setFold(id, true);
 });
 
-function renderAll(){ renderBar(); renderGame(); renderArmory(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderItems();
+function renderAll(){ renderBar(); renderGame(); renderArmory(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderItems(); renderProfs();
   const nb=$("#notesBox"); if(document.activeElement!==nb) nb.value = state.notes||"";
   applyFolds(); }
 
