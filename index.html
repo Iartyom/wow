@@ -457,6 +457,17 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 .qtxt{margin:2px 0 0 1.9rem;font-size:.78rem;color:var(--muted)} .qtxt summary{cursor:pointer}
 .qlh .qxp{margin-left:0}
 .qall>summary{cursor:pointer;list-style:revert} .qall>summary h4{display:inline}
+.qlink{background:none;border:0;padding:0;font:inherit;font-weight:700;color:inherit;cursor:pointer;text-align:left;text-decoration:underline dotted 1px;text-underline-offset:3px}
+.qlink:hover,.qlink:focus-visible{color:var(--gold);text-decoration-style:solid}
+.qwh{font-size:.75rem;text-decoration:none;color:var(--muted)}
+.qsteps li.on{outline:1px solid var(--gold);outline-offset:2px}
+.qguide{border:1px solid var(--gold);padding:var(--s2) var(--s3);margin-bottom:var(--s3);color:var(--fg)}
+.qguide .qgh{margin:0 0 4px}
+.qguide .qgw{margin:0 0 6px;font-size:.85rem}
+.qguide .qgs{margin:0 0 6px;padding-left:1.3rem;font-size:.85rem;display:flex;flex-direction:column;gap:4px}
+.qguide .qgs li.ok{color:var(--muted);list-style:none;margin-left:-1.3rem}
+.qguide .qkey{font-size:.75rem;color:var(--muted);margin:6px 0}.qguide .qkey .qpin{display:inline-grid;vertical-align:middle;width:16px;height:16px;font-size:10px}
+.qguide .qgb{margin:6px 0 0;display:flex;gap:var(--s2);align-items:center;flex-wrap:wrap}
 .qmini{font:600 .65rem/1.4 var(--f-mono);background:none;border:1px solid var(--line);color:var(--muted);padding:0 5px;cursor:pointer;vertical-align:1px}
 .qmini:hover{color:var(--fg);border-color:var(--gold)}
 .qhop{font-size:.8rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:var(--s2)}
@@ -1353,7 +1364,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-16T16:08:48Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-16T16:16:01Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -2583,21 +2594,21 @@ function questPlan(infos, here){
   const stops = {};
   const stop = map => { const z = mapZoneOf(map) || map; return stops[z] ||= {zone:z, acts:[], xp:0}; };
   for(const i of infos){
-    if(i.v==="turn" && i.end){ const s = stop(i.end.map); s.acts.push({k:0, html:`Turn in <b>${esc(i.q.title)}</b> to ${esc(i.d.end.name)}${xy(i.end)}${i.d.next?` · unlocks <i>${esc(i.d.next.name)}</i>`:""}`, id:i.q.id}); s.xp += i.xp||0; }
+    if(i.v==="turn" && i.end){ const s = stop(i.end.map); s.acts.push({k:0, html:`Turn in ${qLink(i.q)} to ${esc(i.d.end.name)}${xy(i.end)}${i.d.next?` · unlocks <i>${esc(i.d.next.name)}</i>`:""}`, id:i.q.id}); s.xp += i.xp||0; }
     if((i.v==="now" || i.v==="way" || i.v==="far") && i.d){
       const byMap = {}, qz = mapZoneOf(i.d.zone || i.q.zone), zones = [];
       for(const o of i.open){ const t = bestSpot(o, here, qz); if(!t) continue; const z = mapZoneOf(t.map)||t.map;
         if(!byMap[z]){ byMap[z] = []; zones.push(z); } byMap[z].push(o); }
-      for(const z of zones) stop(z).acts.push({k:1, html:`<b>${esc(i.q.title)}</b>: ${mergedObjLines(byMap[z], arrOf(i.q.obj))}`, id:i.q.id});
+      for(const z of zones) stop(z).acts.push({k:1, html:`${qLink(i.q)}: ${mergedObjLines(byMap[z], arrOf(i.q.obj))}`, id:i.q.id});
       // Open objectives the database can't place (e.g. a scripted event): say so instead of a bare "turn in".
       const unplaced = i.open.filter(o=>!bestSpot(o, here, qz));
-      if(unplaced.length && i.end) stop(zones[zones.length-1] || i.end.map).acts.push({k:1, html:`<b>${esc(i.q.title)}</b>: ${unplaced.map(o=>esc(o.item||o.text||"objective")).join(", ")} <span class="muted">(no location in the database: read the quest text)</span>`, id:i.q.id});
+      if(unplaced.length && i.end) stop(zones[zones.length-1] || i.end.map).acts.push({k:1, html:`${qLink(i.q)}: ${unplaced.map(o=>esc(o.item||o.text||"objective")).join(", ")} <span class="muted">(no location in the database: read the quest text)</span>`, id:i.q.id});
       if(i.end){
         const ez = mapZoneOf(i.end.map) || i.end.map, last = zones[zones.length-1];
         // Turn-in goes to its own zone's stop only when the work is there too; otherwise it's the last thing
         // you do after the work ("then go back to ..."), listed with the last work zone.
         const s = !zones.length || zones.every(z=>z===ez) ? stop(i.end.map) : stop(last);
-        s.acts.push({k:2, html:`Then turn in <b>${esc(i.q.title)}</b> to ${esc(i.d.end.name)}${ez!==s.zone?` back in ${esc(i.end.map)}`:""}${xy(i.end)}`, id:i.q.id});
+        s.acts.push({k:2, html:`Then turn in ${qLink(i.q)} to ${esc(i.d.end.name)}${ez!==s.zone?` back in ${esc(i.end.map)}`:""}${xy(i.end)}`, id:i.q.id});
         s.xp += i.xp||0;
       }
     }
@@ -2606,7 +2617,7 @@ function questPlan(infos, here){
   // Quests the database doesn't know (new in Forever): a final step so they aren't silently missing.
   const unknown = infos.filter(i=>!i.d && ["turn","now","way"].includes(i.v));
   const tail = unknown.length ? [{zone:"Not in the quest database", acts:unknown.map(i=>{ const p = i.q.pos && i.q.pos.got;
-    return {k:0, html:`${i.q.done?"Turn in":"Finish"} <b>${esc(i.q.title)}</b>${p?`: you picked it up${p.npc?" from "+esc(p.npc):""} in ${esc(p.map)}${xy(p)}`:": new in Forever, check the quest log in game"}`, id:i.q.id}; }), xp:0, unknown:true}] : [];
+    return {k:0, html:`${i.q.done?"Turn in":"Finish"} ${qLink(i.q)}${p?`: you picked it up${p.npc?" from "+esc(p.npc):""} in ${esc(p.map)}${xy(p)}`:": new in Forever, check the quest log in game"}`, id:i.q.id}; }), xp:0, unknown:true}] : [];
   return Object.values(stops).filter(s=>s.acts.length).sort((a,b)=>
     ((b.zone===here)-(a.zone===here)) || ((ZONES[b.zone]?.cont===myCont)-(ZONES[a.zone]?.cont===myCont)) || b.xp-a.xp)
     .map(s=>({...s, acts:s.acts.sort((x,y)=>x.k-y.k)})).concat(tail);
@@ -2626,18 +2637,18 @@ function renderQuestLog(){
 
   // 1. The plan.
   const planHTML = plan.length ? `<section class="ggp qlplan"><h4>Your plan, step by step</h4>
-    <p class="muted gg-note">Starts where you are (${esc(here||"?")}), then the closest zones. Tap a step to see it on the map.</p><ol class="qsteps">`+
+    <p class="muted gg-note">Starts where you are (${esc(here||"?")}), then the closest zones. Tap a <b>quest name</b> for its instructions and its spots on the map, or a zone to see all its quests.</p><ol class="qsteps">`+
     plan.map((s,n)=>(n && !s.unknown && ZONES[s.zone]?.cont && ZONES[s.zone].cont!==ZONES[plan[n-1].zone]?.cont
       ? `<li class="qhop">Take the zeppelin to ${ZONES[s.zone].cont==="EK"?"the Eastern Kingdoms (Orgrimmar → Undercity tower, or Grom'gol)":"Kalimdor (Undercity tower → Orgrimmar)"}</li>` : "")+
       `<li><button type="button" class="qstop" data-qzone="${esc(s.zone)}"><span class="qn">${n+1}</span><b>${esc(s.zone)}</b>`+
       `${s.zone===here?' <span class="badge">you are here</span>':""}${s.xp?` <span class="mono qxp">${fmtXP(s.xp)}</span>`:""}</button>`+
-      `<ul>${s.acts.map(a=>`<li>${a.html}${realMode && !s.unknown?` <button type="button" class="qmini" data-qmap="${a.id}">map</button>`:""}</li>`).join("")}</ul></li>`).join("")+`</ol></section>` : "";
+      `<ul>${s.acts.map(a=>`<li${a.id===qFocus?' class="on"':""}>${a.html}</li>`).join("")}</ul></li>`).join("")+`</ol></section>` : "";
 
   // 2. Don't-do list: everything that wastes time right now, with the reason.
   const nots = infos.filter(i=>["drop","later","group","dungeon"].includes(i.v));
   const notHTML = nots.length ? `<section class="ggp"><h4>Don't do these now</h4><ul class="qnot">`+
     nots.sort((a,b)=>["drop","group","later","dungeon"].indexOf(a.v)-["drop","group","later","dungeon"].indexOf(b.v)).map(i=>
-      `<li><span class="vchip ${VERDICT[i.v][1]}">${VERDICT[i.v][0]}</span><b class="ql-${i.col}">${esc(i.q.title)}</b> <span class="mono">${i.q.level||""}</span><br><span class="muted">${i.why}</span></li>`).join("")+
+      `<li><span class="vchip ${VERDICT[i.v][1]}">${VERDICT[i.v][0]}</span>${qLink(i.q, "ql-"+i.col)} <span class="mono">${i.q.level||""}</span><br><span class="muted">${i.why}</span></li>`).join("")+
     `</ul></section>` : "";
 
   // 3. Every quest, in plan order, with its description and objectives.
@@ -2647,15 +2658,15 @@ function renderQuestLog(){
     const objs = d && !q.done ? i.open.map(o=>`<li>${objLine(o, lo)}</li>`).join("")
       : !q.done ? lo.map(o=>`<li class="${o.done?"ok":""}">${o.done?"✓ ":""}${esc(String(o.text||""))}</li>`).join("") : "";
     return `<li class="ql-${i.col}${qFocus===q.id?" focus":""}" id="q-${q.id}"><div class="qlh"><span class="qll">${q.level||"?"}</span>`+
-      `<a href="https://www.wowhead.com/classic/quest=${q.id}" target="_blank" rel="noopener">${esc(q.title)}</a>`+
+      qLink(q)+` <a class="qwh" href="https://www.wowhead.com/classic/quest=${q.id}" target="_blank" rel="noopener" aria-label="${esc(q.title)} on Wowhead">↗</a>`+
       `<span class="vchip ${VERDICT[i.v][1]}">${VERDICT[i.v][0]}</span>${i.xp?`<span class="mono qxp">${fmtXP(i.xp)}</span>`:""}`+
-      (i.target && realMode ? `<button type="button" class="btn" data-qmap="${q.id}">Map</button>` : "")+`</div>`+
+      `</div>`+
       (i.why ? `<p class="qlw">${i.why}</p>` : "")+
       (objs ? `<ul class="qlo">${objs}</ul>` : "")+
       (d && d.text ? `<details class="qtxt"><summary>Quest text</summary>${esc(d.text)}</details>` : "")+`</li>`;
   };
   // Full list is reference (the plan and the don't-do list carry the advice), so it starts closed.
-  const listHTML = `<details class="ggp qall"${qFocus?" open":""}><summary><h4>All ${list.length} quests, with objectives and quest text</h4></summary><ol class="qlist">${order.flatMap(k=>by(k)).map(card).join("")}</ol></details>`;
+  const listHTML = `<details class="ggp qall"><summary><h4>All ${list.length} quests, with objectives and quest text</h4></summary><ol class="qlist">${order.flatMap(k=>by(k)).map(card).join("")}</ol></details>`;
   body.innerHTML = `<div class="qlgrid">${planHTML}${notHTML}</div>${listHTML}`+
     `<p class="muted" style="font-size:.75rem;margin-top:var(--s2)">Locations, mobs and XP: Questie's Forever database (QuestieDB, GPL-3.0), Classic data converted to Forever's maps. New Forever quests aren't in it yet.</p>`;
 }
@@ -2693,7 +2704,8 @@ function addQuestAreas(mapKey){
   });
   // After openZoneMap's own fitBounds (same tick), zoom onto the focused quest's area, once per Map click.
   if(focusPts.length && qFitPending){ qFitPending = false;
-    setTimeout(()=>{ autoBusy = true; leaf.fitBounds(L.latLngBounds(focusPts).pad(.25), {maxZoom:(zoneFitZoom||0)+2}); setTimeout(releaseAuto, 400); }, 50); }
+    setTimeout(()=>{ autoBusy = true; // No animation: an animated zoom can still be running when autoBusy is released, and the zoom-out handler then fires.
+      leaf.fitBounds(L.latLngBounds(focusPts).pad(.25), {maxZoom:(zoneFitZoom||0)+2, animate:false}); releaseAuto(); }, 50); }
 }
 let qFitPending = false;
 // Quests with work or a turn-in in this zone, for the zone info panel.
@@ -2702,8 +2714,38 @@ function questsInZoneHTML(zone){
   const L = g.level||1, here = mapZoneOf((g.pos && g.pos.name) || g.zone);
   const list = questList().map(q=>questInfo(q, L, here)).filter(i=>i.target && mapZoneOf(i.target.map)===zone && i.v!=="drop");
   if(!list.length) return "";
-  return `<p><b>Your quests here</b></p><ul class="plain">`+list.map(i=>`<li><span class="vchip ${VERDICT[i.v][1]}">${VERDICT[i.v][0]}</span> <a href="#q-${i.q.id}">${esc(i.q.title)}</a></li>`).join("")+`</ul>`+
-    (qFocus ? `<p><button type="button" class="btn" data-qall>Show all quests on the map</button></p>` : "");
+  return `<p><b>Your quests here</b></p><ul class="plain">`+list.map(i=>`<li><span class="vchip ${VERDICT[i.v][1]}">${VERDICT[i.v][0]}</span> ${qLink(i.q)}</li>`).join("")+`</ul>`;
+}
+// A quest name as a button: tapping it opens questGuideHTML in the map panel and zooms the map to the quest.
+const qLink = (q, cls) => `<button type="button" class="qlink ${cls||""}" data-qmap="${q.id}">${esc(q.title)}</button>`;
+// " in Zone (x, y)" for a spot; xy() already names cities, so don't name them twice.
+const atSpot = s => (s.map && !CITY_ZONE[s.map] ? ` in ${esc(s.map)}` : "")+xy(s);
+// Instructions for the focused quest, at the top of the map's side panel: verdict + why, numbered steps
+// (open objectives with spots, then the turn-in), what it unlocks, the quest text and a map key.
+function questGuideHTML(){
+  const g = state.game, q = qFocus && questList().find(x=>x.id===qFocus); if(!g || !q) return "";
+  const i = questInfo(q, g.level||1, mapZoneOf((g.pos && g.pos.name) || g.zone)), d = i.d, lo = arrOf(q.obj);
+  const done = lo.filter(o=>o.done).map(o=>`<li class="ok">✓ ${esc(String(o.text||""))}</li>`);
+  const steps = [];
+  if(!q.done){
+    if(d){ const here = mapZoneOf((g.pos && g.pos.name) || g.zone), qz = mapZoneOf(d.zone||q.zone);
+      const placed = i.open.filter(o=>bestSpot(o, here, qz));
+      // Items from the same mobs merge into one step ("Get A, B and C from ..."), like in the plan.
+      if(placed.length) steps.push(...mergedObjLines(placed, lo).split("; "));
+      for(const o of i.open.filter(o=>!placed.includes(o))) steps.push(`${esc(o.item||o.text||"Objective")} <span class="muted">(no location in the database: read the quest text)</span>`); }
+    else lo.filter(o=>!o.done).forEach(o=>steps.push(esc(String(o.text||""))));
+  }
+  const p = q.pos && q.pos.got;
+  if(i.end) steps.push(`Turn in to <b>${esc(d.end.name)}</b>${atSpot(i.end)}`);
+  else if(p) steps.push(`Turn in${p.npc?` to <b>${esc(p.npc)}</b>`:""} where you picked it up${atSpot(p)} <span class="muted">(usually right; not in the database)</span>`);
+  else steps.push(`Turn-in unknown: check the quest in game.`);
+  const key = realMode && (i.open.length || i.end) ? `<p class="qkey">Map: coloured dots = where the mobs or items are, <b class="qpin" style="background:${Q_COLORS[0]}">!</b> = middle of the area, <b class="qpin turn">?</b> = turn-in, <b class="qpin" style="background:${Q_COLORS[0]}">D</b> = dungeon entrance.</p>` : "";
+  return `<div class="qguide"><p class="qgh"><span class="vchip ${VERDICT[i.v][1]}">${VERDICT[i.v][0]}</span> <b class="ql-${i.col}">${esc(q.title)}</b> <span class="mono">${q.level||""}</span>${i.xp?` <span class="mono qxp">${i.xp} XP</span>`:""}</p>`+
+    (i.why ? `<p class="qgw">${i.why}</p>` : "")+
+    `<ol class="qgs">${done.join("")}${steps.map(x=>`<li>${x}</li>`).join("")}</ol>`+
+    (d && d.next ? `<p class="muted">${d.next.name===q.title?"Has a follow-up part":`Unlocks next: <i>${esc(d.next.name)}</i>`}</p>` : "")+
+    (d && d.text ? `<details class="qtxt"><summary>Quest text</summary>${esc(d.text)}</details>` : "")+key+
+    `<p class="qgb"><button type="button" class="btn" data-qall>Show all quests</button> <a href="https://www.wowhead.com/classic/quest=${q.id}" target="_blank" rel="noopener">Wowhead ↗</a></p></div>`;
 }
 // Open the zone/city map whose name is `where` (a C_Map name). Shared by "Where am I?" and the quest buttons.
 function focusOn(where){
@@ -2723,13 +2765,15 @@ document.addEventListener("click", e=>{
   if(t.dataset.qmap){
     const q = questList().find(x=>String(x.id)===t.dataset.qmap); if(!q) return;
     const i = questInfo(q, g.level||1, mapZoneOf((g.pos && g.pos.name) || g.zone));
-    qFocus = qFocus===q.id ? null : q.id; qFitPending = !!qFocus; where = i.target && i.target.map;
+    qFocus = q.id; qFitPending = true; where = (i.target && i.target.map) || (q.pos && q.pos.got && q.pos.got.map);
   } else { qFocus = null; where = t.dataset.qzone; }
   renderQuestLog();
-  if(!where) return;
-  $("#map").scrollIntoView({behavior:"smooth"});
-  if(!focusOn(where)) setImportMsg && setImportMsg(`${where}: the zoomable map only works on the GitHub site.`);
-  else renderZoneInfo();
+  const z = where && mapZoneOf(where);
+  if(!focusOn(where) && z && ZONES[z]){ selZone = z; renderMap(); }
+  renderZoneInfo();
+  // Scroll after the re-render so the target doesn't move under a smooth scroll; land on the map's nav bar.
+  setTimeout(()=>{ const nav = $("#zonenav"), el = nav && !nav.hidden ? nav : $("#map");
+    window.scrollTo({top: el.getBoundingClientRect().top + window.scrollY - 120, behavior:"smooth"}); }, 60);
 });
 
 /* ---- Profession helper ----
@@ -3519,7 +3563,7 @@ function renderZoneInfo(){
   const wiki = "https://warcraft.wiki.gg/wiki/" + encodeURIComponent(selZone.replace(/ /g,"_"));
   const duns = DUNGEONS.filter(d=>d[3]===selZone || (selZone==="Durotar" && d[3]==="Orgrimmar"));
   const openBtn = realMode && ZMAP[selZone] && zoneView!==selZone ? `<p><button type="button" class="btn" data-openzone="${esc(selZone)}">Open the ${esc(selZone)} map</button></p>` : "";
-  $("#zbody").innerHTML = `<p class="mono" style="color:var(--fg)">Levels ${esc(z.lv)}</p><p>${esc(z.desc)}</p>
+  $("#zbody").innerHTML = questGuideHTML() + `<p class="mono" style="color:var(--fg)">Levels ${esc(z.lv)}</p><p>${esc(z.desc)}</p>
     ${steps.length?`<p>On your route in brackets ${steps.join(", ")}.</p>`:""}
     ${duns.length?`<p>Dungeons: ${duns.map(d=>`${esc(d[2])} <span class="mono">(${d[0]??"?"}–${d[1]})</span>`).join(", ")}</p>`:""}
     ${questsInZoneHTML(selZone)}
