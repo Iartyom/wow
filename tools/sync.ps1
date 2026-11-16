@@ -39,6 +39,8 @@ function Sync-Once {
   New-Item -ItemType Directory -Force (Split-Path $target) | Out-Null
   if ((Test-Path $target) -and ((Get-Content $target -Raw -Encoding UTF8) -eq $text)) { Write-Host "No changes."; return }
   Set-Content $target $text -Encoding UTF8 -NoNewline
+  # Quest locations for the quests in the log (docs/sync/quests.json). Best effort: no Node = no locations.
+  try { & node (Join-Path $PSScriptRoot 'quest-data.mjs') } catch { Write-Host "quest-data skipped: $_" -ForegroundColor Yellow }
   & (Join-Path $PSScriptRoot 'build.ps1')
   # Character level = the `level` directly inside GrimoireSyncDB.last (brace depth 2). Since addon 0.6 the
   # quest log also has `level` fields (quest levels), so "first match in the file" is no longer the character.

@@ -439,7 +439,27 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 .itt.inline{position:static;display:block;max-width:none;pointer-events:auto;margin-bottom:var(--s3)}
 .weights summary{cursor:pointer;font-family:var(--f-mono);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 /* Quest log: four buckets in gear-guide panels; level colours are WoW's quest colours. */
-.poi-q{background:#ffd100;color:#1a1200}.poi-o{background:#e8873c;color:#1a1200}
+.qpin{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;font:700 12px/1 var(--f-mono);color:#120d00;border:2px solid #120d00;box-shadow:0 1px 3px #000}
+.poikey .qpin{display:inline-grid;width:14px;height:14px;font-size:10px;margin-right:4px;vertical-align:-2px}
+.qpin.turn{background:#ffd100;width:20px;height:20px;font-size:14px}
+.qlgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:var(--s3);margin-bottom:var(--s3)}
+.qsteps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s3)}
+.qsteps>li>ul{margin:4px 0 0 2rem;padding:0;font-size:.85rem;display:flex;flex-direction:column;gap:4px}
+.qstop{display:flex;align-items:center;gap:8px;width:100%;text-align:left;font:inherit;background:none;border:0;color:var(--gold);cursor:pointer;padding:0}
+.qstop:hover b,.qstop:focus-visible b{text-decoration:underline}
+.qn{display:grid;place-items:center;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--gold);color:#120d00;font:700 .8rem var(--f-mono);flex:none}
+.qxp{font-size:.75rem;color:var(--fel);margin-left:auto}
+.qnot{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s2);font-size:.85rem}
+.vchip{display:inline-block;font:600 .65rem/1.5 var(--f-mono);text-transform:uppercase;letter-spacing:.05em;padding:0 6px;border-radius:3px;margin-right:6px;white-space:nowrap}
+.v-turn{background:#ffd100;color:#120d00}.v-now{background:var(--fel);color:#0c1206}.v-way{background:#4a6b8a;color:#fff}
+.v-dun{background:#6b4a8a;color:#fff}.v-grp{background:#8a5a2a;color:#fff}.v-later{background:var(--line);color:var(--fg)}.v-drop{background:#7a2a2a;color:#fff}
+.qlist>li.focus{outline:1px solid var(--gold);outline-offset:3px}
+.qtxt{margin:2px 0 0 1.9rem;font-size:.78rem;color:var(--muted)} .qtxt summary{cursor:pointer}
+.qlh .qxp{margin-left:0}
+.qall>summary{cursor:pointer;list-style:revert} .qall>summary h4{display:inline}
+.qmini{font:600 .65rem/1.4 var(--f-mono);background:none;border:1px solid var(--line);color:var(--muted);padding:0 5px;cursor:pointer;vertical-align:1px}
+.qmini:hover{color:var(--fg);border-color:var(--gold)}
+.qhop{font-size:.8rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:var(--s2)}
 .qlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s2)}
 .qlist>li{border-left:3px solid var(--qc,#ffd100);padding:2px 0 2px var(--s2)}
 .qlh{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px;font-size:.92rem}
@@ -1002,8 +1022,9 @@ section:not(.fold) .foldwhy{display:none}
           <span class="poikey"><b class="poi poi-a">A</b>Auction house</span>
           <span class="poikey"><b class="poi poi-v">V</b>Vendor</span>
           <span class="poikey"><b class="poi poi-n">N</b>Other NPC</span>
-          <span class="poikey"><b class="poi poi-q">Q</b>Quest giver</span>
-          <span class="poikey"><b class="poi poi-o">O</b>Quest objective</span>
+          <span class="poikey"><b class="qpin" style="background:#ff8a3c">!</b>Quest area</span>
+          <span class="poikey"><b class="qpin turn">?</b>Turn in</span>
+          <label class="poikey"><input type="checkbox" id="showQuests" checked> Quests</label>
           <span class="poikey"><b class="poi-you" style="display:inline-block"></b>You</span>
           <label class="poikey"><input type="checkbox" id="showFlights" checked> Flight paths</label>
           <button type="button" class="btn" id="whereAmI" style="padding:2px 10px">Where am I?</button>
@@ -1332,7 +1353,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-16T15:36:29Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-16T16:08:48Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -2461,26 +2482,230 @@ function renderWeights(){
   el.innerHTML = STAT_DEFS.map(([k,l])=>`<label><span>${l}</span><input type="number" step="0.05" data-w="${k}" value="${w[k]}"></label>`).join("");
 }
 /* ---- Quest log helper ----
-   renderQuestLog(): your current quests (addon 0.6 `qlog`), sorted into Turn in / Do here / Next / Drop.
-   Colours follow Classic's quest-level colours for your level; positions are where the addon saw you pick
-   the quest up and make progress (real Forever spots), plus Questie's database when that addon is loaded. */
+   Your quest log (addon 0.6 `qlog`) + Questie's Forever database (sync/quests.json, built by tools/quest-data.mjs)
+   -> a verdict per quest (turn in / do now / on the way / dungeon run / needs a group / later / drop), a
+   step-by-step plan that starts where you stand, and quest areas on the zone maps. */
+let questDB = {};          // quest id -> QuestieDB record (quests in your log only)
+let qFocus = null;         // quest id highlighted on the map (Map button); null = all quests
+async function autoFetchQuests(){
+  try{ const r = await fetch("sync/quests.json", {cache:"no-store"}); if(!r.ok) return;
+       questDB = (await r.json()).quests || {}; renderQuestLog(); if(realMode && zoneView) openZoneMap(zoneView, zoneIsCity); }catch(e){}
+}
 // Highest quest level that is grey (no real XP) for a character level, Classic formula.
 function greyMax(L){ return L<=5 ? 0 : L<=39 ? L - Math.floor(L/10) - 5 : L - Math.floor(L/5) - 1; }
 function questColor(ql, L){
   const d = ql - L;
   return d>=5 ? "red" : d>=3 ? "orange" : d>=-2 ? "yellow" : ql>greyMax(L) ? "green" : "grey";
 }
-// Every known spot for a quest, newest progress first: [{map,x,y,k,label}], k "q" = giver/turn-in, "o" = objective.
-function questSpots(q){
-  const out = [], p = q.pos || {};
-  for(const s of arrOf(p.prog).slice().reverse()) out.push({...s, k:"o", label:`${q.title}: you made progress here`});
-  for(const s of arrOf(q.pts)) out.push({...s, k:"o", label:`${q.title}: objective (Questie)`});
-  if(q.to) out.push({...q.to, k:"q", label:`${q.title}: turn in to ${q.to.name||"?"} (Questie)`});
-  if(p.got) out.push({...p.got, k:"q", label:`${q.title}: picked up${p.got.npc?" from "+p.got.npc:""}`});
-  return out.filter(s=>s.map && s.x!=null);
-}
 function questList(){ const ql = state.game && state.game.qlog; return ql ? arrOf(ql.list).filter(q=>q && q.title) : []; }
-// Open the zone/city map whose name is `where` (a C_Map name). Shared by "Where am I?" and the quest Map buttons.
+const contOf = map => { const z = mapZoneOf(map); return z && ZONES[z] ? ZONES[z].cont : null; };
+const PVP_ZONES = /^(Warsong Gulch|Arathi Basin|Alterac Valley)$/;
+const ELITE = /elite|boss/;
+// Where a DB target really is for travel: dungeon mobs -> the dungeon entrance's zone.
+const travelSpot = t => t && t.dungeon && t.door ? {map:t.door.map, x:t.door.x, y:t.door.y, dungeon:t.dungeon} : t && t.map ? {map:t.map, x:t.x, y:t.y} : null;
+// Of an objective's possible locations, the most convenient: your zone, then the quest's zone, then your continent.
+function bestSpot(o, here, qzone){
+  const rank = t => { const z = mapZoneOf(t.map); return z===here ? 0 : z===qzone ? 1 : ZONES[z]?.cont===ZONES[here]?.cont ? 2 : 3; };
+  return o.targets.map(travelSpot).filter(Boolean).sort((a,b)=>rank(a)-rank(b))[0] || null;
+}
+// City coordinates are on the city map, so name the city ("in Thunder Bluff") or they'd be read on the zone map.
+const xy = s => s && s.x!=null ? (s.map && CITY_ZONE[s.map] ? ` in ${esc(s.map)}` : "")+` <span class="mono">(${s.x}, ${s.y})</span>`+(s.dungeon?` inside ${esc(s.dungeon)} (entrance)`:"") : "";
+
+// Joins one log quest with its DB record: which objectives are still open, where they are, and a verdict.
+function questInfo(q, L, here){
+  const d = questDB[q.id] || null, col = q.level ? questColor(q.level, L) : "yellow";
+  const logObj = arrOf(q.obj);
+  // DB objective -> still open? Match the addon's objective text by item/mob name (orders can differ).
+  const open = d ? d.objectives.filter(o=>{
+    if(q.done) return false;
+    const names = [o.item, o.text, ...o.targets.map(t=>t.name)].filter(Boolean).map(s=>s.toLowerCase());
+    const m = logObj.find(lo=>names.some(n=>String(lo.text||"").toLowerCase().includes(n)));
+    return m ? !m.done : true;
+  }) : [];
+  const qzone = mapZoneOf((d && d.zone) || q.zone);
+  const spots = open.map(o=>bestSpot(o, here, qzone)).filter(Boolean)
+    .sort((a,b)=>(mapZoneOf(b.map)===here)-(mapZoneOf(a.map)===here) || (mapZoneOf(b.map)===qzone)-(mapZoneOf(a.map)===qzone));
+  const work = spots[0] || null, end = d && d.end ? travelSpot(d.end) : null;
+  const isDungeon = !!(d && (d.dungeon || open.some(o=>o.targets.some(t=>t.dungeon))));
+  const elite = !isDungeon && open.some(o=>o.targets.length && o.targets.every(t=>ELITE.test(t.rank||"")));
+  const pvp = PVP_ZONES.test(q.zone||"") || PVP_ZONES.test((d && d.zone)||"");
+  const target = q.done ? end : work || end;
+  const here2 = target && mapZoneOf(target.map) === here;
+  const far = target && contOf(target.map) && contOf(here) && contOf(target.map) !== ZONES[here]?.cont;
+  let v, why;
+  if(q.failed){ v = "drop"; why = "Failed. Abandon it and pick it up again from the giver."; }
+  else if(q.done){ v = "turn"; why = end ? `Hand it to <b>${esc(d.end.name)}</b> in ${esc(end.map)}${xy(end)}.` : "Done. Turn it in where you got it."; }
+  else if(col==="grey"){ v = "drop"; why = `Grey at your level: almost no XP. Abandon it to free the log${isDungeon?" (it's a dungeon quest too)":""}.`; }
+  else if(pvp){ v = "later"; why = "Battleground quest: only worth keeping if you queue for that battleground."; }
+  else if(col==="red"){ v = "later"; why = `Level ${q.level}: 5+ above you. Keep it for later; you'd die doing it now.`; }
+  else if(isDungeon){ v = "dungeon"; const dn = (d && d.dungeon) || open.flatMap(o=>o.targets).find(t=>t.dungeon)?.dungeon;
+    why = `Done inside <b>${esc(dn||"a dungeon")}</b>. Keep it and finish it when you run that dungeon with a group, not solo.`; }
+  else if(elite){ v = "group"; why = `The target is ${esc(open.flatMap(o=>o.targets).find(t=>t.rank)?.rank||"elite")}. Don't try it solo at ${L}: find a group or skip it.`; }
+  else if(here2){ v = "now"; why = "In the zone you're in."; }
+  else if(far){ v = "far"; why = `${esc(target.map)}, on the other continent: part of the second leg of your plan.`; }
+  else { v = "way"; why = target ? `In ${esc(target.map)}.` : (d ? "" : "Not in the quest database (likely new in Forever): follow the quest text in game."); }
+  return {q, d, col, open, work, end, target, v, why, xp: d && d.xp};
+}
+const VERDICT = {turn:["Turn in","v-turn"], now:["Do now","v-now"], way:["On the way","v-way"], far:["Next trip","v-way"], dungeon:["Dungeon run","v-dun"],
+  group:["Needs a group","v-grp"], later:["Later","v-later"], drop:["Abandon","v-drop"]};
+// One objective as an instruction: "Kill 9 Ashenvale Outrunner around (x, y) in Ashenvale".
+function objLine(o, logObj){
+  const t = o.targets.filter(t=>t.map);
+  const lo = logObj.find(lo=>[o.item, ...o.targets.map(t=>t.name)].filter(Boolean).some(n=>String(lo.text||"").toLowerCase().includes(n.toLowerCase())));
+  const prog = lo && lo.need > 1 ? ` <span class="mono">${lo.have||0}/${lo.need}</span>` : "";
+  const first = t[0], where = first ? (first.dungeon ? ` inside ${esc(first.dungeon)}` : ` in ${esc(first.map)}${xy(first)}`) : "";
+  const lvl = x => x.lvl && x.lvl[0] ? ` <span class="muted">${x.lvl[0]===x.lvl[1]?x.lvl[0]:x.lvl[0]+"–"+x.lvl[1]}${x.rank?" "+x.rank:""}</span>` : "";
+  if(o.type==="item"){
+    const from = t.slice(0,3).map(x=>esc(x.name)+lvl(x)).join(", ");
+    return `Get <b>${esc(o.item||o.text||"the item")}</b>${prog}${from?` from ${from}`:""}${where}`;
+  }
+  if(o.type==="explore") return `Go to <b>${esc(o.text||"the marked spot")}</b>${where}`;
+  if(o.type==="object") return `Use <b>${esc(first?.name||o.text||"the object")}</b>${prog}${where}`;
+  return `Kill <b>${esc(o.text || t.map(x=>x.name).join(" or "))}</b>${prog}${t[0]?lvl(t[0]):""}${where}`;
+}
+// Several "get X from <same mobs>" objectives become one line: "Get A, B and C from <mobs> in <zone> (x, y)".
+function mergedObjLines(objs, logObj){
+  const groups = [];
+  for(const o of objs){
+    const key = o.type==="item" ? o.targets.map(t=>t.id).sort().join(",") : null;
+    const g = key && groups.find(g=>g.key===key);
+    if(g) g.objs.push(o); else groups.push({key, objs:[o]});
+  }
+  return groups.map(g=>{
+    if(g.objs.length===1) return objLine(g.objs[0], logObj);
+    const names = g.objs.map(o=>{ const lo = logObj.find(lo=>String(lo.text||"").toLowerCase().includes(String(o.item||"").toLowerCase()));
+      return `<b>${esc(o.item||"?")}</b>${lo && lo.need>1?` <span class="mono">${lo.have||0}/${lo.need}</span>`:""}`; });
+    return objLine(g.objs[0], logObj).replace(/^Get <b>.*?<\/b>(?: <span class="mono">[^<]*<\/span>)?/, "Get "+names.join(", "));
+  }).join("; ");
+}
+// Plan: stops by zone, your zone first, then the rest of your continent (most XP first), then the other one.
+function questPlan(infos, here){
+  const stops = {};
+  const stop = map => { const z = mapZoneOf(map) || map; return stops[z] ||= {zone:z, acts:[], xp:0}; };
+  for(const i of infos){
+    if(i.v==="turn" && i.end){ const s = stop(i.end.map); s.acts.push({k:0, html:`Turn in <b>${esc(i.q.title)}</b> to ${esc(i.d.end.name)}${xy(i.end)}${i.d.next?` · unlocks <i>${esc(i.d.next.name)}</i>`:""}`, id:i.q.id}); s.xp += i.xp||0; }
+    if((i.v==="now" || i.v==="way" || i.v==="far") && i.d){
+      const byMap = {}, qz = mapZoneOf(i.d.zone || i.q.zone), zones = [];
+      for(const o of i.open){ const t = bestSpot(o, here, qz); if(!t) continue; const z = mapZoneOf(t.map)||t.map;
+        if(!byMap[z]){ byMap[z] = []; zones.push(z); } byMap[z].push(o); }
+      for(const z of zones) stop(z).acts.push({k:1, html:`<b>${esc(i.q.title)}</b>: ${mergedObjLines(byMap[z], arrOf(i.q.obj))}`, id:i.q.id});
+      // Open objectives the database can't place (e.g. a scripted event): say so instead of a bare "turn in".
+      const unplaced = i.open.filter(o=>!bestSpot(o, here, qz));
+      if(unplaced.length && i.end) stop(zones[zones.length-1] || i.end.map).acts.push({k:1, html:`<b>${esc(i.q.title)}</b>: ${unplaced.map(o=>esc(o.item||o.text||"objective")).join(", ")} <span class="muted">(no location in the database: read the quest text)</span>`, id:i.q.id});
+      if(i.end){
+        const ez = mapZoneOf(i.end.map) || i.end.map, last = zones[zones.length-1];
+        // Turn-in goes to its own zone's stop only when the work is there too; otherwise it's the last thing
+        // you do after the work ("then go back to ..."), listed with the last work zone.
+        const s = !zones.length || zones.every(z=>z===ez) ? stop(i.end.map) : stop(last);
+        s.acts.push({k:2, html:`Then turn in <b>${esc(i.q.title)}</b> to ${esc(i.d.end.name)}${ez!==s.zone?` back in ${esc(i.end.map)}`:""}${xy(i.end)}`, id:i.q.id});
+        s.xp += i.xp||0;
+      }
+    }
+  }
+  const myCont = ZONES[here]?.cont;
+  // Quests the database doesn't know (new in Forever): a final step so they aren't silently missing.
+  const unknown = infos.filter(i=>!i.d && ["turn","now","way"].includes(i.v));
+  const tail = unknown.length ? [{zone:"Not in the quest database", acts:unknown.map(i=>{ const p = i.q.pos && i.q.pos.got;
+    return {k:0, html:`${i.q.done?"Turn in":"Finish"} <b>${esc(i.q.title)}</b>${p?`: you picked it up${p.npc?" from "+esc(p.npc):""} in ${esc(p.map)}${xy(p)}`:": new in Forever, check the quest log in game"}`, id:i.q.id}; }), xp:0, unknown:true}] : [];
+  return Object.values(stops).filter(s=>s.acts.length).sort((a,b)=>
+    ((b.zone===here)-(a.zone===here)) || ((ZONES[b.zone]?.cont===myCont)-(ZONES[a.zone]?.cont===myCont)) || b.xp-a.xp)
+    .map(s=>({...s, acts:s.acts.sort((x,y)=>x.k-y.k)})).concat(tail);
+}
+function renderQuestLog(){
+  const body = $("#qlBody"); if(!body) return;
+  const g = state.game, ql = g && g.qlog, list = questList();
+  if(!ql){ $("#qlSum").textContent = ""; body.innerHTML = `<p class="muted">Needs addon 0.6: <kbd>/reload</kbd> in game and your quest log shows up here after the next sync.</p>`; return; }
+  const L = g.level||1, here = mapZoneOf((g.pos && g.pos.name) || g.zone);
+  const infos = list.map(q=>questInfo(q, L, here));
+  const by = k => infos.filter(i=>i.v===k);
+  const plan = questPlan(infos, here);
+  const haveDB = Object.keys(questDB).length > 0;
+  const fmtXP = n => n ? (n>=1000 ? (n/1000).toFixed(1).replace(/\.0$/,"")+"k" : n)+" XP" : "";
+  $("#qlSum").innerHTML = `<b>${list.length}</b> quests · <b>${by("turn").length}</b> to turn in · <b>${by("now").length}</b> here in ${esc(here||"your zone")}`+
+    ` · <b>${by("drop").length}</b> to abandon`+(haveDB ? "" : ` · <span class="warn">quest database not loaded: locations missing</span>`);
+
+  // 1. The plan.
+  const planHTML = plan.length ? `<section class="ggp qlplan"><h4>Your plan, step by step</h4>
+    <p class="muted gg-note">Starts where you are (${esc(here||"?")}), then the closest zones. Tap a step to see it on the map.</p><ol class="qsteps">`+
+    plan.map((s,n)=>(n && !s.unknown && ZONES[s.zone]?.cont && ZONES[s.zone].cont!==ZONES[plan[n-1].zone]?.cont
+      ? `<li class="qhop">Take the zeppelin to ${ZONES[s.zone].cont==="EK"?"the Eastern Kingdoms (Orgrimmar → Undercity tower, or Grom'gol)":"Kalimdor (Undercity tower → Orgrimmar)"}</li>` : "")+
+      `<li><button type="button" class="qstop" data-qzone="${esc(s.zone)}"><span class="qn">${n+1}</span><b>${esc(s.zone)}</b>`+
+      `${s.zone===here?' <span class="badge">you are here</span>':""}${s.xp?` <span class="mono qxp">${fmtXP(s.xp)}</span>`:""}</button>`+
+      `<ul>${s.acts.map(a=>`<li>${a.html}${realMode && !s.unknown?` <button type="button" class="qmini" data-qmap="${a.id}">map</button>`:""}</li>`).join("")}</ul></li>`).join("")+`</ol></section>` : "";
+
+  // 2. Don't-do list: everything that wastes time right now, with the reason.
+  const nots = infos.filter(i=>["drop","later","group","dungeon"].includes(i.v));
+  const notHTML = nots.length ? `<section class="ggp"><h4>Don't do these now</h4><ul class="qnot">`+
+    nots.sort((a,b)=>["drop","group","later","dungeon"].indexOf(a.v)-["drop","group","later","dungeon"].indexOf(b.v)).map(i=>
+      `<li><span class="vchip ${VERDICT[i.v][1]}">${VERDICT[i.v][0]}</span><b class="ql-${i.col}">${esc(i.q.title)}</b> <span class="mono">${i.q.level||""}</span><br><span class="muted">${i.why}</span></li>`).join("")+
+    `</ul></section>` : "";
+
+  // 3. Every quest, in plan order, with its description and objectives.
+  const order = ["turn","now","way","far","dungeon","group","later","drop"];
+  const card = i => {
+    const q = i.q, d = i.d, lo = arrOf(q.obj);
+    const objs = d && !q.done ? i.open.map(o=>`<li>${objLine(o, lo)}</li>`).join("")
+      : !q.done ? lo.map(o=>`<li class="${o.done?"ok":""}">${o.done?"✓ ":""}${esc(String(o.text||""))}</li>`).join("") : "";
+    return `<li class="ql-${i.col}${qFocus===q.id?" focus":""}" id="q-${q.id}"><div class="qlh"><span class="qll">${q.level||"?"}</span>`+
+      `<a href="https://www.wowhead.com/classic/quest=${q.id}" target="_blank" rel="noopener">${esc(q.title)}</a>`+
+      `<span class="vchip ${VERDICT[i.v][1]}">${VERDICT[i.v][0]}</span>${i.xp?`<span class="mono qxp">${fmtXP(i.xp)}</span>`:""}`+
+      (i.target && realMode ? `<button type="button" class="btn" data-qmap="${q.id}">Map</button>` : "")+`</div>`+
+      (i.why ? `<p class="qlw">${i.why}</p>` : "")+
+      (objs ? `<ul class="qlo">${objs}</ul>` : "")+
+      (d && d.text ? `<details class="qtxt"><summary>Quest text</summary>${esc(d.text)}</details>` : "")+`</li>`;
+  };
+  // Full list is reference (the plan and the don't-do list carry the advice), so it starts closed.
+  const listHTML = `<details class="ggp qall"${qFocus?" open":""}><summary><h4>All ${list.length} quests, with objectives and quest text</h4></summary><ol class="qlist">${order.flatMap(k=>by(k)).map(card).join("")}</ol></details>`;
+  body.innerHTML = `<div class="qlgrid">${planHTML}${notHTML}</div>${listHTML}`+
+    `<p class="muted" style="font-size:.75rem;margin-top:var(--s2)">Locations, mobs and XP: Questie's Forever database (QuestieDB, GPL-3.0), Classic data converted to Forever's maps. New Forever quests aren't in it yet.</p>`;
+}
+// Quest areas on an open zone/city map: spawn dots per open objective, a numbered pin at each area's centre,
+// and "?" at turn-ins. With a focused quest (Map button) only that quest is drawn.
+const Q_COLORS = ["#ff8a3c","#4fc3f7","#c792ea","#9ccc65","#ffd54f","#f06292","#4db6ac","#e57373"];
+function addQuestAreas(mapKey){
+  if(!$("#showQuests") || !$("#showQuests").checked) return;
+  const g = state.game; if(!g) return;
+  const lvl = g.level||1, here = mapZoneOf((g.pos && g.pos.name) || g.zone);   // not `L`: that's Leaflet
+  const P = (x,y) => pxToLL([x/100*1002, y/100*668]);
+  const focusPts = [];   // focused quest's points on this map: the view zooms to them once
+  questList().map(q=>questInfo(q, lvl, here)).filter(i=>qFocus ? i.q.id===qFocus : !["drop","later"].includes(i.v)).forEach((i, n)=>{
+    const color = Q_COLORS[n % Q_COLORS.length];
+    for(const o of i.open) for(const t of o.targets){
+      if(t.map!==mapKey) continue;
+      if(qFocus) for(const p of (t.pts||[]).length ? t.pts : t.x!=null ? [[t.x,t.y]] : []) focusPts.push(P(p[0],p[1]));
+      for(const p of t.pts||[]) L.circleMarker(P(p[0],p[1]), {radius:qFocus?7:5, color:"#120d00", weight:1, opacity:.5, fillColor:color, fillOpacity:qFocus?.7:.5, interactive:false}).addTo(leafGroup);
+      if(t.x!=null) L.marker(P(t.x,t.y), {icon:L.divIcon({className:"", html:`<b class="qpin" style="background:${color}">!</b>`, iconSize:[18,18], iconAnchor:[9,9]}), zIndexOffset:500})
+        .bindTooltip(`<b>${esc(i.q.title)}</b><br>${objLine(o, arrOf(i.q.obj))}`, {direction:"top", offset:[0,-8]}).addTo(leafGroup);
+    }
+    // Dungeon objective: pin the entrance instead.
+    for(const o of i.open) for(const t of o.targets) if(t.dungeon && t.door && t.door.map===mapKey)
+      L.marker(P(t.door.x,t.door.y), {icon:L.divIcon({className:"", html:`<b class="qpin" style="background:${color}">D</b>`, iconSize:[18,18], iconAnchor:[9,9]})})
+        .bindTooltip(`<b>${esc(i.q.title)}</b>: ${esc(t.dungeon)} entrance`, {direction:"top", offset:[0,-8]}).addTo(leafGroup);
+    if(qFocus && i.end && i.end.map===mapKey && i.end.x!=null && !i.open.length) focusPts.push(P(i.end.x,i.end.y));
+    if(i.end && i.end.map===mapKey && i.end.x!=null && (i.q.done || qFocus))
+      L.marker(P(i.end.x,i.end.y), {icon:L.divIcon({className:"", html:`<b class="qpin turn">?</b>`, iconSize:[20,20], iconAnchor:[10,10]}), zIndexOffset:600})
+        .bindTooltip(`Turn in <b>${esc(i.q.title)}</b>: ${esc(i.d.end.name)}`, {direction:"top", offset:[0,-8]}).addTo(leafGroup);
+    // Not in the DB: fall back to the spots the addon learned (where you picked it up / made progress).
+    if(!i.d){ const p = i.q.pos || {};
+      for(const s of [...arrOf(p.prog), p.got].filter(s=>s && s.map===mapKey))
+        L.marker(P(s.x,s.y), {icon:L.divIcon({className:"", html:`<b class="qpin" style="background:${color}">•</b>`, iconSize:[16,16], iconAnchor:[8,8]})})
+          .bindTooltip(`<b>${esc(i.q.title)}</b>: you were here`, {direction:"top"}).addTo(leafGroup); }
+  });
+  // After openZoneMap's own fitBounds (same tick), zoom onto the focused quest's area, once per Map click.
+  if(focusPts.length && qFitPending){ qFitPending = false;
+    setTimeout(()=>{ autoBusy = true; leaf.fitBounds(L.latLngBounds(focusPts).pad(.25), {maxZoom:(zoneFitZoom||0)+2}); setTimeout(releaseAuto, 400); }, 50); }
+}
+let qFitPending = false;
+// Quests with work or a turn-in in this zone, for the zone info panel.
+function questsInZoneHTML(zone){
+  const g = state.game; if(!g || !g.qlog) return "";
+  const L = g.level||1, here = mapZoneOf((g.pos && g.pos.name) || g.zone);
+  const list = questList().map(q=>questInfo(q, L, here)).filter(i=>i.target && mapZoneOf(i.target.map)===zone && i.v!=="drop");
+  if(!list.length) return "";
+  return `<p><b>Your quests here</b></p><ul class="plain">`+list.map(i=>`<li><span class="vchip ${VERDICT[i.v][1]}">${VERDICT[i.v][0]}</span> <a href="#q-${i.q.id}">${esc(i.q.title)}</a></li>`).join("")+`</ul>`+
+    (qFocus ? `<p><button type="button" class="btn" data-qall>Show all quests on the map</button></p>` : "");
+}
+// Open the zone/city map whose name is `where` (a C_Map name). Shared by "Where am I?" and the quest buttons.
 function focusOn(where){
   const zone = mapZoneOf(where);
   if(!realMode || !zone || !ZMAP[zone]) return false;
@@ -2490,67 +2715,21 @@ function focusOn(where){
   openZoneMap(zone, isCity);
   return true;
 }
-function renderQuestLog(){
-  const body = $("#qlBody"); if(!body) return;
-  const g = state.game, ql = g && g.qlog, list = questList();
-  if(!ql){ $("#qlSum").textContent = ""; body.innerHTML = `<p class="muted">Needs addon 0.6: <kbd>/reload</kbd> in game and your quest log shows up here after the next sync.</p>`; return; }
-  const L = g.level||1, here = mapZoneOf((g.pos && g.pos.name) || g.zone);
-  const rows = list.map(q=>{
-    const col = q.level ? questColor(q.level, L) : "yellow", spots = questSpots(q);
-    const zone = mapZoneOf(q.zone) || (spots[0] && mapZoneOf(spots[0].map));
-    const bucket = q.failed ? "drop" : q.done ? "turn" : (col==="grey" || col==="red") ? "drop" : (here && zone===here) ? "here" : "next";
-    return {q, col, spots, zone, bucket};
-  });
-  const B = {turn:[], here:[], next:[], drop:[]};
-  rows.forEach(r=>B[r.bucket].push(r));
-  // Within a bucket: current zone first, then lowest level (easiest XP first).
-  for(const k in B) B[k].sort((a,b)=>((b.zone===here)-(a.zone===here)) || (a.q.level||0)-(b.q.level||0));
-  const objHTML = q => arrOf(q.obj).map(o=>{
-    const need = +o.need||0, have = Math.min(+o.have||0, need);
-    const text = esc(String(o.text||"").replace(/:\s*\d+\s*\/\s*\d+\s*$/,"").replace(/^\d+\s*\/\s*\d+\s*/,""));
-    return `<li class="${o.done?"ok":""}">${o.done?"✓ ":""}${text}`+
-      (need>1 ? ` <span class="mono">${have}/${need}</span><span class="qlbar"><i style="width:${Math.round(have/need*100)}%"></i></span>` : "")+`</li>`;
-  }).join("");
-  const why = r => r.q.failed ? "failed: abandon it and pick it up again"
-    : r.col==="grey" ? `grey at your level (quest ${r.q.level}): almost no XP, abandon unless it's on the way`
-    : r.col==="red" ? `level ${r.q.level}, 5+ above you: bring a group or come back later` : "";
-  const where = r => {
-    const p = r.q.pos && r.q.pos.got, to = r.q.to;
-    if(r.bucket==="turn") return to ? `Turn in to <b>${esc(to.name||"?")}</b>, ${esc(to.map)} <span class="mono">(${to.x}, ${to.y})</span>`
-      : p ? `Picked up ${p.npc?`from <b>${esc(p.npc)}</b> `:""}in ${esc(p.map)} <span class="mono">(${p.x}, ${p.y})</span>; most quests turn in there`
-      : `Turn-in spot unknown: check the quest text in game`;
-    return p ? `Picked up ${p.npc?`from ${esc(p.npc)} `:""}in ${esc(p.map)}` : "";
-  };
-  const card = r => {
-    const q = r.q, w = where(r), y = why(r);
-    return `<li class="ql-${r.col}"><div class="qlh"><span class="qll">${q.level||"?"}</span>`+
-      (q.id ? `<a href="https://www.wowhead.com/classic/quest=${q.id}" target="_blank" rel="noopener">${esc(q.title)}</a>` : esc(q.title))+
-      `<span class="qlz">${esc(q.zone||"")}</span>`+
-      (r.spots.length ? `<button type="button" class="btn" data-qmap="${q.id}" aria-label="Show ${esc(q.title)} on the map">Map</button>` : "")+`</div>`+
-      (r.bucket!=="turn" && arrOf(q.obj).length ? `<ul class="qlo">${objHTML(q)}</ul>` : "")+
-      (w ? `<p class="qlw">${w}</p>` : "")+(y ? `<p class="qlw warn">${y}</p>` : "")+`</li>`;
-  };
-  const block = (k, title, note) => B[k].length ? `<section class="ggp"><h4>${title} <span class="mono qlc">${B[k].length}</span></h4>`+
-    (note ? `<p class="muted gg-note">${note}</p>` : "")+`<ol class="qlist">${B[k].map(card).join("")}</ol></section>` : "";
-  const xpNote = "Colour = quest level against yours: <span class=\"ql-orange\">orange</span> hard, <span class=\"ql-yellow\">yellow</span> even, <span class=\"ql-green\">green</span> easy, grey no XP.";
-  $("#qlSum").innerHTML = `${list.length} quests · <b>${B.turn.length}</b> ready to turn in · <b>${B.here.length}</b> in ${esc(here||"your zone")}`+
-    (B.drop.length ? ` · ${B.drop.length} to drop or postpone` : "")+
-    // No warning for ql.collapsed: on Forever, C_QuestLog lists quests under collapsed headers too (Nov 16 sync:
-    // 8 collapsed headers, all 32 quests present).
-    `<br><span class="muted">${xpNote} Map pins: where you picked each quest up and where its counters went up${ql.questie?", plus Questie's spawns":""}.</span>`;
-  body.innerHTML = `<div class="gg-grid">`+
-    block("turn", "Turn in", "Done. Hand these in before anything else: free XP.")+
-    block("here", "Do here", "In the zone you're in, so no travel.")+
-    block("next", "Next", "")+
-    block("drop", "Drop or postpone", "")+`</div>`;
-}
 document.addEventListener("click", e=>{
-  const b = e.target.closest && e.target.closest("[data-qmap]"); if(!b) return;
-  const q = questList().find(x=>String(x.id)===b.dataset.qmap); if(!q) return;
-  const s = questSpots(q)[0]; if(!s) return;
+  const t = e.target.closest && e.target.closest("[data-qmap],[data-qzone],[data-qall]"); if(!t) return;
+  const g = state.game; if(!g) return;
+  if(t.dataset.qall!==undefined){ qFocus = null; if(zoneView) openZoneMap(zoneView, zoneIsCity); renderQuestLog(); return; }
+  let where;
+  if(t.dataset.qmap){
+    const q = questList().find(x=>String(x.id)===t.dataset.qmap); if(!q) return;
+    const i = questInfo(q, g.level||1, mapZoneOf((g.pos && g.pos.name) || g.zone));
+    qFocus = qFocus===q.id ? null : q.id; qFitPending = !!qFocus; where = i.target && i.target.map;
+  } else { qFocus = null; where = t.dataset.qzone; }
+  renderQuestLog();
+  if(!where) return;
   $("#map").scrollIntoView({behavior:"smooth"});
-  if(!focusOn(s.map)){ setImportMsg && setImportMsg(`${q.title}: ${s.map} (${s.x}, ${s.y}). The zoomable map only works on the GitHub site.`); return; }
-  renderZoneInfo();
+  if(!focusOn(where)) setImportMsg && setImportMsg(`${where}: the zoomable map only works on the GitHub site.`);
+  else renderZoneInfo();
 });
 
 /* ---- Profession helper ----
@@ -3099,8 +3278,6 @@ function poisFor(mapKey){
   // NPCs the addon saw you talk to: real positions, so they're always "verified".
   for(const n of Object.values((state.game && state.game.npcs) || {}))
     if(n && n.map===mapKey && n.x!=null) out.push({x:n.x, y:n.y, k:n.k||"n", label:n.name+(n.title?` <${n.title}>`:""), title:n.title, v:1, seen:1});
-  // Quest spots (addon 0.6): giver/turn-in and objective areas of quests in your log.
-  for(const q of questList()) for(const sp of questSpots(q)) if(sp.map===mapKey) out.push({x:sp.x, y:sp.y, k:sp.k, label:sp.label, v:1});
   return out;
 }
 // Map key of a zone/city name, as ZONES knows it: cities fold into their zone; unknown names -> null.
@@ -3252,6 +3429,7 @@ function openZoneMap(name, isCity){
       .on("error", ()=>{ $("#zbody").insertAdjacentHTML("beforeend", '<p style="color:var(--warn)">This map didn\'t load. Try the Warcraft Wiki link.</p>'); })
       .addTo(leafGroup);
     addZonePois(isCity ? CITY[name][0] : name);
+    addQuestAreas(isCity ? CITY[name][0] : name);
     addYouMarker(isCity ? CITY[name][0] : name);
     leafGroup.addTo(leaf);
     zoneView = name; zoneIsCity = !!isCity;
@@ -3324,6 +3502,7 @@ $("#whereAmI").addEventListener("click", ()=>{
   if(!state.game){ setImportMsg && setImportMsg("No game data yet: sync the addon first."); return; }
   focusHere(true); renderZoneInfo();
 });
+$("#showQuests").addEventListener("change", ()=>{ if(realMode && zoneView) openZoneMap(zoneView, zoneIsCity); });
 $("#showFlights").addEventListener("change", ()=>{ if(realMode && !zoneView) showContinent(curCont); });
 // Delegated: zone-nav buttons and the "Open zone map" button in the info panel are re-rendered often.
 document.addEventListener("click", e=>{
@@ -3343,6 +3522,7 @@ function renderZoneInfo(){
   $("#zbody").innerHTML = `<p class="mono" style="color:var(--fg)">Levels ${esc(z.lv)}</p><p>${esc(z.desc)}</p>
     ${steps.length?`<p>On your route in brackets ${steps.join(", ")}.</p>`:""}
     ${duns.length?`<p>Dungeons: ${duns.map(d=>`${esc(d[2])} <span class="mono">(${d[0]??"?"}–${d[1]})</span>`).join(", ")}</p>`:""}
+    ${questsInZoneHTML(selZone)}
     ${servicesHTML(selZone)}
     ${openBtn}
     <p><a href="${wiki}" target="_blank" rel="noopener">Zone page on Warcraft Wiki ↗</a></p>`;
@@ -3760,7 +3940,7 @@ function tick(){
 }
 tick(); setInterval(tick,1000);
 
-initItems(); initGearGuide(); loadLocal(); setChar(CHAR); addKitIcons(); initRealMap(); initCloud(); autoFetchSV(); autoFetchArmory(); initSpellTips();
+initItems(); initGearGuide(); loadLocal(); setChar(CHAR); addKitIcons(); initRealMap(); initCloud(); autoFetchSV(); autoFetchArmory(); autoFetchQuests(); initSpellTips();
 // Re-check the synced file every minute while the tab is visible, and when you come back to it.
 // Safe to repeat: applySnap ignores snapshots that aren't newer. On the Claude artifact the fetch just fails quietly.
 setInterval(()=>{ if(document.visibilityState==="visible"){ autoFetchSV(); autoFetchArmory(); } }, 60000);
