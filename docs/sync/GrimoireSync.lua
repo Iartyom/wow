@@ -24,49 +24,108 @@ GrimoireSyncDB = {
 ["subzone"] = "Splintertree Post",
 ["class"] = "WARLOCK",
 ["race"] = "Scourge",
-["time"] = 1794843269,
+["time"] = 1794844734,
 ["npcs"] = {
 ["Burkrum@Ashenvale"] = {
 ["map"] = "Ashenvale",
 ["x"] = 73.5,
 ["name"] = "Burkrum",
-["y"] = 60.2,
+["title"] = "Heavy Armor Merchant",
 ["t"] = 1794781280,
 ["k"] = "v",
-["title"] = "Heavy Armor Merchant",
+["y"] = 60.2,
 },
 ["Barkeep Morag@Orgrimmar"] = {
 ["map"] = "Orgrimmar",
 ["x"] = 54.5,
 ["name"] = "Barkeep Morag",
 ["t"] = 1794775358,
-["y"] = 67.9,
 ["k"] = "v",
+["y"] = 67.9,
 },
 ["Innkeeper Kaylisk@Ashenvale"] = {
 ["map"] = "Ashenvale",
 ["x"] = 73.9,
 ["name"] = "Innkeeper Kaylisk",
-["y"] = 60.7,
+["title"] = "Innkeeper",
 ["t"] = 1794781397,
 ["k"] = "v",
-["title"] = "Innkeeper",
+["y"] = 60.7,
 },
 ["Vhulgra@Ashenvale"] = {
 ["map"] = "Ashenvale",
 ["x"] = 73.2,
 ["name"] = "Vhulgra",
-["y"] = 61.5,
+["title"] = "Wind Rider Master",
 ["t"] = 1794775483,
 ["k"] = "n",
-["title"] = "Wind Rider Master",
+["y"] = 61.5,
 },
 },
 ["qlog"] = {
 ["questie"] = false,
-["t"] = 1794843269,
-["collapsed"] = 8,
+["t"] = 1794844734,
+["collapsed"] = 13,
 ["list"] = {
+{
+["obj"] = {
+{
+["type"] = "monster",
+["have"] = 0,
+["text"] = "0/1 Mine Assaulted",
+["need"] = 1,
+["done"] = false,
+},
+{
+["type"] = "monster",
+["have"] = 0,
+["text"] = "0/1 Lumber Mill Assaulted",
+["need"] = 1,
+["done"] = false,
+},
+{
+["type"] = "monster",
+["have"] = 0,
+["text"] = "0/1 Blacksmith Assaulted",
+["need"] = 1,
+["done"] = false,
+},
+{
+["type"] = "monster",
+["have"] = 0,
+["text"] = "0/1 Stable Assaulted",
+["need"] = 1,
+["done"] = false,
+},
+},
+["done"] = false,
+["title"] = "The Battle for Arathi Basin!",
+["zone"] = "Arathi Basin",
+["id"] = 8171,
+["level"] = 25,
+["failed"] = false,
+["pos"] = {
+},
+},
+{
+["obj"] = {
+{
+["type"] = "item",
+["have"] = 0,
+["text"] = "0/3 Arathi Basin Mark of Honor",
+["need"] = 3,
+["done"] = false,
+},
+},
+["done"] = false,
+["title"] = "Conquering Arathi Basin",
+["zone"] = "Arathi Basin",
+["id"] = 8370,
+["level"] = 29,
+["failed"] = false,
+["pos"] = {
+},
+},
 {
 ["obj"] = {
 {
@@ -155,271 +214,6 @@ GrimoireSyncDB = {
 ["zone"] = "Ashenvale",
 ["id"] = 6504,
 ["level"] = 30,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-{
-["type"] = "item",
-["have"] = 0,
-["text"] = "0/30 Mirkweed Pods",
-["need"] = 30,
-["done"] = false,
-},
-},
-["done"] = false,
-["title"] = "Pigments for Paints",
-["zone"] = "Stonetalon Mountains",
-["id"] = 97538,
-["level"] = 26,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-{
-["type"] = "item",
-["have"] = 1,
-["text"] = "1/1 Warsong Scout Update",
-["need"] = 1,
-["done"] = true,
-},
-{
-["type"] = "item",
-["have"] = 0,
-["text"] = "0/1 Warsong Runner Update",
-["need"] = 1,
-["done"] = false,
-},
-{
-["type"] = "item",
-["have"] = 1,
-["text"] = "1/1 Warsong Outrider Update",
-["need"] = 1,
-["done"] = true,
-},
-},
-["done"] = false,
-["title"] = "The Warsong Reports",
-["zone"] = "The Barrens",
-["id"] = 6543,
-["level"] = 19,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-{
-["type"] = "item",
-["have"] = 0,
-["text"] = "0/15 Deepmoss Egg",
-["need"] = 15,
-["done"] = false,
-},
-},
-["done"] = false,
-["title"] = "Deepmoss Spider Eggs",
-["zone"] = "The Barrens",
-["id"] = 1069,
-["level"] = 20,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-{
-["type"] = "monster",
-["have"] = 0,
-["text"] = "0/1 Captain Fairmount slain",
-["need"] = 1,
-["done"] = false,
-},
-{
-["type"] = "monster",
-["have"] = 0,
-["text"] = "0/1 Cannoneer Whessan slain",
-["need"] = 1,
-["done"] = false,
-},
-{
-["type"] = "monster",
-["have"] = 0,
-["text"] = "0/1 Cannoneer Smythe slain",
-["need"] = 1,
-["done"] = false,
-},
-{
-["type"] = "item",
-["have"] = 0,
-["text"] = "0/10 Theramore Medal",
-["need"] = 10,
-["done"] = false,
-},
-},
-["done"] = false,
-["title"] = "The Guns of Northwatch",
-["zone"] = "The Barrens",
-["id"] = 891,
-["level"] = 20,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-},
-["done"] = true,
-["title"] = "Ziz Fizziks",
-["zone"] = "The Barrens",
-["id"] = 1483,
-["level"] = 21,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-},
-["done"] = true,
-["title"] = "... and that note you found",
-["zone"] = "The Barrens",
-["id"] = 79007,
-["level"] = 22,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-{
-["type"] = "item",
-["have"] = 0,
-["text"] = "0/6 Nitroglycerin",
-["need"] = 6,
-["done"] = false,
-},
-{
-["type"] = "item",
-["have"] = 0,
-["text"] = "0/6 Wood Pulp",
-["need"] = 6,
-["done"] = false,
-},
-{
-["type"] = "item",
-["have"] = 0,
-["text"] = "0/6 Sodium Nitrate",
-["need"] = 6,
-["done"] = false,
-},
-},
-["done"] = false,
-["title"] = "Revenge of Gann",
-["zone"] = "The Barrens",
-["id"] = 846,
-["level"] = 26,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-{
-["type"] = "item",
-["have"] = 0,
-["text"] = "0/1 Filled Etched Phial",
-["need"] = 1,
-["done"] = false,
-},
-},
-["done"] = false,
-["title"] = "The Sacred Flame",
-["zone"] = "Thunder Bluff",
-["id"] = 1195,
-["level"] = 25,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-{
-["type"] = "item",
-["have"] = 0,
-["text"] = "0/1 Steelsnap's Rib",
-["need"] = 1,
-["done"] = false,
-},
-},
-["done"] = false,
-["title"] = "Steelsnap",
-["zone"] = "Thunder Bluff",
-["id"] = 1131,
-["level"] = 30,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-{
-["type"] = "monster",
-["have"] = 0,
-["text"] = "0/1 Mine Assaulted",
-["need"] = 1,
-["done"] = false,
-},
-{
-["type"] = "monster",
-["have"] = 0,
-["text"] = "0/1 Lumber Mill Assaulted",
-["need"] = 1,
-["done"] = false,
-},
-{
-["type"] = "monster",
-["have"] = 0,
-["text"] = "0/1 Blacksmith Assaulted",
-["need"] = 1,
-["done"] = false,
-},
-{
-["type"] = "monster",
-["have"] = 0,
-["text"] = "0/1 Stable Assaulted",
-["need"] = 1,
-["done"] = false,
-},
-},
-["done"] = false,
-["title"] = "The Battle for Arathi Basin!",
-["zone"] = "Arathi Basin",
-["id"] = 8171,
-["level"] = 25,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-{
-["type"] = "item",
-["have"] = 0,
-["text"] = "0/3 Arathi Basin Mark of Honor",
-["need"] = 3,
-["done"] = false,
-},
-},
-["done"] = false,
-["title"] = "Conquering Arathi Basin",
-["zone"] = "Arathi Basin",
-["id"] = 8370,
-["level"] = 29,
 ["failed"] = false,
 ["pos"] = {
 },
@@ -758,6 +552,212 @@ GrimoireSyncDB = {
 ["zone"] = "Silverpine Forest",
 ["id"] = 442,
 ["level"] = 24,
+["failed"] = false,
+["pos"] = {
+},
+},
+{
+["obj"] = {
+{
+["type"] = "item",
+["have"] = 0,
+["text"] = "0/30 Mirkweed Pods",
+["need"] = 30,
+["done"] = false,
+},
+},
+["done"] = false,
+["title"] = "Pigments for Paints",
+["zone"] = "Stonetalon Mountains",
+["id"] = 97538,
+["level"] = 26,
+["failed"] = false,
+["pos"] = {
+},
+},
+{
+["obj"] = {
+{
+["type"] = "item",
+["have"] = 1,
+["text"] = "1/1 Warsong Scout Update",
+["need"] = 1,
+["done"] = true,
+},
+{
+["type"] = "item",
+["have"] = 0,
+["text"] = "0/1 Warsong Runner Update",
+["need"] = 1,
+["done"] = false,
+},
+{
+["type"] = "item",
+["have"] = 1,
+["text"] = "1/1 Warsong Outrider Update",
+["need"] = 1,
+["done"] = true,
+},
+},
+["done"] = false,
+["title"] = "The Warsong Reports",
+["zone"] = "The Barrens",
+["id"] = 6543,
+["level"] = 19,
+["failed"] = false,
+["pos"] = {
+},
+},
+{
+["obj"] = {
+{
+["type"] = "item",
+["have"] = 0,
+["text"] = "0/15 Deepmoss Egg",
+["need"] = 15,
+["done"] = false,
+},
+},
+["done"] = false,
+["title"] = "Deepmoss Spider Eggs",
+["zone"] = "The Barrens",
+["id"] = 1069,
+["level"] = 20,
+["failed"] = false,
+["pos"] = {
+},
+},
+{
+["obj"] = {
+{
+["type"] = "monster",
+["have"] = 0,
+["text"] = "0/1 Captain Fairmount slain",
+["need"] = 1,
+["done"] = false,
+},
+{
+["type"] = "monster",
+["have"] = 0,
+["text"] = "0/1 Cannoneer Whessan slain",
+["need"] = 1,
+["done"] = false,
+},
+{
+["type"] = "monster",
+["have"] = 0,
+["text"] = "0/1 Cannoneer Smythe slain",
+["need"] = 1,
+["done"] = false,
+},
+{
+["type"] = "item",
+["have"] = 0,
+["text"] = "0/10 Theramore Medal",
+["need"] = 10,
+["done"] = false,
+},
+},
+["done"] = false,
+["title"] = "The Guns of Northwatch",
+["zone"] = "The Barrens",
+["id"] = 891,
+["level"] = 20,
+["failed"] = false,
+["pos"] = {
+},
+},
+{
+["obj"] = {
+},
+["done"] = true,
+["title"] = "Ziz Fizziks",
+["zone"] = "The Barrens",
+["id"] = 1483,
+["level"] = 21,
+["failed"] = false,
+["pos"] = {
+},
+},
+{
+["obj"] = {
+},
+["done"] = true,
+["title"] = "... and that note you found",
+["zone"] = "The Barrens",
+["id"] = 79007,
+["level"] = 22,
+["failed"] = false,
+["pos"] = {
+},
+},
+{
+["obj"] = {
+{
+["type"] = "item",
+["have"] = 0,
+["text"] = "0/6 Nitroglycerin",
+["need"] = 6,
+["done"] = false,
+},
+{
+["type"] = "item",
+["have"] = 0,
+["text"] = "0/6 Wood Pulp",
+["need"] = 6,
+["done"] = false,
+},
+{
+["type"] = "item",
+["have"] = 0,
+["text"] = "0/6 Sodium Nitrate",
+["need"] = 6,
+["done"] = false,
+},
+},
+["done"] = false,
+["title"] = "Revenge of Gann",
+["zone"] = "The Barrens",
+["id"] = 846,
+["level"] = 26,
+["failed"] = false,
+["pos"] = {
+},
+},
+{
+["obj"] = {
+{
+["type"] = "item",
+["have"] = 0,
+["text"] = "0/1 Filled Etched Phial",
+["need"] = 1,
+["done"] = false,
+},
+},
+["done"] = false,
+["title"] = "The Sacred Flame",
+["zone"] = "Thunder Bluff",
+["id"] = 1195,
+["level"] = 25,
+["failed"] = false,
+["pos"] = {
+},
+},
+{
+["obj"] = {
+{
+["type"] = "item",
+["have"] = 0,
+["text"] = "0/1 Steelsnap's Rib",
+["need"] = 1,
+["done"] = false,
+},
+},
+["done"] = false,
+["title"] = "Steelsnap",
+["zone"] = "Thunder Bluff",
+["id"] = 1131,
+["level"] = 30,
 ["failed"] = false,
 ["pos"] = {
 },
@@ -1136,7 +1136,6 @@ GrimoireSyncDB = {
 "Binds when picked up",
 "Held In Off-hand",
 "+3 Spirit",
-"Use: Heal your target for 135 to 165. (30 Min Cooldown)",
 "Sell Price: 16|A:coin-silver:14:14:2:0|a 32|A:coin-copper:14:14:2:0|a",
 },
 ["tex"] = 134249,
@@ -1247,7 +1246,6 @@ GrimoireSyncDB = {
 ["tip"] = {
 "Binds when picked up",
 "Unique",
-"Use: Returns you to Splintertree Post.  Speak to an Innkeeper in a different place to change your home location. (1 Hr Cooldown)",
 },
 ["tex"] = 134414,
 ["bound"] = true,
@@ -1287,7 +1285,6 @@ GrimoireSyncDB = {
 ["tip"] = {
 "Quest Item",
 "Unique",
-"Use: Use in Razorfen Kraul near buried tubers to summon a Snufflenose Gopher. (30 Sec Cooldown)",
 },
 ["tex"] = 132765,
 ["bound"] = true,
@@ -1324,7 +1321,6 @@ GrimoireSyncDB = {
 ["id"] = 3382,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Regenerate 2 health every 5 sec for 1 hour.",
 "Sell Price: 10|A:coin-copper:14:14:2:0|a",
 },
 ["tex"] = 134858,
@@ -1342,7 +1338,6 @@ GrimoireSyncDB = {
 ["id"] = 5997,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Increases armor by 50 for 1 hour.",
 "Sell Price: 5|A:coin-copper:14:14:2:0|a",
 },
 ["tex"] = 134843,
@@ -1360,7 +1355,6 @@ GrimoireSyncDB = {
 ["id"] = 929,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Restores 280 to 360 health.",
 "Requires Level 12",
 "Sell Price: 75|A:coin-copper:14:14:2:0|a",
 },
@@ -1379,7 +1373,6 @@ GrimoireSyncDB = {
 ["id"] = 2455,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Restores 140 to 180 mana.",
 "Requires Level 5",
 "Sell Price: 10|A:coin-copper:14:14:2:0|a",
 },
@@ -1398,7 +1391,6 @@ GrimoireSyncDB = {
 ["id"] = 16646,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Bind pages 1-4 into Chapter 1 of the Shredder Operating Manual.",
 "Sell Price: 62|A:coin-copper:14:14:2:0|a",
 },
 ["tex"] = 134332,
@@ -1452,7 +1444,6 @@ GrimoireSyncDB = {
 ["id"] = 16651,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Bind pages 5-8 into Chapter 2 of the Shredder Operating Manual.",
 "Sell Price: 62|A:coin-copper:14:14:2:0|a",
 },
 ["tex"] = 134332,
@@ -1470,7 +1461,6 @@ GrimoireSyncDB = {
 ["id"] = 16656,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Bind pages 9-12 into Chapter 3 of the Shredder Operating Manual.",
 "Sell Price: 62|A:coin-copper:14:14:2:0|a",
 },
 ["tex"] = 134332,
@@ -1488,7 +1478,6 @@ GrimoireSyncDB = {
 ["id"] = 16648,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Bind pages 1-4 into Chapter 1 of the Shredder Operating Manual.",
 "Sell Price: 62|A:coin-copper:14:14:2:0|a",
 },
 ["tex"] = 134332,
@@ -1507,16 +1496,8 @@ GrimoireSyncDB = {
 ["bag"] = 1,
 ["tip"] = {
 "Binds when picked up",
-"\nIron Fists",
-"Binds when equipped",
-"!One-Hand	!Fist Weapon",
-"27 - 51 Damage	Speed 2.40",
-"(16.2 damage per second)",
-"+5 Agility",
-"!Requires Level 26",
-"You haven't collected this appearance",
+"!Retrieving item information",
 "Use: Teaches you how to craft Iron Fists.",
-"Iron Bar (6), Strong Flux (2), Heavy Grinding Stone, Silver Bar (2), Heavy Leather (2)",
 "!Requires Blacksmithing (130)",
 "Sell Price: 7|A:coin-silver:14:14:2:0|a 50|A:coin-copper:14:14:2:0|a",
 },
@@ -1686,7 +1667,6 @@ GrimoireSyncDB = {
 ["id"] = 16654,
 ["bag"] = 2,
 ["tip"] = {
-"Use: Bind pages 9-12 into Chapter 3 of the Shredder Operating Manual.",
 "Sell Price: 62|A:coin-copper:14:14:2:0|a",
 },
 ["tex"] = 134332,
@@ -1935,7 +1915,6 @@ GrimoireSyncDB = {
 ["bag"] = 4,
 ["tip"] = {
 "Binds when picked up",
-"Use: Removes the Hex of Ravenclaw. (30 Sec Cooldown)",
 },
 ["tex"] = 134732,
 ["bound"] = true,
@@ -1953,7 +1932,6 @@ GrimoireSyncDB = {
 ["id"] = 16650,
 ["bag"] = 4,
 ["tip"] = {
-"Use: Bind pages 5-8 into Chapter 2 of the Shredder Operating Manual.",
 "Sell Price: 62|A:coin-copper:14:14:2:0|a",
 },
 ["tex"] = 134332,
@@ -1971,7 +1949,6 @@ GrimoireSyncDB = {
 ["id"] = 16647,
 ["bag"] = 4,
 ["tip"] = {
-"Use: Bind pages 1-4 into Chapter 1 of the Shredder Operating Manual.",
 "Sell Price: 62|A:coin-copper:14:14:2:0|a",
 },
 ["tex"] = 134332,
@@ -1983,7 +1960,7 @@ GrimoireSyncDB = {
 ["n"] = 1,
 },
 },
-["time"] = 1794843269,
+["time"] = 1794844733,
 },
 ["profMax"] = {
 ["Herbalism"] = 150,
@@ -2024,49 +2001,108 @@ GrimoireSyncDB = {
 ["subzone"] = "Splintertree Post",
 ["class"] = "WARLOCK",
 ["race"] = "Scourge",
-["time"] = 1794843269,
+["time"] = 1794844734,
 ["npcs"] = {
 ["Burkrum@Ashenvale"] = {
 ["map"] = "Ashenvale",
 ["x"] = 73.5,
 ["name"] = "Burkrum",
-["y"] = 60.2,
+["title"] = "Heavy Armor Merchant",
 ["t"] = 1794781280,
 ["k"] = "v",
-["title"] = "Heavy Armor Merchant",
+["y"] = 60.2,
 },
 ["Barkeep Morag@Orgrimmar"] = {
 ["map"] = "Orgrimmar",
 ["x"] = 54.5,
 ["name"] = "Barkeep Morag",
 ["t"] = 1794775358,
-["y"] = 67.9,
 ["k"] = "v",
+["y"] = 67.9,
 },
 ["Innkeeper Kaylisk@Ashenvale"] = {
 ["map"] = "Ashenvale",
 ["x"] = 73.9,
 ["name"] = "Innkeeper Kaylisk",
-["y"] = 60.7,
+["title"] = "Innkeeper",
 ["t"] = 1794781397,
 ["k"] = "v",
-["title"] = "Innkeeper",
+["y"] = 60.7,
 },
 ["Vhulgra@Ashenvale"] = {
 ["map"] = "Ashenvale",
 ["x"] = 73.2,
 ["name"] = "Vhulgra",
-["y"] = 61.5,
+["title"] = "Wind Rider Master",
 ["t"] = 1794775483,
 ["k"] = "n",
-["title"] = "Wind Rider Master",
+["y"] = 61.5,
 },
 },
 ["qlog"] = {
 ["questie"] = false,
-["t"] = 1794843269,
-["collapsed"] = 8,
+["t"] = 1794844734,
+["collapsed"] = 13,
 ["list"] = {
+{
+["obj"] = {
+{
+["type"] = "monster",
+["have"] = 0,
+["text"] = "0/1 Mine Assaulted",
+["need"] = 1,
+["done"] = false,
+},
+{
+["type"] = "monster",
+["have"] = 0,
+["text"] = "0/1 Lumber Mill Assaulted",
+["need"] = 1,
+["done"] = false,
+},
+{
+["type"] = "monster",
+["have"] = 0,
+["text"] = "0/1 Blacksmith Assaulted",
+["need"] = 1,
+["done"] = false,
+},
+{
+["type"] = "monster",
+["have"] = 0,
+["text"] = "0/1 Stable Assaulted",
+["need"] = 1,
+["done"] = false,
+},
+},
+["done"] = false,
+["title"] = "The Battle for Arathi Basin!",
+["zone"] = "Arathi Basin",
+["id"] = 8171,
+["level"] = 25,
+["failed"] = false,
+["pos"] = {
+},
+},
+{
+["obj"] = {
+{
+["type"] = "item",
+["have"] = 0,
+["text"] = "0/3 Arathi Basin Mark of Honor",
+["need"] = 3,
+["done"] = false,
+},
+},
+["done"] = false,
+["title"] = "Conquering Arathi Basin",
+["zone"] = "Arathi Basin",
+["id"] = 8370,
+["level"] = 29,
+["failed"] = false,
+["pos"] = {
+},
+},
 {
 ["obj"] = {
 {
@@ -2155,271 +2191,6 @@ GrimoireSyncDB = {
 ["zone"] = "Ashenvale",
 ["id"] = 6504,
 ["level"] = 30,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-{
-["type"] = "item",
-["have"] = 0,
-["text"] = "0/30 Mirkweed Pods",
-["need"] = 30,
-["done"] = false,
-},
-},
-["done"] = false,
-["title"] = "Pigments for Paints",
-["zone"] = "Stonetalon Mountains",
-["id"] = 97538,
-["level"] = 26,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-{
-["type"] = "item",
-["have"] = 1,
-["text"] = "1/1 Warsong Scout Update",
-["need"] = 1,
-["done"] = true,
-},
-{
-["type"] = "item",
-["have"] = 0,
-["text"] = "0/1 Warsong Runner Update",
-["need"] = 1,
-["done"] = false,
-},
-{
-["type"] = "item",
-["have"] = 1,
-["text"] = "1/1 Warsong Outrider Update",
-["need"] = 1,
-["done"] = true,
-},
-},
-["done"] = false,
-["title"] = "The Warsong Reports",
-["zone"] = "The Barrens",
-["id"] = 6543,
-["level"] = 19,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-{
-["type"] = "item",
-["have"] = 0,
-["text"] = "0/15 Deepmoss Egg",
-["need"] = 15,
-["done"] = false,
-},
-},
-["done"] = false,
-["title"] = "Deepmoss Spider Eggs",
-["zone"] = "The Barrens",
-["id"] = 1069,
-["level"] = 20,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-{
-["type"] = "monster",
-["have"] = 0,
-["text"] = "0/1 Captain Fairmount slain",
-["need"] = 1,
-["done"] = false,
-},
-{
-["type"] = "monster",
-["have"] = 0,
-["text"] = "0/1 Cannoneer Whessan slain",
-["need"] = 1,
-["done"] = false,
-},
-{
-["type"] = "monster",
-["have"] = 0,
-["text"] = "0/1 Cannoneer Smythe slain",
-["need"] = 1,
-["done"] = false,
-},
-{
-["type"] = "item",
-["have"] = 0,
-["text"] = "0/10 Theramore Medal",
-["need"] = 10,
-["done"] = false,
-},
-},
-["done"] = false,
-["title"] = "The Guns of Northwatch",
-["zone"] = "The Barrens",
-["id"] = 891,
-["level"] = 20,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-},
-["done"] = true,
-["title"] = "Ziz Fizziks",
-["zone"] = "The Barrens",
-["id"] = 1483,
-["level"] = 21,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-},
-["done"] = true,
-["title"] = "... and that note you found",
-["zone"] = "The Barrens",
-["id"] = 79007,
-["level"] = 22,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-{
-["type"] = "item",
-["have"] = 0,
-["text"] = "0/6 Nitroglycerin",
-["need"] = 6,
-["done"] = false,
-},
-{
-["type"] = "item",
-["have"] = 0,
-["text"] = "0/6 Wood Pulp",
-["need"] = 6,
-["done"] = false,
-},
-{
-["type"] = "item",
-["have"] = 0,
-["text"] = "0/6 Sodium Nitrate",
-["need"] = 6,
-["done"] = false,
-},
-},
-["done"] = false,
-["title"] = "Revenge of Gann",
-["zone"] = "The Barrens",
-["id"] = 846,
-["level"] = 26,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-{
-["type"] = "item",
-["have"] = 0,
-["text"] = "0/1 Filled Etched Phial",
-["need"] = 1,
-["done"] = false,
-},
-},
-["done"] = false,
-["title"] = "The Sacred Flame",
-["zone"] = "Thunder Bluff",
-["id"] = 1195,
-["level"] = 25,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-{
-["type"] = "item",
-["have"] = 0,
-["text"] = "0/1 Steelsnap's Rib",
-["need"] = 1,
-["done"] = false,
-},
-},
-["done"] = false,
-["title"] = "Steelsnap",
-["zone"] = "Thunder Bluff",
-["id"] = 1131,
-["level"] = 30,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-{
-["type"] = "monster",
-["have"] = 0,
-["text"] = "0/1 Mine Assaulted",
-["need"] = 1,
-["done"] = false,
-},
-{
-["type"] = "monster",
-["have"] = 0,
-["text"] = "0/1 Lumber Mill Assaulted",
-["need"] = 1,
-["done"] = false,
-},
-{
-["type"] = "monster",
-["have"] = 0,
-["text"] = "0/1 Blacksmith Assaulted",
-["need"] = 1,
-["done"] = false,
-},
-{
-["type"] = "monster",
-["have"] = 0,
-["text"] = "0/1 Stable Assaulted",
-["need"] = 1,
-["done"] = false,
-},
-},
-["done"] = false,
-["title"] = "The Battle for Arathi Basin!",
-["zone"] = "Arathi Basin",
-["id"] = 8171,
-["level"] = 25,
-["failed"] = false,
-["pos"] = {
-},
-},
-{
-["obj"] = {
-{
-["type"] = "item",
-["have"] = 0,
-["text"] = "0/3 Arathi Basin Mark of Honor",
-["need"] = 3,
-["done"] = false,
-},
-},
-["done"] = false,
-["title"] = "Conquering Arathi Basin",
-["zone"] = "Arathi Basin",
-["id"] = 8370,
-["level"] = 29,
 ["failed"] = false,
 ["pos"] = {
 },
@@ -2758,6 +2529,212 @@ GrimoireSyncDB = {
 ["zone"] = "Silverpine Forest",
 ["id"] = 442,
 ["level"] = 24,
+["failed"] = false,
+["pos"] = {
+},
+},
+{
+["obj"] = {
+{
+["type"] = "item",
+["have"] = 0,
+["text"] = "0/30 Mirkweed Pods",
+["need"] = 30,
+["done"] = false,
+},
+},
+["done"] = false,
+["title"] = "Pigments for Paints",
+["zone"] = "Stonetalon Mountains",
+["id"] = 97538,
+["level"] = 26,
+["failed"] = false,
+["pos"] = {
+},
+},
+{
+["obj"] = {
+{
+["type"] = "item",
+["have"] = 1,
+["text"] = "1/1 Warsong Scout Update",
+["need"] = 1,
+["done"] = true,
+},
+{
+["type"] = "item",
+["have"] = 0,
+["text"] = "0/1 Warsong Runner Update",
+["need"] = 1,
+["done"] = false,
+},
+{
+["type"] = "item",
+["have"] = 1,
+["text"] = "1/1 Warsong Outrider Update",
+["need"] = 1,
+["done"] = true,
+},
+},
+["done"] = false,
+["title"] = "The Warsong Reports",
+["zone"] = "The Barrens",
+["id"] = 6543,
+["level"] = 19,
+["failed"] = false,
+["pos"] = {
+},
+},
+{
+["obj"] = {
+{
+["type"] = "item",
+["have"] = 0,
+["text"] = "0/15 Deepmoss Egg",
+["need"] = 15,
+["done"] = false,
+},
+},
+["done"] = false,
+["title"] = "Deepmoss Spider Eggs",
+["zone"] = "The Barrens",
+["id"] = 1069,
+["level"] = 20,
+["failed"] = false,
+["pos"] = {
+},
+},
+{
+["obj"] = {
+{
+["type"] = "monster",
+["have"] = 0,
+["text"] = "0/1 Captain Fairmount slain",
+["need"] = 1,
+["done"] = false,
+},
+{
+["type"] = "monster",
+["have"] = 0,
+["text"] = "0/1 Cannoneer Whessan slain",
+["need"] = 1,
+["done"] = false,
+},
+{
+["type"] = "monster",
+["have"] = 0,
+["text"] = "0/1 Cannoneer Smythe slain",
+["need"] = 1,
+["done"] = false,
+},
+{
+["type"] = "item",
+["have"] = 0,
+["text"] = "0/10 Theramore Medal",
+["need"] = 10,
+["done"] = false,
+},
+},
+["done"] = false,
+["title"] = "The Guns of Northwatch",
+["zone"] = "The Barrens",
+["id"] = 891,
+["level"] = 20,
+["failed"] = false,
+["pos"] = {
+},
+},
+{
+["obj"] = {
+},
+["done"] = true,
+["title"] = "Ziz Fizziks",
+["zone"] = "The Barrens",
+["id"] = 1483,
+["level"] = 21,
+["failed"] = false,
+["pos"] = {
+},
+},
+{
+["obj"] = {
+},
+["done"] = true,
+["title"] = "... and that note you found",
+["zone"] = "The Barrens",
+["id"] = 79007,
+["level"] = 22,
+["failed"] = false,
+["pos"] = {
+},
+},
+{
+["obj"] = {
+{
+["type"] = "item",
+["have"] = 0,
+["text"] = "0/6 Nitroglycerin",
+["need"] = 6,
+["done"] = false,
+},
+{
+["type"] = "item",
+["have"] = 0,
+["text"] = "0/6 Wood Pulp",
+["need"] = 6,
+["done"] = false,
+},
+{
+["type"] = "item",
+["have"] = 0,
+["text"] = "0/6 Sodium Nitrate",
+["need"] = 6,
+["done"] = false,
+},
+},
+["done"] = false,
+["title"] = "Revenge of Gann",
+["zone"] = "The Barrens",
+["id"] = 846,
+["level"] = 26,
+["failed"] = false,
+["pos"] = {
+},
+},
+{
+["obj"] = {
+{
+["type"] = "item",
+["have"] = 0,
+["text"] = "0/1 Filled Etched Phial",
+["need"] = 1,
+["done"] = false,
+},
+},
+["done"] = false,
+["title"] = "The Sacred Flame",
+["zone"] = "Thunder Bluff",
+["id"] = 1195,
+["level"] = 25,
+["failed"] = false,
+["pos"] = {
+},
+},
+{
+["obj"] = {
+{
+["type"] = "item",
+["have"] = 0,
+["text"] = "0/1 Steelsnap's Rib",
+["need"] = 1,
+["done"] = false,
+},
+},
+["done"] = false,
+["title"] = "Steelsnap",
+["zone"] = "Thunder Bluff",
+["id"] = 1131,
+["level"] = 30,
 ["failed"] = false,
 ["pos"] = {
 },
@@ -3136,7 +3113,6 @@ GrimoireSyncDB = {
 "Binds when picked up",
 "Held In Off-hand",
 "+3 Spirit",
-"Use: Heal your target for 135 to 165. (30 Min Cooldown)",
 "Sell Price: 16|A:coin-silver:14:14:2:0|a 32|A:coin-copper:14:14:2:0|a",
 },
 ["tex"] = 134249,
@@ -3247,7 +3223,6 @@ GrimoireSyncDB = {
 ["tip"] = {
 "Binds when picked up",
 "Unique",
-"Use: Returns you to Splintertree Post.  Speak to an Innkeeper in a different place to change your home location. (1 Hr Cooldown)",
 },
 ["tex"] = 134414,
 ["bound"] = true,
@@ -3287,7 +3262,6 @@ GrimoireSyncDB = {
 ["tip"] = {
 "Quest Item",
 "Unique",
-"Use: Use in Razorfen Kraul near buried tubers to summon a Snufflenose Gopher. (30 Sec Cooldown)",
 },
 ["tex"] = 132765,
 ["bound"] = true,
@@ -3324,7 +3298,6 @@ GrimoireSyncDB = {
 ["id"] = 3382,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Regenerate 2 health every 5 sec for 1 hour.",
 "Sell Price: 10|A:coin-copper:14:14:2:0|a",
 },
 ["tex"] = 134858,
@@ -3342,7 +3315,6 @@ GrimoireSyncDB = {
 ["id"] = 5997,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Increases armor by 50 for 1 hour.",
 "Sell Price: 5|A:coin-copper:14:14:2:0|a",
 },
 ["tex"] = 134843,
@@ -3360,7 +3332,6 @@ GrimoireSyncDB = {
 ["id"] = 929,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Restores 280 to 360 health.",
 "Requires Level 12",
 "Sell Price: 75|A:coin-copper:14:14:2:0|a",
 },
@@ -3379,7 +3350,6 @@ GrimoireSyncDB = {
 ["id"] = 2455,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Restores 140 to 180 mana.",
 "Requires Level 5",
 "Sell Price: 10|A:coin-copper:14:14:2:0|a",
 },
@@ -3398,7 +3368,6 @@ GrimoireSyncDB = {
 ["id"] = 16646,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Bind pages 1-4 into Chapter 1 of the Shredder Operating Manual.",
 "Sell Price: 62|A:coin-copper:14:14:2:0|a",
 },
 ["tex"] = 134332,
@@ -3452,7 +3421,6 @@ GrimoireSyncDB = {
 ["id"] = 16651,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Bind pages 5-8 into Chapter 2 of the Shredder Operating Manual.",
 "Sell Price: 62|A:coin-copper:14:14:2:0|a",
 },
 ["tex"] = 134332,
@@ -3470,7 +3438,6 @@ GrimoireSyncDB = {
 ["id"] = 16656,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Bind pages 9-12 into Chapter 3 of the Shredder Operating Manual.",
 "Sell Price: 62|A:coin-copper:14:14:2:0|a",
 },
 ["tex"] = 134332,
@@ -3488,7 +3455,6 @@ GrimoireSyncDB = {
 ["id"] = 16648,
 ["bag"] = 0,
 ["tip"] = {
-"Use: Bind pages 1-4 into Chapter 1 of the Shredder Operating Manual.",
 "Sell Price: 62|A:coin-copper:14:14:2:0|a",
 },
 ["tex"] = 134332,
@@ -3507,16 +3473,8 @@ GrimoireSyncDB = {
 ["bag"] = 1,
 ["tip"] = {
 "Binds when picked up",
-"\nIron Fists",
-"Binds when equipped",
-"!One-Hand	!Fist Weapon",
-"27 - 51 Damage	Speed 2.40",
-"(16.2 damage per second)",
-"+5 Agility",
-"!Requires Level 26",
-"You haven't collected this appearance",
+"!Retrieving item information",
 "Use: Teaches you how to craft Iron Fists.",
-"Iron Bar (6), Strong Flux (2), Heavy Grinding Stone, Silver Bar (2), Heavy Leather (2)",
 "!Requires Blacksmithing (130)",
 "Sell Price: 7|A:coin-silver:14:14:2:0|a 50|A:coin-copper:14:14:2:0|a",
 },
@@ -3686,7 +3644,6 @@ GrimoireSyncDB = {
 ["id"] = 16654,
 ["bag"] = 2,
 ["tip"] = {
-"Use: Bind pages 9-12 into Chapter 3 of the Shredder Operating Manual.",
 "Sell Price: 62|A:coin-copper:14:14:2:0|a",
 },
 ["tex"] = 134332,
@@ -3935,7 +3892,6 @@ GrimoireSyncDB = {
 ["bag"] = 4,
 ["tip"] = {
 "Binds when picked up",
-"Use: Removes the Hex of Ravenclaw. (30 Sec Cooldown)",
 },
 ["tex"] = 134732,
 ["bound"] = true,
@@ -3953,7 +3909,6 @@ GrimoireSyncDB = {
 ["id"] = 16650,
 ["bag"] = 4,
 ["tip"] = {
-"Use: Bind pages 5-8 into Chapter 2 of the Shredder Operating Manual.",
 "Sell Price: 62|A:coin-copper:14:14:2:0|a",
 },
 ["tex"] = 134332,
@@ -3971,7 +3926,6 @@ GrimoireSyncDB = {
 ["id"] = 16647,
 ["bag"] = 4,
 ["tip"] = {
-"Use: Bind pages 1-4 into Chapter 1 of the Shredder Operating Manual.",
 "Sell Price: 62|A:coin-copper:14:14:2:0|a",
 },
 ["tex"] = 134332,
@@ -3983,7 +3937,7 @@ GrimoireSyncDB = {
 ["n"] = 1,
 },
 },
-["time"] = 1794843269,
+["time"] = 1794844733,
 },
 ["profMax"] = {
 ["Herbalism"] = 150,
@@ -4005,36 +3959,102 @@ GrimoireSyncDB = {
 ["map"] = "Ashenvale",
 ["x"] = 73.5,
 ["name"] = "Burkrum",
-["y"] = 60.2,
+["title"] = "Heavy Armor Merchant",
 ["t"] = 1794781280,
 ["k"] = "v",
-["title"] = "Heavy Armor Merchant",
+["y"] = 60.2,
 },
 ["Barkeep Morag@Orgrimmar"] = {
 ["map"] = "Orgrimmar",
 ["x"] = 54.5,
 ["name"] = "Barkeep Morag",
 ["t"] = 1794775358,
-["y"] = 67.9,
 ["k"] = "v",
+["y"] = 67.9,
 },
 ["Innkeeper Kaylisk@Ashenvale"] = {
 ["map"] = "Ashenvale",
 ["x"] = 73.9,
 ["name"] = "Innkeeper Kaylisk",
-["y"] = 60.7,
+["title"] = "Innkeeper",
 ["t"] = 1794781397,
 ["k"] = "v",
-["title"] = "Innkeeper",
+["y"] = 60.7,
 },
 ["Vhulgra@Ashenvale"] = {
 ["map"] = "Ashenvale",
 ["x"] = 73.2,
 ["name"] = "Vhulgra",
-["y"] = 61.5,
+["title"] = "Wind Rider Master",
 ["t"] = 1794775483,
 ["k"] = "n",
-["title"] = "Wind Rider Master",
+["y"] = 61.5,
+},
+},
+["qpos"] = {
+[8171] = {
+},
+[8368] = {
+},
+[442] = {
+},
+[6571] = {
+},
+[1483] = {
+},
+[480] = {
+},
+[959] = {
+},
+[451] = {
+},
+[527] = {
+},
+[79007] = {
+},
+[501] = {
+},
+[1195] = {
+},
+[8370] = {
+},
+[1740] = {
+},
+[98299] = {
+},
+[498] = {
+},
+[1221] = {
+},
+[6503] = {
+},
+[1131] = {
+},
+[1013] = {
+},
+[65610] = {
+},
+[1014] = {
+},
+[1098] = {
+},
+[891] = {
+},
+[1069] = {
+},
+[6504] = {
+},
+[846] = {
+},
+[6543] = {
+},
+[5725] = {
+},
+[567] = {
+},
+[1509] = {
+},
+[97538] = {
 },
 },
 ["probe"] = {
@@ -4080,75 +4100,9 @@ nil,
 ["GetNumTalents"] = "nil",
 ["C_ClassTalents_fns"] = "CanChangeTalents,CanCreateNewConfig,CanEditTalents,CommitConfig,DeleteConfig,GetActiveConfigID,GetActiveHeroTalentSpec,GetConfigIDsBySpecID,GetHasStarterBuild,GetHeroTalentSpecsForClassSpec,GetLastSelectedSavedConfigID,GetNextStarterBuildPurchase,GetStarterBuildActive,GetTraitTreeForSpec,HasUnspentHeroTalentPoints,HasUnspentTalentPoints,ImportLoadout,InitializeViewLoadout,IsConfigPopulated,LoadConfig,RenameConfig,RequestNewConfig,SaveConfig,SetStarterBuildActive,SetUsesSharedActionBars,SwitchToLoadoutByIndex,SwitchToLoadoutByName,SwitchToSpecializationByIndex,SwitchToSpecializationByName,UpdateLastSelectedSavedConfigID,ViewLoadout",
 },
-["qpos"] = {
-[8171] = {
-},
-[1014] = {
-},
-[527] = {
-},
-[6571] = {
-},
-[1483] = {
-},
-[480] = {
-},
-[97538] = {
-},
-[6543] = {
-},
-[442] = {
-},
-[79007] = {
-},
-[846] = {
-},
-[567] = {
-},
-[8370] = {
-},
-[1740] = {
-},
-[98299] = {
-},
-[498] = {
-},
-[1069] = {
-},
-[6503] = {
-},
-[5725] = {
-},
-[1013] = {
-},
-[1098] = {
-},
-[1221] = {
-},
-[65610] = {
-},
-[891] = {
-},
-[1131] = {
-},
-[6504] = {
-},
-[1195] = {
-},
-[501] = {
-},
-[451] = {
-},
-[959] = {
-},
-[1509] = {
-},
-[8368] = {
-},
-},
 ["tree"] = {
 ["WARLOCK"] = {
-["time"] = 1794843269,
+["time"] = 1794844734,
 ["nodes"] = {
 {
 ["spell"] = 412758,
@@ -4794,198 +4748,198 @@ nil,
 ["type"] = "Trade Goods",
 ["ilvl"] = 15,
 ["id"] = 2452,
-["req"] = 0,
+["n"] = 7,
+["bag"] = 5,
+["sub"] = "Herb",
+["name"] = "Swiftthistle",
+["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
+["tex"] = 134184,
+["sell"] = 15,
 ["tip"] = {
 "Crafting Reagent",
 "Sell Price: 15|A:coin-copper:14:14:2:0|a",
 },
-["sub"] = "Herb",
-["name"] = "Swiftthistle",
-["tex"] = 134184,
-["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
-["sell"] = 15,
-["bag"] = 5,
-["n"] = 7,
+["req"] = 0,
 },
 {
 ["q"] = 1,
 ["type"] = "Trade Goods",
 ["ilvl"] = 15,
 ["id"] = 2450,
-["req"] = 0,
+["n"] = 8,
+["bag"] = 5,
+["sub"] = "Herb",
+["name"] = "Briarthorn",
+["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
+["tex"] = 134412,
+["sell"] = 25,
 ["tip"] = {
 "Crafting Reagent",
 "Sell Price: 25|A:coin-copper:14:14:2:0|a",
 },
-["sub"] = "Herb",
-["name"] = "Briarthorn",
-["tex"] = 134412,
-["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
-["sell"] = 25,
-["bag"] = 5,
-["n"] = 8,
+["req"] = 0,
 },
 {
 ["q"] = 1,
 ["type"] = "Trade Goods",
 ["ilvl"] = 10,
 ["id"] = 785,
-["req"] = 0,
+["n"] = 16,
+["bag"] = 5,
+["sub"] = "Herb",
+["name"] = "Mageroyal",
+["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
+["tex"] = 133436,
+["sell"] = 20,
 ["tip"] = {
 "Crafting Reagent",
 "Sell Price: 20|A:coin-copper:14:14:2:0|a",
 },
-["sub"] = "Herb",
-["name"] = "Mageroyal",
-["tex"] = 133436,
-["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
-["sell"] = 20,
-["bag"] = 5,
-["n"] = 16,
+["req"] = 0,
 },
 {
 ["q"] = 1,
 ["type"] = "Trade Goods",
 ["ilvl"] = 5,
 ["id"] = 2449,
-["req"] = 0,
+["n"] = 4,
+["bag"] = 5,
+["sub"] = "Herb",
+["name"] = "Earthroot",
+["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
+["tex"] = 134187,
+["sell"] = 20,
 ["tip"] = {
 "Crafting Reagent",
 "Sell Price: 20|A:coin-copper:14:14:2:0|a",
 },
-["sub"] = "Herb",
-["name"] = "Earthroot",
-["tex"] = 134187,
-["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
-["sell"] = 20,
-["bag"] = 5,
-["n"] = 4,
+["req"] = 0,
 },
 {
 ["q"] = 1,
 ["type"] = "Trade Goods",
 ["ilvl"] = 5,
 ["id"] = 2447,
-["req"] = 0,
+["n"] = 7,
+["bag"] = 5,
+["sub"] = "Herb",
+["name"] = "Peacebloom",
+["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
+["tex"] = 133939,
+["sell"] = 10,
 ["tip"] = {
 "Crafting Reagent",
 "Sell Price: 10|A:coin-copper:14:14:2:0|a",
 },
-["sub"] = "Herb",
-["name"] = "Peacebloom",
-["tex"] = 133939,
-["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
-["sell"] = 10,
-["bag"] = 5,
-["n"] = 7,
+["req"] = 0,
 },
 {
 ["q"] = 1,
 ["type"] = "Trade Goods",
 ["ilvl"] = 5,
 ["id"] = 765,
-["req"] = 0,
+["n"] = 6,
+["bag"] = 5,
+["sub"] = "Herb",
+["name"] = "Silverleaf",
+["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
+["tex"] = 134190,
+["sell"] = 10,
 ["tip"] = {
 "Crafting Reagent",
 "Sell Price: 10|A:coin-copper:14:14:2:0|a",
 },
-["sub"] = "Herb",
-["name"] = "Silverleaf",
-["tex"] = 134190,
-["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
-["sell"] = 10,
-["bag"] = 5,
-["n"] = 6,
+["req"] = 0,
 },
 {
 ["q"] = 2,
 ["type"] = "Trade Goods",
 ["ilvl"] = 25,
 ["id"] = 249399,
-["req"] = 0,
+["n"] = 1,
+["bag"] = 5,
+["sub"] = "Herb",
+["name"] = "Frilled Lichen",
+["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
+["tex"] = 133963,
+["sell"] = 30,
 ["tip"] = {
 "|cFF87ABFFScarce|r",
 "Crafting Reagent",
 "Sell Price: 30|A:coin-copper:14:14:2:0|a",
 },
-["sub"] = "Herb",
-["name"] = "Frilled Lichen",
-["tex"] = 133963,
-["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
-["sell"] = 30,
-["bag"] = 5,
-["n"] = 1,
+["req"] = 0,
 },
 {
 ["q"] = 1,
 ["type"] = "Reagent",
 ["ilvl"] = 10,
 ["id"] = 210177,
-["req"] = 0,
+["n"] = 1,
+["bag"] = 6,
+["sell"] = 0,
+["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
+["name"] = "Ataeric: On Arcane Curiosities",
+["sub"] = "Reagent",
+["tex"] = 133744,
+["bound"] = true,
 ["tip"] = {
 "Binds when picked up",
 "Unique",
 "\"The writings of a notable Kirin Tor archmage. A fine addition to any library's collection.\"",
 },
-["bound"] = true,
-["tex"] = 133744,
-["name"] = "Ataeric: On Arcane Curiosities",
-["sub"] = "Reagent",
-["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
-["sell"] = 0,
-["bag"] = 6,
-["n"] = 1,
+["req"] = 0,
 },
 {
 ["q"] = 1,
 ["type"] = "Consumable",
 ["ilvl"] = 1,
 ["id"] = 248685,
-["req"] = 10,
+["n"] = 1,
+["bag"] = 6,
+["sub"] = "Other",
+["name"] = "Waylaid Crate: Apprentice Curiosities",
+["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
+["tex"] = 236994,
+["sell"] = 0,
 ["tip"] = {
 "Requires Level 10",
 },
-["sub"] = "Other",
-["name"] = "Waylaid Crate: Apprentice Curiosities",
-["tex"] = 236994,
-["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
-["sell"] = 0,
-["bag"] = 6,
-["n"] = 1,
+["req"] = 10,
 },
 {
 ["q"] = 1,
 ["type"] = "Consumable",
 ["ilvl"] = 1,
 ["id"] = 248683,
-["req"] = 10,
+["n"] = 1,
+["bag"] = 6,
+["sub"] = "Other",
+["name"] = "Waylaid Crate: Apprentice Ore",
+["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
+["tex"] = 236994,
+["sell"] = 0,
 ["tip"] = {
 "Requires Level 10",
 },
-["sub"] = "Other",
-["name"] = "Waylaid Crate: Apprentice Ore",
-["tex"] = 236994,
-["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
-["sell"] = 0,
-["bag"] = 6,
-["n"] = 1,
+["req"] = 10,
 },
 {
 ["q"] = 1,
 ["type"] = "Consumable",
 ["ilvl"] = 1,
 ["id"] = 248682,
-["req"] = 10,
+["n"] = 2,
+["bag"] = 6,
+["sub"] = "Other",
+["name"] = "Waylaid Crate: Apprentice Herbs",
+["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
+["tex"] = 236994,
+["sell"] = 0,
 ["tip"] = {
 "Requires Level 10",
 },
-["sub"] = "Other",
-["name"] = "Waylaid Crate: Apprentice Herbs",
-["tex"] = 236994,
-["loc"] = "INVTYPE_NON_EQUIP_IGNORE",
-["sell"] = 0,
-["bag"] = 6,
-["n"] = 2,
+["req"] = 10,
 },
 },
 },
