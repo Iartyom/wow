@@ -317,6 +317,13 @@ body.char-pal label.chk.on input{filter:drop-shadow(0 0 4px rgba(240,207,116,.8)
 body.char-pal ::selection{background:rgba(240,207,116,.35)}
 .wi.big{width:52px;height:52px;margin:0;border-radius:6px;box-shadow:0 0 0 2px var(--bronze),0 0 18px rgba(155,212,74,.3)}
 .leaflet-tooltip.lt-minor{color:#d9cfbf;font-size:10.5px;font-style:italic;font-weight:400}
+/* Pin tooltips: a readable WoW-style box (wrapping, solid background), unlike the shadow-only zone labels. */
+.leaflet-tooltip.lt-card{background:rgba(6,6,22,.96);border:1px solid #7b7b8c;border-radius:5px;box-shadow:0 0 0 1px #000,0 6px 16px rgba(0,0,0,.6);
+  padding:6px 9px;white-space:normal;width:max-content;max-width:250px;text-shadow:none;color:#e8e2d6;
+  font:400 12.5px/1.4 var(--f-body)}
+.leaflet-tooltip.lt-card b{color:#ffd100;font-weight:700}
+.leaflet-tooltip.lt-card .muted{color:#a9a3b5}
+.leaflet-tooltip.lt-card .mono{font-family:var(--f-mono);font-size:11.5px;color:#cfc8bb}
 .maplayout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:var(--s4)}
 @media (max-width:860px){.maplayout{grid-template-columns:1fr}}
 .zinfo{background:var(--surface);border:1px solid var(--line);padding:var(--s4);display:flex;flex-direction:column;gap:var(--s2);align-self:start}
@@ -1365,7 +1372,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-16T16:16:01Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-16T17:04:17Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -2681,32 +2688,43 @@ function addQuestAreas(mapKey){
   const P = (x,y) => pxToLL([x/100*1002, y/100*668]);
   const focusPts = [];   // focused quest's points on this map: the view zooms to them once
   questList().map(q=>questInfo(q, lvl, here)).filter(i=>qFocus ? i.q.id===qFocus : !["drop","later"].includes(i.v)).forEach((i, n)=>{
-    const color = Q_COLORS[n % Q_COLORS.length];
+    const color = Q_COLORS[n % Q_COLORS.length], pins = [];
     for(const o of i.open) for(const t of o.targets){
       if(t.map!==mapKey) continue;
       if(qFocus) for(const p of (t.pts||[]).length ? t.pts : t.x!=null ? [[t.x,t.y]] : []) focusPts.push(P(p[0],p[1]));
       for(const p of t.pts||[]) L.circleMarker(P(p[0],p[1]), {radius:qFocus?7:5, color:"#120d00", weight:1, opacity:.5, fillColor:color, fillOpacity:qFocus?.7:.5, interactive:false}).addTo(leafGroup);
-      if(t.x!=null) L.marker(P(t.x,t.y), {icon:L.divIcon({className:"", html:`<b class="qpin" style="background:${color}">!</b>`, iconSize:[18,18], iconAnchor:[9,9]}), zIndexOffset:500})
-        .bindTooltip(`<b>${esc(i.q.title)}</b><br>${objLine(o, arrOf(i.q.obj))}`, {direction:"top", offset:[0,-8]}).addTo(leafGroup);
+      // One "!" per spot: objectives at the same centre (e.g. three items from the same mobs) share a pin.
+      // Targets within ~6% of the map (soldiers, riflemen, officers of one camp) count as the same spot.
+      if(t.x!=null){ let pin = pins.find(p=>Math.hypot(p.t.x-t.x, p.t.y-t.y) < 6);
+        if(!pin) pins.push(pin = {t, objs:[]}); if(!pin.objs.includes(o)) pin.objs.push(o); }
     }
+    for(const {t, objs} of pins)
+      L.marker(P(t.x,t.y), {icon:L.divIcon({className:"", html:`<b class="qpin" style="background:${color}">!</b>`, iconSize:[18,18], iconAnchor:[9,9]}), zIndexOffset:500})
+        .bindTooltip(`<b>${esc(i.q.title)}</b><br>${mergedObjLines(objs, arrOf(i.q.obj)).split("; ").map(x=>x.replace(/ in [^<]*<span class="mono">\([^)]*\)<\/span>$/,"")).join("<br>")}`, {direction:"top", offset:[0,-8], className:"lt-card"}).on("click", ()=>pinFocus(i.q.id)).addTo(leafGroup);
     // Dungeon objective: pin the entrance instead.
     for(const o of i.open) for(const t of o.targets) if(t.dungeon && t.door && t.door.map===mapKey)
       L.marker(P(t.door.x,t.door.y), {icon:L.divIcon({className:"", html:`<b class="qpin" style="background:${color}">D</b>`, iconSize:[18,18], iconAnchor:[9,9]})})
-        .bindTooltip(`<b>${esc(i.q.title)}</b>: ${esc(t.dungeon)} entrance`, {direction:"top", offset:[0,-8]}).addTo(leafGroup);
+        .bindTooltip(`<b>${esc(i.q.title)}</b>: ${esc(t.dungeon)} entrance`, {direction:"top", offset:[0,-8], className:"lt-card"}).on("click", ()=>pinFocus(i.q.id)).addTo(leafGroup);
     if(qFocus && i.end && i.end.map===mapKey && i.end.x!=null && !i.open.length) focusPts.push(P(i.end.x,i.end.y));
     if(i.end && i.end.map===mapKey && i.end.x!=null && (i.q.done || qFocus))
       L.marker(P(i.end.x,i.end.y), {icon:L.divIcon({className:"", html:`<b class="qpin turn">?</b>`, iconSize:[20,20], iconAnchor:[10,10]}), zIndexOffset:600})
-        .bindTooltip(`Turn in <b>${esc(i.q.title)}</b>: ${esc(i.d.end.name)}`, {direction:"top", offset:[0,-8]}).addTo(leafGroup);
+        .bindTooltip(`Turn in <b>${esc(i.q.title)}</b>: ${esc(i.d.end.name)}`, {direction:"top", offset:[0,-8], className:"lt-card"}).on("click", ()=>pinFocus(i.q.id)).addTo(leafGroup);
     // Not in the DB: fall back to the spots the addon learned (where you picked it up / made progress).
     if(!i.d){ const p = i.q.pos || {};
       for(const s of [...arrOf(p.prog), p.got].filter(s=>s && s.map===mapKey))
         L.marker(P(s.x,s.y), {icon:L.divIcon({className:"", html:`<b class="qpin" style="background:${color}">•</b>`, iconSize:[16,16], iconAnchor:[8,8]})})
-          .bindTooltip(`<b>${esc(i.q.title)}</b>: you were here`, {direction:"top"}).addTo(leafGroup); }
+          .bindTooltip(`<b>${esc(i.q.title)}</b>: you were here`, {direction:"top", className:"lt-card"}).addTo(leafGroup); }
   });
   // After openZoneMap's own fitBounds (same tick), zoom onto the focused quest's area, once per Map click.
   if(focusPts.length && qFitPending){ qFitPending = false;
     setTimeout(()=>{ autoBusy = true; // No animation: an animated zoom can still be running when autoBusy is released, and the zoom-out handler then fires.
       leaf.fitBounds(L.latLngBounds(focusPts).pad(.25), {maxZoom:(zoneFitZoom||0)+2, animate:false}); releaseAuto(); }, 50); }
+}
+// Pin click: focus that quest (guide card in the panel, only its pins drawn, zoom onto it).
+function pinFocus(id){
+  qFocus = id; qFitPending = true; renderQuestLog();
+  if(zoneView) openZoneMap(zoneView, zoneIsCity);
+  renderZoneInfo();
 }
 let qFitPending = false;
 // Quests with work or a turn-in in this zone, for the zone info panel.
@@ -3331,7 +3349,7 @@ function mapZoneOf(name){ return name ? (CITY_ZONE[name] || (ZONES[name] ? name 
 function addYouMarker(mapKey){
   const p = state.game && state.game.pos; if(!p || p.name!==mapKey || p.x==null) return;
   L.marker(pxToLL([p.x/100*1002, p.y/100*668]), {icon:L.divIcon({className:"", html:'<b class="poi-you"></b>', iconSize:[20,20], iconAnchor:[10,10]}), zIndexOffset:1000, keyboard:false})
-    .bindTooltip(`You were here <span class="mono">(${p.x}, ${p.y})</span>`, {direction:"top", offset:[0,-10]}).addTo(leafGroup);
+    .bindTooltip(`You were here <span class="mono">(${p.x}, ${p.y})</span>`, {direction:"top", offset:[0,-10], className:"lt-card"}).addTo(leafGroup);
 }
 // Open the map where you are: city map if you logged out in a city, else the zone map. Runs once per page
 // load on its own (so it doesn't yank the map while you browse), and every time from "Where am I?".
@@ -3348,7 +3366,7 @@ function focusHere(force){
 function addZonePois(mapKey){
   for(const p of poisFor(mapKey)){
     L.marker(pxToLL([p.x/100*1002, p.y/100*668]), {icon:poiIcon(p.k, p.v), keyboard:false})
-      .bindTooltip(`${esc(p.label)} <span class="mono">(${p.x}, ${p.y})</span>${p.v?"":" · verify"}`, {direction:"top", offset:[0,-8]})
+      .bindTooltip(`${esc(p.label)} <span class="mono">(${p.x}, ${p.y})</span>${p.v?"":" · verify"}`, {direction:"top", offset:[0,-8], className:"lt-card"})
       .addTo(leafGroup);
   }
 }
@@ -3365,7 +3383,7 @@ function addFlightLines(){
       L.polyline([pxToLL(a),pxToLL(b)], {color:"#e8c86a", weight:1.2, opacity:.55, interactive:false}).addTo(leafGroup);
     }
     L.circleMarker(pxToLL(a), {radius:3, color:"#0d0a10", weight:1, fillColor:"#e8c86a", fillOpacity:1})
-      .bindTooltip(`${esc(name)} flight master`).addTo(leafGroup);
+      .bindTooltip(`${esc(name)} flight master`, {className:"lt-card"}).addTo(leafGroup);
   }
 }
 // Text list for the zone panel, so the info is there on the Claude page (drawn map) too.
