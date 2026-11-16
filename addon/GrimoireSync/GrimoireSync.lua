@@ -454,6 +454,146 @@ local function noteNpc(event)
   GrimoireSyncDB.npcs[name .. "@" .. pos.name] = { name = name, title = title, k = kind, map = pos.name, x = pos.x, y = pos.y, t = time() }
 end
 
+-- ---- Quest log (0.6) ----
+-- scanQuestLog(): every quest in the log with its level, zone header, done state and objective progress.
+-- Positions come from what you did, so they are real Forever coordinates:
+--   qpos[id].got  = where you stood when you accepted it (the giver; often also the turn-in)
+--   qpos[id].prog = up to 8 spots where an objective counter went up (where the mobs/items are)
+-- If Questie is loaded, its database adds the turn-in NPC and objective spawns (Classic data, may be off).
+local function questObjectives(qid, idx)
+  local out = {}
+  if C_QuestLog and C_QuestLog.GetQuestObjectives and qid then
+    for _, o in ipairs(safe(C_QuestLog.GetQuestObjectives, qid) or {}) do
+      out[#out + 1] = { text = o.text, done = o.finished and true or false, have = o.numFulfilled, need = o.numRequired, type = o.type }
+    end
+  end
+  if #out == 0 and GetNumQuestLeaderBoards and idx then
+    for j = 1, safe(GetNumQuestLeaderBoards, idx) or 0 do
+      local text, typ, done = safe(GetQuestLogLeaderBoard, j, idx)
+      if text then
+        local have, need = text:match("(%d+)%s*/%s*(%d+)")
+        out[#out + 1] = { text = text, done = done and true or false, have = tonumber(have), need = tonumber(need), type = typ }
+      end
+    end
+  end
+  return out
+end
+
+-- Questie (optional). Module and query names are from Questie's source; everything is pcall'd, so a
+-- different Questie version just means no extra data.
+local function questieDB()
+  if not (QuestieLoader and QuestieLoader.ImportModule) then return end
+  local db = safe(QuestieLoader.ImportModule, QuestieLoader, "QuestieDB")
+  local zdb = safe(QuestieLoader.ImportModule, QuestieLoader, "ZoneDB")
+  if db and db.QueryNPCSingle and db.QueryQuestSingle then return db, zdb end
+end
+-- Questie spawns are {[areaId] = {{x, y}, ...}}; keep up to `max` points from the zone with the most.
+local function spawnPts(zdb, spawns, max, out)
+  if type(spawns) ~= "table" then return end
+  local bestA, bestN = nil, 0
+  for a, pts in pairs(spawns) do if type(pts) == "table" and #pts > bestN then bestA, bestN = a, #pts end end
+  if not bestA then return end
+  local ui = zdb and zdb.GetUiMapIdByAreaId and safe(zdb.GetUiMapIdByAreaId, zdb, bestA)
+  local info = ui and safe(C_Map.GetMapInfo, ui)
+  if not (info and info.name) then return end
+  local pts, step, n = spawns[bestA], math.max(1, math.floor(bestN / max)), 0
+  for i = 1, #pts, step do
+    local p = pts[i]
+    if p and p[1] and p[1] >= 0 then
+      out[#out + 1] = { map = info.name, x = math.floor(p[1] * 10 + 0.5) / 10, y = math.floor(p[2] * 10 + 0.5) / 10 }
+      n = n + 1; if n >= max then break end
+    end
+  end
+end
+local function questieInfo(db, zdb, qid)
+  local r = {}
+  local fin = safe(db.QueryQuestSingle, qid, "finishedBy")
+  local npc = fin and fin[1] and fin[1][1]
+  if npc then
+    local pts = {}
+    spawnPts(zdb, safe(db.QueryNPCSingle, npc, "spawns"), 1, pts)
+    if pts[1] then r.to = pts[1]; r.to.name = safe(db.QueryNPCSingle, npc, "name") end
+  end
+  local obj = safe(db.QueryQuestSingle, qid, "objectives")
+  if type(obj) == "table" then
+    local pts = {}
+    for _, c in ipairs(obj[1] or {}) do spawnPts(zdb, safe(db.QueryNPCSingle, c[1], "spawns"), 4, pts) end
+    for _, o in ipairs(obj[2] or {}) do if db.QueryObjectSingle then spawnPts(zdb, safe(db.QueryObjectSingle, o[1], "spawns"), 4, pts) end end
+    for _, it in ipairs(obj[3] or {}) do
+      if db.QueryItemSingle then
+        for _, npcId in ipairs(safe(db.QueryItemSingle, it[1], "npcDrops") or {}) do
+          spawnPts(zdb, safe(db.QueryNPCSingle, npcId, "spawns"), 3, pts); if #pts >= 10 then break end
+        end
+      end
+    end
+    if #pts > 0 then r.pts = pts end
+  end
+  return r
+end
+
+local questState, lastProgress = nil, {}
+local function scanQuestLog()
+  local list, header, collapsed = {}, nil, 0
+  local n = (C_QuestLog and C_QuestLog.GetNumQuestLogEntries and safe(C_QuestLog.GetNumQuestLogEntries))
+            or safe(GetNumQuestLogEntries) or 0
+  local db, zdb = questieDB()
+  GrimoireSyncDB.qpos = GrimoireSyncDB.qpos or {}
+  local here = playerPos()
+  for i = 1, n do
+    local title, level, isHeader, isCollapsed, complete, qid
+    local info = C_QuestLog and C_QuestLog.GetInfo and safe(C_QuestLog.GetInfo, i)
+    if info then
+      title, level, isHeader, isCollapsed, qid = info.title, info.level, info.isHeader, info.isCollapsed, info.questID
+      if not isHeader and qid and C_QuestLog.IsComplete then complete = safe(C_QuestLog.IsComplete, qid) and 1 or nil end
+      if not isHeader and qid and C_QuestLog.IsFailed and safe(C_QuestLog.IsFailed, qid) then complete = -1 end
+    else
+      local _
+      title, level, _, isHeader, isCollapsed, complete, _, qid = safe(GetQuestLogTitle, i)
+    end
+    if isHeader then
+      header = title
+      if isCollapsed then collapsed = collapsed + 1 end   -- quests under a collapsed header aren't listed
+    elseif title then
+      local obj = questObjectives(qid, i)
+      local q = { id = qid, title = title, level = level, zone = header, obj = obj,
+                  done = complete == 1 or complete == true, failed = complete == -1 }
+      -- Objective counter went up since the last scan: remember where you were (that's where it drops/spawns).
+      if qid and here then
+        local sum = 0; for _, o in ipairs(obj) do sum = sum + (tonumber(o.have) or 0) + (o.done and 1 or 0) end
+        local qp = GrimoireSyncDB.qpos[qid] or {}
+        if lastProgress[qid] and sum > lastProgress[qid] then
+          qp.prog = qp.prog or {}
+          table.insert(qp.prog, { map = here.name, x = here.x, y = here.y })
+          if #qp.prog > 8 then table.remove(qp.prog, 1) end
+        end
+        lastProgress[qid] = sum
+        GrimoireSyncDB.qpos[qid] = qp
+      end
+      if db and qid then
+        local ok, qi = pcall(questieInfo, db, zdb, qid)
+        if ok and qi then q.to, q.pts = qi.to, qi.pts end
+      end
+      list[#list + 1] = q
+    end
+  end
+  -- Forget positions of quests that left the log (turned in or abandoned) so the file doesn't grow forever.
+  local inLog = {}; for _, q in ipairs(list) do if q.id then inLog[q.id] = true end end
+  for id in pairs(GrimoireSyncDB.qpos) do if not inLog[id] then GrimoireSyncDB.qpos[id] = nil end end
+  for _, q in ipairs(list) do if q.id then q.pos = GrimoireSyncDB.qpos[q.id] end end
+  questState = { t = time(), list = list, collapsed = collapsed, questie = db and true or false }
+end
+-- QUEST_ACCEPTED: you're standing at the giver. arg is questID on modern clients, log index on old ones.
+local function noteQuestAccepted(a1, a2)
+  local qid = (type(a2) == "number" and a2) or a1
+  if not qid then return end
+  if not a2 and GetQuestLogTitle and a1 and a1 < 100 then qid = select(8, safe(GetQuestLogTitle, a1)) or qid end
+  local here = playerPos(); if not here then return end
+  GrimoireSyncDB.qpos = GrimoireSyncDB.qpos or {}
+  local qp = GrimoireSyncDB.qpos[qid] or {}
+  qp.got = { map = here.name, x = here.x, y = here.y, npc = safe(UnitName, "npc") }
+  GrimoireSyncDB.qpos[qid] = qp
+end
+
 local function snapshot(event)
   local _, classFile = safe(UnitClass, "player")
   local _, raceFile = safe(UnitRace, "player")
@@ -482,6 +622,7 @@ local function snapshot(event)
     profs = scanProfessions(),
     profMax = profMax,
     crafts = GrimoireSyncDB.crafts,
+    qlog = questState,
     talents = scanTalents(),
     spells = scanSpells(),
     time = time(),
@@ -514,6 +655,16 @@ for e in pairs(NPC_EVENTS) do pcall(f.RegisterEvent, f, e) end
 -- Profession window: LIST_UPDATE fires again once recipes load and after each craft (colours change).
 local CRAFT_EVENTS = { TRADE_SKILL_SHOW = true, TRADE_SKILL_LIST_UPDATE = true, TRADE_SKILL_UPDATE = true }
 for e in pairs(CRAFT_EVENTS) do pcall(f.RegisterEvent, f, e) end
+-- Quest log: QUEST_LOG_UPDATE fires in bursts (every kill, every loot), so the rescan is debounced to 1s.
+local QUEST_EVENTS = { QUEST_LOG_UPDATE = true, QUEST_ACCEPTED = true, QUEST_REMOVED = true }
+for e in pairs(QUEST_EVENTS) do pcall(f.RegisterEvent, f, e) end
+local questPending = false
+local function queueQuest()
+  if questPending then return end
+  questPending = true
+  local run = function() questPending = false; pcall(scanQuestLog); pcall(snapshot, "quests") end
+  if C_Timer and C_Timer.After then C_Timer.After(1, run) else run() end
+end
 pcall(f.RegisterEvent, f, "GET_ITEM_INFO_RECEIVED")
 local bankOpen, invPending = false, false
 -- pcall: one odd item must not throw a Lua error popup from a timer callback.
@@ -528,7 +679,11 @@ local function queueInv()
   invPending = true
   if C_Timer and C_Timer.After then C_Timer.After(1, invRescan) else invRescan() end
 end
-f:SetScript("OnEvent", function(_, event, arg1)
+f:SetScript("OnEvent", function(_, event, arg1, arg2)
+  if QUEST_EVENTS[event] then
+    if event == "QUEST_ACCEPTED" then pcall(noteQuestAccepted, arg1, arg2) end
+    queueQuest(); return
+  end
   if CRAFT_EVENTS[event] then pcall(scanTradeSkill); pcall(snapshot, event); return end
   if NPC_EVENTS[event] then pcall(noteNpc, event) end
   if event ~= "BANKFRAME_OPENED" and NPC_EVENTS[event] then return end
@@ -542,7 +697,7 @@ f:SetScript("OnEvent", function(_, event, arg1)
   if INV_EVENTS[event] then queueInv() return end
   if event == "PLAYER_LEVEL_UP" then pendingLevel = arg1 else pendingLevel = nil end
   -- First scan a few seconds after login: item data for bag contents may still be loading.
-  if event == "PLAYER_ENTERING_WORLD" and C_Timer and C_Timer.After then C_Timer.After(4, queueInv) end
+  if event == "PLAYER_ENTERING_WORLD" and C_Timer and C_Timer.After then C_Timer.After(4, queueInv); C_Timer.After(5, queueQuest) end
   snapshot(event)
 end)
 

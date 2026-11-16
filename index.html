@@ -438,6 +438,24 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 .calchits li.note{font-size:.85rem;color:var(--muted);padding:4px 2px}
 .itt.inline{position:static;display:block;max-width:none;pointer-events:auto;margin-bottom:var(--s3)}
 .weights summary{cursor:pointer;font-family:var(--f-mono);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+/* Quest log: four buckets in gear-guide panels; level colours are WoW's quest colours. */
+.poi-q{background:#ffd100;color:#1a1200}.poi-o{background:#e8873c;color:#1a1200}
+.qlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s2)}
+.qlist>li{border-left:3px solid var(--qc,#ffd100);padding:2px 0 2px var(--s2)}
+.qlh{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px;font-size:.92rem}
+.qlh a{color:var(--qc);text-decoration:none} .qlh a:hover{text-decoration:underline}
+.qll{font-family:var(--f-mono);font-size:.75rem;color:var(--qc);min-width:1.6rem}
+.qlz{font-size:.72rem;color:var(--muted)}
+.qlh .btn{margin-left:auto;padding:1px 8px;font-size:.72rem}
+.qlo{list-style:none;margin:2px 0 0;padding:0 0 0 1.9rem;font-size:.8rem;display:flex;flex-direction:column;gap:2px}
+.qlo li.ok{color:var(--muted)}
+.qlbar{display:inline-block;width:60px;height:5px;margin-left:6px;background:var(--line);border-radius:3px;overflow:hidden;vertical-align:middle}
+.qlbar i{display:block;height:100%;background:var(--qc,#ffd100)}
+.qlw{margin:2px 0 0 1.9rem;font-size:.78rem;color:var(--muted)} .qlw.warn{color:var(--warn)}
+.qlc{font-size:.8rem;color:var(--muted)}
+.ql-red{--qc:#ff4040;color:#ff4040}.ql-orange{--qc:#ff8040;color:#ff8040}.ql-yellow{--qc:#e0d020;color:#e0d020}
+.ql-green{--qc:#40c040;color:#40c040}.ql-grey{--qc:#9d9d9d;color:#9d9d9d}
+.qlist>li{color:var(--fg)}
 /* Profession helper: one panel per profession, reusing the gear guide's panel styles. */
 .pfbar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
 .pfbar i{display:block;height:100%;background:var(--fel)}
@@ -625,7 +643,7 @@ section:not(.fold) .foldwhy{display:none}
   </div>
   <div class="wrap">
     <nav class="toc" aria-label="Sections">
-      <a href="#newbie" data-only="pal">Start here</a><a href="#game">From the game</a><a href="#items">Item worth</a><a href="#kit">Your kit</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#rotation">Your spec</a><a href="#training" data-only="wl">Talents &amp; trainer</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
+      <a href="#newbie" data-only="pal">Start here</a><a href="#game">From the game</a><a href="#items">Item worth</a><a href="#kit">Your kit</a><a href="#questlog">Quest log</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#rotation">Your spec</a><a href="#training" data-only="wl">Talents &amp; trainer</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
     </nav>
     <div class="foldall"><button type="button" class="foldbtn" data-foldall="auto">Show only what matters now</button><button type="button" class="foldbtn" data-foldall="open">Open everything</button><span class="updline" id="updated"></span></div>
   </div>
@@ -950,6 +968,14 @@ section:not(.fold) .foldwhy{display:none}
   </div>
 </section>
 
+<!-- Quest log (Nov 16): renderQuestLog() from addon 0.6's `qlog`. No chapter number: it's live data, not guide text. -->
+<section id="questlog">
+  <div class="wrap">
+    <header><p class="eyebrow">Right now</p><h2>Your quest log</h2><p id="qlSum"></p></header>
+    <div id="qlBody"></div>
+  </div>
+</section>
+
 <section id="map">
   <div class="wrap">
     <header><p class="eyebrow">Chapter II</p><h2>Route map</h2><p>The GitHub site shows the real Forever world maps, which you can zoom and drag. Claude pages can't load outside images, so here you get a drawn version. Green means your level, purple means on your route, gold marks new Forever zones, and the dashed line is your path. Tap a zone for details and its zone map. On the GitHub site you can also just zoom: zoom in on a zone to open its map, and zoom out to go back.</p></header>
@@ -976,6 +1002,8 @@ section:not(.fold) .foldwhy{display:none}
           <span class="poikey"><b class="poi poi-a">A</b>Auction house</span>
           <span class="poikey"><b class="poi poi-v">V</b>Vendor</span>
           <span class="poikey"><b class="poi poi-n">N</b>Other NPC</span>
+          <span class="poikey"><b class="poi poi-q">Q</b>Quest giver</span>
+          <span class="poikey"><b class="poi poi-o">O</b>Quest objective</span>
           <span class="poikey"><b class="poi-you" style="display:inline-block"></b>You</span>
           <label class="poikey"><input type="checkbox" id="showFlights" checked> Flight paths</label>
           <button type="button" class="btn" id="whereAmI" style="padding:2px 10px">Where am I?</button>
@@ -1304,7 +1332,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-16T11:52:35Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-16T15:06:43Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -1628,7 +1656,7 @@ function applySnap(c, s, source){
     bank: bank ? {time:+bank.time||0, items:compactList(bank.items)} : null, addonTime:+s.time||0,
     addonGear: inv ? gear : null,
     // addon 0.4+: where you stood, NPCs you talked to. 0.5+: skill caps and recipes from profession windows.
-    pos: objOrNull(s.pos), npcs: objOrNull(s.npcs), profMax: objOrNull(s.profMax), crafts: objOrNull(s.crafts)};
+    pos: objOrNull(s.pos), npcs: objOrNull(s.npcs), profMax: objOrNull(s.profMax), crafts: objOrNull(s.crafts), qlog: objOrNull(s.qlog)};
   // 0.2+ files keep the character name in `who` (items use `name`); older files used `name`.
   const who = s.who || (!inv && s.name); if(who) st.charName = String(who);
   st.level = Math.max(1, Math.min(60, Math.round(s.level)));
@@ -2432,6 +2460,98 @@ function renderWeights(){
   el.dataset.char = sig; const w = weightsFor(CHAR);
   el.innerHTML = STAT_DEFS.map(([k,l])=>`<label><span>${l}</span><input type="number" step="0.05" data-w="${k}" value="${w[k]}"></label>`).join("");
 }
+/* ---- Quest log helper ----
+   renderQuestLog(): your current quests (addon 0.6 `qlog`), sorted into Turn in / Do here / Next / Drop.
+   Colours follow Classic's quest-level colours for your level; positions are where the addon saw you pick
+   the quest up and make progress (real Forever spots), plus Questie's database when that addon is loaded. */
+// Highest quest level that is grey (no real XP) for a character level, Classic formula.
+function greyMax(L){ return L<=5 ? 0 : L<=39 ? L - Math.floor(L/10) - 5 : L - Math.floor(L/5) - 1; }
+function questColor(ql, L){
+  const d = ql - L;
+  return d>=5 ? "red" : d>=3 ? "orange" : d>=-2 ? "yellow" : ql>greyMax(L) ? "green" : "grey";
+}
+// Every known spot for a quest, newest progress first: [{map,x,y,k,label}], k "q" = giver/turn-in, "o" = objective.
+function questSpots(q){
+  const out = [], p = q.pos || {};
+  for(const s of arrOf(p.prog).slice().reverse()) out.push({...s, k:"o", label:`${q.title}: you made progress here`});
+  for(const s of arrOf(q.pts)) out.push({...s, k:"o", label:`${q.title}: objective (Questie)`});
+  if(q.to) out.push({...q.to, k:"q", label:`${q.title}: turn in to ${q.to.name||"?"} (Questie)`});
+  if(p.got) out.push({...p.got, k:"q", label:`${q.title}: picked up${p.got.npc?" from "+p.got.npc:""}`});
+  return out.filter(s=>s.map && s.x!=null);
+}
+function questList(){ const ql = state.game && state.game.qlog; return ql ? arrOf(ql.list).filter(q=>q && q.title) : []; }
+// Open the zone/city map whose name is `where` (a C_Map name). Shared by "Where am I?" and the quest Map buttons.
+function focusOn(where){
+  const zone = mapZoneOf(where);
+  if(!realMode || !zone || !ZMAP[zone]) return false;
+  selZone = zone;
+  const isCity = !!CITY[zone] && CITY[zone][0]===where;
+  if(ZONES[zone].cont !== curCont || zoneView) showContinent(ZONES[zone].cont);
+  openZoneMap(zone, isCity);
+  return true;
+}
+function renderQuestLog(){
+  const body = $("#qlBody"); if(!body) return;
+  const g = state.game, ql = g && g.qlog, list = questList();
+  if(!ql){ $("#qlSum").textContent = ""; body.innerHTML = `<p class="muted">Needs addon 0.6: <kbd>/reload</kbd> in game and your quest log shows up here after the next sync.</p>`; return; }
+  const L = g.level||1, here = mapZoneOf((g.pos && g.pos.name) || g.zone);
+  const rows = list.map(q=>{
+    const col = q.level ? questColor(q.level, L) : "yellow", spots = questSpots(q);
+    const zone = mapZoneOf(q.zone) || (spots[0] && mapZoneOf(spots[0].map));
+    const bucket = q.failed ? "drop" : q.done ? "turn" : (col==="grey" || col==="red") ? "drop" : (here && zone===here) ? "here" : "next";
+    return {q, col, spots, zone, bucket};
+  });
+  const B = {turn:[], here:[], next:[], drop:[]};
+  rows.forEach(r=>B[r.bucket].push(r));
+  // Within a bucket: current zone first, then lowest level (easiest XP first).
+  for(const k in B) B[k].sort((a,b)=>((b.zone===here)-(a.zone===here)) || (a.q.level||0)-(b.q.level||0));
+  const objHTML = q => arrOf(q.obj).map(o=>{
+    const need = +o.need||0, have = Math.min(+o.have||0, need);
+    const text = esc(String(o.text||"").replace(/:\s*\d+\s*\/\s*\d+\s*$/,"").replace(/^\d+\s*\/\s*\d+\s*/,""));
+    return `<li class="${o.done?"ok":""}">${o.done?"✓ ":""}${text}`+
+      (need>1 ? ` <span class="mono">${have}/${need}</span><span class="qlbar"><i style="width:${Math.round(have/need*100)}%"></i></span>` : "")+`</li>`;
+  }).join("");
+  const why = r => r.q.failed ? "failed: abandon it and pick it up again"
+    : r.col==="grey" ? `grey at your level (quest ${r.q.level}): almost no XP, abandon unless it's on the way`
+    : r.col==="red" ? `level ${r.q.level}, 5+ above you: bring a group or come back later` : "";
+  const where = r => {
+    const p = r.q.pos && r.q.pos.got, to = r.q.to;
+    if(r.bucket==="turn") return to ? `Turn in to <b>${esc(to.name||"?")}</b>, ${esc(to.map)} <span class="mono">(${to.x}, ${to.y})</span>`
+      : p ? `Picked up ${p.npc?`from <b>${esc(p.npc)}</b> `:""}in ${esc(p.map)} <span class="mono">(${p.x}, ${p.y})</span>; most quests turn in there`
+      : `Turn-in spot unknown: check the quest text in game`;
+    return p ? `Picked up ${p.npc?`from ${esc(p.npc)} `:""}in ${esc(p.map)}` : "";
+  };
+  const card = r => {
+    const q = r.q, w = where(r), y = why(r);
+    return `<li class="ql-${r.col}"><div class="qlh"><span class="qll">${q.level||"?"}</span>`+
+      (q.id ? `<a href="https://www.wowhead.com/classic/quest=${q.id}" target="_blank" rel="noopener">${esc(q.title)}</a>` : esc(q.title))+
+      `<span class="qlz">${esc(q.zone||"")}</span>`+
+      (r.spots.length ? `<button type="button" class="btn" data-qmap="${q.id}" aria-label="Show ${esc(q.title)} on the map">Map</button>` : "")+`</div>`+
+      (r.bucket!=="turn" && arrOf(q.obj).length ? `<ul class="qlo">${objHTML(q)}</ul>` : "")+
+      (w ? `<p class="qlw">${w}</p>` : "")+(y ? `<p class="qlw warn">${y}</p>` : "")+`</li>`;
+  };
+  const block = (k, title, note) => B[k].length ? `<section class="ggp"><h4>${title} <span class="mono qlc">${B[k].length}</span></h4>`+
+    (note ? `<p class="muted gg-note">${note}</p>` : "")+`<ol class="qlist">${B[k].map(card).join("")}</ol></section>` : "";
+  const xpNote = "Colour = quest level against yours: <span class=\"ql-orange\">orange</span> hard, <span class=\"ql-yellow\">yellow</span> even, <span class=\"ql-green\">green</span> easy, grey no XP.";
+  $("#qlSum").innerHTML = `${list.length} quests · <b>${B.turn.length}</b> ready to turn in · <b>${B.here.length}</b> in ${esc(here||"your zone")}`+
+    (B.drop.length ? ` · ${B.drop.length} to drop or postpone` : "")+
+    (ql.collapsed ? ` · <span class="warn">${ql.collapsed} collapsed zone header${ql.collapsed>1?"s":""} in your log hide quests; expand them in game</span>` : "")+
+    `<br><span class="muted">${xpNote} Map pins: where you picked each quest up and where its counters went up${ql.questie?", plus Questie's spawns":""}.</span>`;
+  body.innerHTML = `<div class="gg-grid">`+
+    block("turn", "Turn in", "Done. Hand these in before anything else: free XP.")+
+    block("here", "Do here", "In the zone you're in, so no travel.")+
+    block("next", "Next", "")+
+    block("drop", "Drop or postpone", "")+`</div>`;
+}
+document.addEventListener("click", e=>{
+  const b = e.target.closest && e.target.closest("[data-qmap]"); if(!b) return;
+  const q = questList().find(x=>String(x.id)===b.dataset.qmap); if(!q) return;
+  const s = questSpots(q)[0]; if(!s) return;
+  $("#map").scrollIntoView({behavior:"smooth"});
+  if(!focusOn(s.map)){ setImportMsg && setImportMsg(`${q.title}: ${s.map} (${s.x}, ${s.y}). The zoomable map only works on the GitHub site.`); return; }
+  renderZoneInfo();
+});
+
 /* ---- Profession helper ----
    renderProfs(): one panel per profession: skill vs cap (train the next tier when capped), what to gather
    next, and for crafting skills which known recipes still give skill and how many you can make from
@@ -2978,6 +3098,8 @@ function poisFor(mapKey){
   // NPCs the addon saw you talk to: real positions, so they're always "verified".
   for(const n of Object.values((state.game && state.game.npcs) || {}))
     if(n && n.map===mapKey && n.x!=null) out.push({x:n.x, y:n.y, k:n.k||"n", label:n.name+(n.title?` <${n.title}>`:""), title:n.title, v:1, seen:1});
+  // Quest spots (addon 0.6): giver/turn-in and objective areas of quests in your log.
+  for(const q of questList()) for(const sp of questSpots(q)) if(sp.map===mapKey) out.push({x:sp.x, y:sp.y, k:sp.k, label:sp.label, v:1});
   return out;
 }
 // Map key of a zone/city name, as ZONES knows it: cities fold into their zone; unknown names -> null.
@@ -3026,7 +3148,8 @@ function addFlightLines(){
 // Text list for the zone panel, so the info is there on the Claude page (drawn map) too.
 function servicesHTML(zone){
   const keys = [zone, ...Object.entries(CITY_ZONE).filter(([,z])=>z===zone).map(([c])=>c)];
-  const rows = keys.flatMap(k=>poisFor(k).map(p=>({...p, where:k})));
+  // Quest pins (q/o) are map-only: the Services list is for NPCs you can use, not quest spots.
+  const rows = keys.flatMap(k=>poisFor(k).filter(p=>p.k!=="q" && p.k!=="o").map(p=>({...p, where:k})));
   if(!rows.length) return "";
   const name = {f:"Flight", t:"Warlock trainer", b:"Bank", a:"Auction house", v:"Vendor", n:"NPC", s:"Stable master"};
   // Trainers/NPCs from the addon carry their own title ("Herbalism Trainer"), which beats the generic word.
@@ -3475,6 +3598,7 @@ const FOLD_RULES = {
     return [!!due, "next class quest is more than " + NEAR + " levels away"];
   },
   // Opens when the profession helper has something to do: a skill at/near its cap, or skill-ups you can craft now.
+  questlog:() => [questList().length > 0, "no quest log synced yet (needs addon 0.6)"],
   extras:  () => [profNeedsYou(), "professions fine for now; reference, open when you train or sell"],
   notes:   () => [!!(state.notes || "").trim(), "empty"],
   setup:   () => [!state.game, "addon already connected"],
@@ -3524,7 +3648,7 @@ document.addEventListener("click", e => {
   if(sec && sec.classList.contains("fold")) setFold(id, true);
 });
 
-function renderAll(){ renderBar(); renderGame(); renderArmory(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderItems(); renderProfs();
+function renderAll(){ renderBar(); renderGame(); renderArmory(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderItems(); renderProfs(); renderQuestLog();
   const nb=$("#notesBox"); if(document.activeElement!==nb) nb.value = state.notes||"";
   applyFolds(); }
 
