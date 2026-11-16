@@ -1333,7 +1333,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-16T15:34:50Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-16T15:36:29Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -2536,7 +2536,8 @@ function renderQuestLog(){
   const xpNote = "Colour = quest level against yours: <span class=\"ql-orange\">orange</span> hard, <span class=\"ql-yellow\">yellow</span> even, <span class=\"ql-green\">green</span> easy, grey no XP.";
   $("#qlSum").innerHTML = `${list.length} quests · <b>${B.turn.length}</b> ready to turn in · <b>${B.here.length}</b> in ${esc(here||"your zone")}`+
     (B.drop.length ? ` · ${B.drop.length} to drop or postpone` : "")+
-    (ql.collapsed ? ` · <span class="warn">${ql.collapsed} collapsed zone header${ql.collapsed>1?"s":""} in your log hide quests; expand them in game</span>` : "")+
+    // No warning for ql.collapsed: on Forever, C_QuestLog lists quests under collapsed headers too (Nov 16 sync:
+    // 8 collapsed headers, all 32 quests present).
     `<br><span class="muted">${xpNote} Map pins: where you picked each quest up and where its counters went up${ql.questie?", plus Questie's spawns":""}.</span>`;
   body.innerHTML = `<div class="gg-grid">`+
     block("turn", "Turn in", "Done. Hand these in before anything else: free XP.")+
