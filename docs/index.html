@@ -477,6 +477,7 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 .qguide .qkey{font-size:.75rem;color:var(--muted);margin:6px 0}.qguide .qkey .qpin{display:inline-grid;vertical-align:middle;width:16px;height:16px;font-size:10px}
 .qguide .qgb{margin:6px 0 0;display:flex;gap:var(--s2);align-items:center;flex-wrap:wrap}
 .qsteps li.qdun>.qstop{border-left:3px solid #9b6bd6;padding-left:6px}
+.qbag{margin-top:var(--s3)} .qbag .qbh{margin:var(--s2) 0 4px}
 .qmini{font:600 .65rem/1.4 var(--f-mono);background:none;border:1px solid var(--line);color:var(--muted);padding:0 5px;cursor:pointer;vertical-align:1px}
 .qmini:hover{color:var(--fg);border-color:var(--gold)}
 .qhop{font-size:.8rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:var(--s2)}
@@ -1373,7 +1374,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-17T08:15:17Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-17T09:06:34Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -2506,10 +2507,11 @@ function renderWeights(){
    -> a verdict per quest (turn in / do now / on the way / dungeon run / needs a group / later / drop), a
    step-by-step plan that starts where you stand, and quest areas on the zone maps. */
 let questDB = {};          // quest id -> QuestieDB record (quests in your log only)
+let questBag = {};         // quest item id in your bags -> {name, uses:[{id,name,how,log,chain}]} (quest-data.mjs)
 let qFocus = null;         // quest id highlighted on the map (Map button); null = all quests
 async function autoFetchQuests(){
   try{ const r = await fetch("sync/quests.json", {cache:"no-store"}); if(!r.ok) return;
-       questDB = (await r.json()).quests || {}; renderQuestLog(); if(realMode && zoneView) openZoneMap(zoneView, zoneIsCity); }catch(e){}
+       const j = await r.json(); questDB = j.quests || {}; questBag = j.bagItems || {}; renderQuestLog(); if(realMode && zoneView) openZoneMap(zoneView, zoneIsCity); }catch(e){}
 }
 // Highest quest level that is grey (no real XP) for a character level, Classic formula.
 function greyMax(L){ return L<=5 ? 0 : L<=39 ? L - Math.floor(L/10) - 5 : L - Math.floor(L/5) - 1; }
@@ -2749,8 +2751,65 @@ function renderQuestLog(){
   };
   // Full list is reference (the plan and the don't-do list carry the advice), so it starts closed.
   const listHTML = `<details class="ggp qall"><summary><h4>All ${list.length} quests, with objectives and quest text</h4></summary><ol class="qlist">${order.flatMap(k=>by(k)).map(card).join("")}</ol></details>`;
-  body.innerHTML = `<div class="qlgrid">${planHTML}${notHTML}</div>${listHTML}`+
+  body.innerHTML = `<div class="qlgrid">${planHTML}<div>${notHTML}${bagCleanupHTML(infos)}</div></div>${listHTML}`+
     `<p class="muted" style="font-size:.75rem;margin-top:var(--s2)">Locations, mobs and XP: Questie's Forever database (QuestieDB, GPL-3.0), Classic data converted to Forever's maps. New Forever quests aren't in it yet.</p>`;
+}
+// Quest items in your bags, sorted into: destroy now / destroy if you drop a quest / keep.
+// Who needs an item: quests.json bagItems (quests that use it, in your log or a log quest's chain), your log's
+// objective text (covers new Forever quests the DB lacks) and part-objectives (Lost Pages pages).
+const BAG_SKIP = {drop:1, later:1, group:1, dungeon:1};   // verdicts where dropping the quest is on the table
+function bagCleanupHTML(infos){
+  const g = state.game; if(!g || !g.bags) return "";
+  const byId = Object.fromEntries(infos.map(i=>[i.q.id, i]));
+  const seen = new Set(), now = [], ifDrop = [], keep = [];
+  for(const it of [...arrOf(g.bags), ...arrOf(g.bank && g.bank.items)]){
+    const tip = arrOf(it.tip).join(" ");
+    // The stored bag state has no tooltips, so "Quest Item" consumables (Crate With Holes) come via questBag.
+    if(!it.id || seen.has(it.id) || !(it.type==="Quest" || /Quest Item/.test(tip) || questBag[it.id])) continue;
+    seen.add(it.id);
+    const name = it.name || questBag[it.id]?.name || "?", uses = arrOf(questBag[it.id]?.uses);
+    // Log quests needing it: DB objective/source/reward links, objective text, or parts of a log objective.
+    const need = new Map();
+    // A direct use (in your log) beats a chain link to the same log quest.
+    for(const u of uses){ const i = byId[u.log ? u.id : u.chain]; if(i && (!need.has(i.q.id) || u.log)) need.set(i.q.id, {i, chain: !u.log && u.name}); }
+    for(const i of infos){
+      if(arrOf(i.q.obj).some(o=>String(o.text||"").includes(name))) need.set(i.q.id, need.get(i.q.id) || {i});
+      if(i.d && i.d.objectives.some(o=>o.via && name.startsWith(o.via+" - "))) need.set(i.q.id, need.get(i.q.id) || {i, part:true});
+    }
+    const starts = uses.find(u=>u.how==="starts" && !byId[u.id]);
+    const row = {it, name, need:[...need.values()]};
+    const qn = n => n.i ? qLink(n.i.q) : "";
+    if(starts){ row.why = `Starts <i>${esc(starts.name)}</i>: right-click it to take the quest if you haven't done it.`; keep.push(row); }
+    else if(!row.need.length){
+      const other = uses.filter(u=>!u.log && !u.chain).map(u=>esc(u.name));
+      row.why = other.length ? `For ${other.slice(0,2).join(", ")}, which isn't in your log.` : "No quest in your log or the database uses it: left over.";
+      now.push(row);
+    } else if(row.need.every(n=>BAG_SKIP[n.i.v])){
+      row.why = row.need.map(n=>`${qn(n)} <span class="vchip ${VERDICT[n.i.v][1]}">${VERDICT[n.i.v][0]}</span>${n.chain?` (via <i>${esc(n.chain)}</i> in its chain)`:""}`).join(", ");
+      ifDrop.push(row);
+    } else {
+      row.why = row.need.map(n=>`${qn(n)}${n.chain?` (via <i>${esc(n.chain)}</i> in its chain)`:n.part?" (parts for it)":""}`).join(", ");
+      keep.push(row);
+    }
+  }
+  if(!seen.size) return "";
+  const li = r => `<li><b>${esc(r.name)}</b>${(r.it.n||1)>1?` <span class="mono">×${r.it.n}</span>`:""}<br><span class="muted">${r.why}</span></li>`;
+  // Shredder pages, Blueleaf kit etc.: many rows for one reason fold into one line.
+  const grouped = rows => Object.values(rows.reduce((m,r)=>{ (m[r.why] ||= []).push(r); return m; }, {}))
+    .map(rs=>{
+      if(rs.length===1) return li(rs[0]);
+      // Same base ("Shredder Operating Manual - Page N"): one name plus the suffixes, numbers in order.
+      const base = rs[0].name.includes(" - ") ? rs[0].name.split(" - ")[0] : null;
+      const names = base && rs.every(r=>r.name.startsWith(base+" - "))
+        ? `<b>${esc(base)}</b>: ${rs.map(r=>r.name.slice(base.length+3)).sort((a,b)=>(parseInt(a.replace(/\D/g,""))||0)-(parseInt(b.replace(/\D/g,""))||0)).map(esc).join(", ")}`
+        : rs.map(r=>`<b>${esc(r.name)}</b>`).join(", ");
+      return `<li>${names}<br><span class="muted">${rs[0].why}</span></li>`; }).join("");
+  return `<section class="ggp qbag"><h4>Bag cleanup: quest items</h4>`+
+    `<p class="muted gg-note">From your last sync. Destroying is permanent: pick the item up, drop it outside your bags and confirm.</p>`+
+    (now.length ? `<p class="qbh"><span class="vchip v-drop">Destroy now</span></p><ul class="qnot">${now.map(li).join("")}</ul>` : `<p class="muted">Nothing to destroy right now.</p>`)+
+    (ifDrop.length ? `<p class="qbh"><span class="vchip v-later">Only if you drop the quest</span></p><ul class="qnot">${grouped(ifDrop)}</ul>` : "")+
+    (keep.length ? `<details class="qtxt"><summary>Keep: ${keep.length} item${keep.length>1?"s":""} a quest still needs</summary><ul class="qnot">${grouped(keep)}</ul></details>` : "")+
+    `</section>`;
 }
 // Quest areas on an open zone/city map: spawn dots per open objective, a numbered pin at each area's centre,
 // and "?" at turn-ins. With a focused quest (Map button) only that quest is drawn.

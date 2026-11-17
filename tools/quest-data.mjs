@@ -83,6 +83,70 @@ function logQuestIds(){
   return ids;
 }
 
+// Quest items in the synced bags/bank: Map id -> name (type "Quest" or a "Quest Item" tooltip line).
+// Line walker like logQuestIds: a record opens at the block's inner depth, fields sit one level deeper.
+function bagQuestItems(){
+  const out = new Map(); let depth = 0, inB = 0, rec = null;
+  for(const line of fs.readFileSync(SV, "utf8").split("\n")){
+    const before = depth;
+    depth += (line.match(/\{/g) || []).length - (line.match(/\}/g) || []).length;
+    if(!inB){ if(/^\s*\["(bags|items)"\]\s*=\s*\{\s*$/.test(line)) inB = depth; continue; }
+    if(depth < inB){ inB = 0; rec = null; continue; }
+    if(before === inB && depth > inB && !rec){ rec = {}; continue; }
+    if(!rec) continue;
+    let m;
+    if(before === inB + 1){
+      if((m = /^\s*\["id"\]\s*=\s*(\d+)/.exec(line))) rec.id = +m[1];
+      else if((m = /^\s*\["name"\]\s*=\s*"(.*)",?\s*$/.exec(line))) rec.name = m[1].replace(/\\"/g, '"');
+      else if((m = /^\s*\["type"\]\s*=\s*"(.*)"/.exec(line))) rec.type = m[1];
+    }
+    if(/"Quest Item"/.test(line)) rec.qi = true;
+    if(depth === inB){ if(rec.id && (rec.type === "Quest" || rec.qi)) out.set(rec.id, rec.name || null); rec = null; }
+  }
+  return out;
+}
+// For each quest item you carry: which quests use it (objective, source, required, reward, starts), and
+// whether each is in your log or in the chain of a log quest (pre/next/child links, 3 steps either way).
+// The page turns that into "destroy now / destroy if you abandon X / keep".
+function bagItemUses(logIds){
+  const bag = bagQuestItems(); if(!bag.size) return {};
+  const all = {};
+  for(const line of fs.readFileSync(path.join(CACHE, "foreverQuestDB.lua"), "utf8").split("\n")){
+    const m = /^\[(\d+)\] = \{/.exec(line); if(!m) continue;
+    try{ all[m[1]] = parseLua(line, line.indexOf("{")).v; }catch(e){}
+  }
+  const adj = {};
+  const link = (a, b) => { if(!a || !b || a === b) return; (adj[a] ||= new Set()).add(+b); (adj[b] ||= new Set()).add(+a); };
+  for(const [id, q] of Object.entries(all)) for(const o of [...(q[11] || []), ...(q[12] || []), ...(q[13] || []), q[21]]) link(+id, o);
+  const chainOf = {};   // quest id -> the log quest whose chain it is in
+  for(const l of logIds){
+    let front = [l];
+    for(let d = 0; d < 3; d++){
+      const next = [];
+      for(const a of front) for(const b of adj[a] || []) if(!logIds.has(b) && chainOf[b] == null){ chainOf[b] = l; next.push(b); }
+      front = next;
+    }
+  }
+  const its = entries("foreverItemDB.lua", new Set(bag.keys()));
+  const out = {};
+  for(const [iid, name] of bag){
+    const uses = new Map();
+    const add = (qid, how) => { if(!all[qid] || uses.has(qid)) return; uses.set(qid, { id: qid, name: all[qid][0], how,
+      log: logIds.has(qid) || undefined, chain: chainOf[qid] || undefined }); };
+    for(const [qid, q] of Object.entries(all)){
+      const ob = (q[9] || [])[2] || [];
+      if(ob.some(o => o[0] === iid)) add(+qid, "objective");
+      else if(q[10] === iid) add(+qid, "source");
+      else if((q[20] || []).includes(iid)) add(+qid, "required");
+    }
+    const it = its[iid] || [];
+    for(const qid of it[4] || []) add(qid, "starts");
+    for(const qid of it[5] || []) add(qid, "reward");
+    out[iid] = { name: name || it[0] || null, uses: [...uses.values()].slice(0, 6) };
+  }
+  return out;
+}
+
 async function main(){
   if(process.argv.includes("--fetch") || !fs.existsSync(path.join(CACHE, "foreverQuestDB.lua"))) await fetchAll();
   const ids = logQuestIds();
@@ -218,7 +282,7 @@ async function main(){
       next: q[21] && nextQ[q[21]] ? { id: q[21], name: nextQ[q[21]][0] } : null
     };
   }
-  const json = JSON.stringify({ built: Math.floor(Date.now() / 1000), source: "QuestieDB Forever (GPL-3.0)", quests: out });
+  const json = JSON.stringify({ built: Math.floor(Date.now() / 1000), source: "QuestieDB Forever (GPL-3.0)", quests: out, bagItems: bagItemUses(ids) });
   const prev = fs.existsSync(OUT) ? fs.readFileSync(OUT, "utf8") : "";
   // Same quests, same data: don't touch the file (keeps sync commits quiet).
   if(prev && prev.replace(/"built":\d+,/, "") === json.replace(/"built":\d+,/, "")){ console.log("quests.json unchanged"); return; }
