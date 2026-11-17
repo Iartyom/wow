@@ -120,6 +120,26 @@ async function main(){
   }
   const items = entries("foreverItemDB.lua", itemIds);
   for(const it of Object.values(items)){ (it[1] || []).slice(0, 12).forEach(x => npcIds.add(x)); (it[2] || []).slice(0, 12).forEach(x => objIds.add(x)); }
+  // Objective items with no source of their own are often bound from parts ("Shredder Operating Manual -
+  // Chapter 1" from "... - Page 1" to "Page 4"). Borrow the drops of every "<same base> - ..." item.
+  // partsOf[itemId] = {via: base name, drops: {npcId: number of parts it drops}}.
+  const partsOf = {};
+  const noSrc = Object.entries(items).filter(([, it]) => !(it[1] || []).length && !(it[2] || []).length && / - /.test(it[0] || ""));
+  if(noSrc.length){
+    const base = Object.fromEntries(noSrc.map(([id, it]) => [id, it[0].split(" - ")[0]]));
+    for(const line of fs.readFileSync(path.join(CACHE, "foreverItemDB.lua"), "utf8").split("\n")){
+      const m = /^\[(\d+)\] = \{'((?:[^'\\]|\\.)*)'/.exec(line); if(!m || base[m[1]]) continue;
+      const name = m[2].replace(/\\'/g, "'");
+      for(const [id, b] of Object.entries(base)){
+        if(!name.startsWith(b + " - ")) continue;
+        const it = parseLua(line, line.indexOf("{")).v;
+        const pa = partsOf[id] ||= { via: b, drops: {}, parts: [] };
+        if(!pa.parts.includes(name.slice(b.length + 3))) pa.parts.push(name.slice(b.length + 3));
+        for(const n of it[1] || []) pa.drops[n] = (pa.drops[n] || 0) + 1;
+      }
+    }
+    for(const pa of Object.values(partsOf)) Object.keys(pa.drops).forEach(n => npcIds.add(+n));
+  }
   const npcs = entries("foreverNpcDB.lua", npcIds), objs = entries("foreverObjectDB.lua", objIds);
   const nextQ = entries("foreverQuestDB.lua", nextIds);
 
@@ -174,8 +194,16 @@ async function main(){
     for(const o of ob[1] || []) objectives.push({ type: "object", text: o[1] || null, targets: [target("obj", o[0])].filter(Boolean) });
     for(const o of ob[2] || []){
       const it = items[o[0]] || [];
-      const from = [...(it[1] || []).slice(0, 6).map(n => target("npc", n)), ...(it[2] || []).slice(0, 6).map(n => target("obj", n))].filter(Boolean);
-      objectives.push({ type: "item", item: it[0] || null, itemId: o[0], text: o[1] || null, targets: from });
+      let from = [...(it[1] || []).slice(0, 6).map(n => target("npc", n)), ...(it[2] || []).slice(0, 6).map(n => target("obj", n))].filter(Boolean);
+      const pa = !from.length && partsOf[o[0]];
+      if(pa){
+        // Part droppers: in the quest's zone first, then the ones dropping the most parts, then the most
+        // common (most spawns: farmable mobs beat a named rare); keep 6.
+        const qz = q[16] > 0 ? areaName(q[16]) : null;
+        from = Object.entries(pa.drops).map(([n, c]) => ({ t: target("npc", +n), c })).filter(x => x.t && x.t.map && !npcs[x.t.id][12])   // [12] friendlyToFaction: guards/peons aren't farm targets
+          .sort((a, b) => ((b.t.map === qz) - (a.t.map === qz)) || b.c - a.c || b.t.pts.length - a.t.pts.length).slice(0, 6).map(x => x.t);
+      }
+      objectives.push({ type: "item", item: it[0] || null, itemId: o[0], text: o[1] || null, targets: from, ...(pa ? { via: pa.via, parts: pa.parts } : {}) });
     }
     for(const k of ob[4] || []) objectives.push({ type: "kill", text: k[2] || null, targets: (k[0] || []).slice(0, 4).map(n => target("npc", n)).filter(Boolean) });
     // triggerEnd = "go to this place" objectives: {text, {[area] = {{x,y}}}}

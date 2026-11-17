@@ -1372,7 +1372,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-16T17:18:36Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-17T08:15:17Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -2545,11 +2545,25 @@ function setPlanDun(dn, on){
   const set = planDuns(); on ? set.add(dn) : set.delete(dn);
   try{ localStorage.setItem("fg-qdun-"+CHAR, JSON.stringify([...set])); }catch(e){}
 }
+// Mobs closest to your level first; drop ones 4+ above you when at least two easier ones remain.
+function nearLevel(ts, L){
+  const mid = t => t.lvl && t.lvl[0] ? (t.lvl[0]+t.lvl[1])/2 : L;
+  const easy = ts.filter(t=>!t.lvl || !t.lvl[0] || t.lvl[0] <= L+3);
+  return (easy.length >= 2 ? easy : ts).slice().sort((a,b)=>Math.abs(mid(a)-L)-Math.abs(mid(b)-L));
+}
+// Parts of a "bind it from parts" objective you already carry: {have:["2","3"], missing:["1"]} (numbers or names).
+function partsStatus(o){
+  if(!o.via || !o.parts) return null;
+  const g = state.game || {}, names = new Set([...(g.bags||[]), ...((g.bank && g.bank.items)||[])].map(it=>it.name));
+  const short = x => x.replace(/^Page /, "");
+  return {have: o.parts.filter(x=>names.has(o.via+" - "+x)).map(short), missing: o.parts.filter(x=>!names.has(o.via+" - "+x)).map(short)};
+}
 function questInfo(q, L, here){
   const d = questDB[q.id] || null, col = q.level ? questColor(q.level, L) : "yellow";
   const logObj = arrOf(q.obj);
   // DB objective -> still open? Match the addon's objective text by item/mob name (orders can differ).
-  const open = d ? d.objectives.filter(o=>{
+  const dObjs = d ? d.objectives.map(o=>o.via ? {...o, targets: nearLevel(o.targets, L)} : o) : [];
+  const open = d ? dObjs.filter(o=>{
     if(q.done) return false;
     const names = [o.item, o.text, ...o.targets.map(t=>t.name)].filter(Boolean).map(s=>s.toLowerCase());
     const m = logObj.find(lo=>names.some(n=>String(lo.text||"").toLowerCase().includes(n)));
@@ -2566,11 +2580,13 @@ function questInfo(q, L, here){
   const here2 = target && mapZoneOf(target.map) === here;
   const far = target && contOf(target.map) && contOf(here) && contOf(target.map) !== ZONES[here]?.cont;
   let v, why, dunName = null;
+  const mobs = open.flatMap(o=>o.targets).filter(t=>t.lvl && t.lvl[0]);
+  const safeRed = col==="red" && !isDungeon && mobs.length > 0 && mobs.every(t=>t.lvl[0] <= L+2 && !ELITE.test(t.rank||""));
   if(q.failed){ v = "drop"; why = "Failed. Abandon it and pick it up again from the giver."; }
   else if(q.done){ v = "turn"; why = end ? `Hand it to <b>${esc(d.end.name)}</b> in ${esc(end.map)}${xy(end)}.` : "Done. Turn it in where you got it."; }
   else if(col==="grey"){ v = "drop"; why = `Grey at your level: almost no XP. Abandon it to free the log${isDungeon?" (it's a dungeon quest too)":""}.`; }
   else if(pvp){ v = "later"; why = "Battleground quest: only worth keeping if you queue for that battleground."; }
-  else if(col==="red"){ v = "later"; why = `Level ${q.level}: 5+ above you. Keep it for later; you'd die doing it now.`; }
+  else if(col==="red" && !safeRed){ v = "later"; why = `Level ${q.level}: 5+ above you. Keep it for later; you'd die doing it now.`; }
   else if(isDungeon){
     // A quest can span dungeons (The Orb of Soran'ruk: BFD + SFK); a planned one wins.
     const duns = [...new Set([d && d.dungeon, ...open.flatMap(o=>o.targets).map(t=>t.dungeon)].filter(Boolean))];
@@ -2582,6 +2598,10 @@ function questInfo(q, L, here){
   else if(here2){ v = "now"; why = "In the zone you're in."; }
   else if(far){ v = "far"; why = `${esc(target.map)}, on the other continent: part of the second leg of your plan.`; }
   else { v = "way"; why = target ? `In ${esc(target.map)}.` : (d ? "" : "Not in the quest database (likely new in Forever): follow the quest text in game."); }
+  if(safeRed && ["now","way","far"].includes(v)){
+    const lo = Math.min(...mobs.map(t=>t.lvl[0])), hi = Math.max(...mobs.map(t=>t.lvl[1]||t.lvl[0]));
+    why = `Quest level ${q.level}, but the mobs are ${lo}–${hi}: safe now, and the XP is big. ${why}`;
+  }
   return {q, d, col, open, work, end, target, v, why, xp: d && d.xp, dun: dunName};
 }
 const VERDICT = {dunplan:["Dungeon run","v-dun"], turn:["Turn in","v-turn"], now:["Do now","v-now"], way:["On the way","v-way"], far:["Next trip","v-way"], dungeon:["Dungeon run","v-dun"],
@@ -2593,6 +2613,11 @@ function objLine(o, logObj){
   const prog = lo && lo.need > 1 ? ` <span class="mono">${lo.have||0}/${lo.need}</span>` : "";
   const first = t[0], where = first ? (first.dungeon ? ` inside ${esc(first.dungeon)}` : ` in ${esc(first.map)}${xy(first)}`) : "";
   const lvl = x => x.lvl && x.lvl[0] ? ` <span class="muted">${x.lvl[0]===x.lvl[1]?x.lvl[0]:x.lvl[0]+"–"+x.lvl[1]}${x.rank?" "+x.rank:""}</span>` : "";
+  if(o.type==="item" && o.via){
+    const from = t.slice(0,3).map(x=>esc(x.name)+lvl(x)).join(", "), ps = partsStatus(o);
+    return `Get <b>${esc(String(o.item||"the item").replace(o.via+" - ",""))}</b>${prog}: made from <b>${esc(o.via)}</b> parts that drop from ${from}${where}`+
+      (ps ? ` <span class="muted">(you have ${ps.have.length} of ${o.parts.length}${ps.have.length?`: ${ps.have.join(", ")}`:""}${ps.missing.length?` · still need ${ps.missing.join(", ")}`:""})</span>` : "");
+  }
   if(o.type==="item"){
     const from = t.slice(0,3).map(x=>esc(x.name)+lvl(x)).join(", ");
     return `Get <b>${esc(o.item||o.text||"the item")}</b>${prog}${from?` from ${from}`:""}${where}`;
@@ -2612,7 +2637,7 @@ function mergedObjLines(objs, logObj){
   return groups.map(g=>{
     if(g.objs.length===1) return objLine(g.objs[0], logObj);
     const names = g.objs.map(o=>{ const lo = logObj.find(lo=>String(lo.text||"").toLowerCase().includes(String(o.item||"").toLowerCase()));
-      return `<b>${esc(o.item||"?")}</b>${lo && lo.need>1?` <span class="mono">${lo.have||0}/${lo.need}</span>`:""}`; });
+      return `<b>${esc(o.via ? String(o.item||"?").replace(o.via+" - ","") : o.item||"?")}</b>${lo && lo.need>1?` <span class="mono">${lo.have||0}/${lo.need}</span>`:""}`; });
     return objLine(g.objs[0], logObj).replace(/^Get <b>.*?<\/b>(?: <span class="mono">[^<]*<\/span>)?/, "Get "+names.join(", "));
   }).join("; ");
 }
