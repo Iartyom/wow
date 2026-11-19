@@ -1452,7 +1452,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-19T16:45:23Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-19T16:49:10Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -2283,6 +2283,9 @@ function itemById(id){
   return null;
 }
 const STAT_NAME = Object.fromEntries(STAT_DEFS);
+// AH listing (Market card): the stats come from the scan's tooltip read, but you don't own it, so the
+// vendor line and the bag verdict ("Vendor"/"Keep") would be nonsense; skip both.
+function shopItemById(id){ const g = state.game; return (g && arrOf(g.ahShop && g.ahShop.items).find(x=>x.id===id)) || null; }
 function itemCardHTML(it){
   const lvl = (state.game && state.game.level) || state.level, slot = (LOC_SLOTS[it.loc]||[])[0];
   const equipped = Object.values((state.game && state.game.gear)||{}).some(x=>x===it);
@@ -2305,7 +2308,7 @@ function itemCardHTML(it){
   if(it.ilvl) lines.push(`<div class="itt-dim">Item Level ${it.ilvl}</div>`);
   const per = it.sell ? fmtCoin(it.sell) : "no sell price";
   // A searched item (Try-an-item) has no sell price or bag verdict of its own, so skip both lines.
-  const searched = typeof calcItem !== "undefined" && it === calcItem;
+  const searched = (typeof calcItem !== "undefined" && it === calcItem) || it.cat !== undefined;
   if(!searched) lines.push(`<div class="itt-dim">Vendor: ${per}${it.n>1 && it.sell?` each · ${fmtCoin(it.sell*it.n)} for ${it.n}`:""}</div>`);
   const ah = ahOf(it);
   if(ah) lines.push(`<div class="itt-dim">AH: ${fmtCoin(ah)} each${it.aht && it.ah===ah ? ` · seen ${ago(it.aht)}` : ""}</div>`);
@@ -2320,8 +2323,9 @@ function itemCardHTML(it){
 (function initItemCard(){
   const card = document.createElement("div"); card.className = "itt"; card.hidden = true; card.setAttribute("role","tooltip");
   document.body.appendChild(card);
-  const idOf = a => { const m = /item=(\d+)/.exec(a.getAttribute("href")||"") ; return m ? +m[1] : +(a.dataset.ahgo||0); };
-  const trigger = t => t && t.closest && t.closest('#items a[href*="item="], #items a[data-ahgo]');
+  const idOf = a => { const m = /item=(\d+)/.exec(a.getAttribute("href")||"") ; return m ? +m[1] : +(a.dataset.ahgo||a.dataset.mid||0); };
+  // Market rows (data-mid) count too: AH listings first, then your own bags (Sell card rows).
+  const trigger = t => t && t.closest && t.closest('#items a[href*="item="], #items a[data-ahgo], #market [data-mid]');
   function place(x, y){
     const w = card.offsetWidth, h = card.offsetHeight, vw = innerWidth, vh = innerHeight;
     let left = x + 16, top = y + 14;
@@ -2330,7 +2334,7 @@ function itemCardHTML(it){
     card.style.left = left + "px"; card.style.top = top + "px";
   }
   function show(a, x, y){
-    const it = itemById(idOf(a)); if(!it){ card.hidden = true; return; }
+    const id = idOf(a), it = (a.dataset.mid && shopItemById(id)) || itemById(id); if(!it){ card.hidden = true; return; }
     card.innerHTML = itemCardHTML(it); card.hidden = false; place(x, y);
   }
   document.addEventListener("mouseover", e=>{ const a = trigger(e.target); if(a) show(a, e.clientX, e.clientY); });
@@ -4059,7 +4063,7 @@ function mPrice(id){ const a = AH_P[id], v = VENDOR_REAGENT[id]; return a && v ?
 // One recommendation row: icon, coloured name, reason line, price on the right.
 function mRow(it, sub, price, extra = ""){
   if(it.tex) texById[it.id] = it.tex;
-  return `<li class="mrow">${itemIcon(it.id) || `<span class="wi ii mnoicon"></span>`}<div class="mtxt"><span class="mname" style="color:${QCOL[it.q]||"var(--fg)"}">${esc(it.name||("Item "+it.id))}</span>${extra}<span class="msub">${sub}</span></div><span class="mprice">${price}</span></li>`;
+  return `<li class="mrow" data-mid="${it.id}" tabindex="0">${itemIcon(it.id) || `<span class="wi ii mnoicon"></span>`}<div class="mtxt"><span class="mname" style="color:${QCOL[it.q]||"var(--fg)"}">${esc(it.name||("Item "+it.id))}</span>${extra}<span class="msub">${sub}</span></div><span class="mprice">${price}</span></li>`;
 }
 function marketPlan(){
   const g = state.game; if(!g) return null;
