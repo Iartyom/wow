@@ -398,6 +398,14 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 /* Beginner tips (per character): .basic blocks only show while the toggle is on. */
 body.nobasics .basic{display:none!important}
 #basicsBtn[aria-pressed=true]{border-color:var(--fel);color:var(--fel)}
+/* ---- Now: do-next list ---- */
+.nowlist{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.nowlist>li{display:grid;grid-template-columns:7.5rem minmax(0,1fr);gap:var(--s3);align-items:baseline;padding:8px 12px;border-left:3px solid var(--fel-dim);background:rgba(135,136,238,.06);border-radius:3px}
+.nowlist>li.hi{border-left-color:var(--warn);background:rgba(255,170,60,.07)}
+.nowlist .ntag{font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--void)}
+.nowlist ul{margin:4px 0 0;padding-left:1.1rem}
+.nowlist a{white-space:nowrap}
+@media (max-width:560px){.nowlist>li{grid-template-columns:minmax(0,1fr)}}
 /* ---- warlock combat helper ---- */
 .wlc{grid-column:1/-1}
 .wlc-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:var(--s4)}
@@ -705,7 +713,7 @@ section:not(.fold) .foldwhy{display:none}
   </div>
   <div class="wrap">
     <nav class="toc" aria-label="Sections">
-      <a href="#newbie" data-only="pal">Start here</a><a href="#game">From the game</a><a href="#items">Item worth</a><a href="#kit">Your kit</a><a href="#questlog">Quest log</a><a href="#rotation">Your spec</a><a href="#training" data-only="wl">Talents &amp; trainer</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
+      <a href="#newbie" data-only="pal">Start here</a><a href="#now">Now</a><a href="#game">From the game</a><a href="#items">Item worth</a><a href="#kit">Your kit</a><a href="#questlog">Quest log</a><a href="#rotation">Your spec</a><a href="#training" data-only="wl">Talents &amp; trainer</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
     </nav>
     <div class="foldall"><button type="button" class="foldbtn" data-foldall="auto">Show only what matters now</button><button type="button" class="foldbtn" data-foldall="open">Open everything</button><button type="button" class="foldbtn" id="basicsBtn" aria-pressed="false">Beginner tips</button><span class="updline" id="updated"></span></div>
   </div>
@@ -851,6 +859,14 @@ section:not(.fold) .foldwhy{display:none}
   </div>
 </section>
 
+<!-- Now: one list of what to do next, pulled from every other section (renderNow). -->
+<section id="now">
+  <div class="wrap">
+    <header><p class="eyebrow">Right now</p><h2>Do next</h2><p id="nowSum"></p></header>
+    <ol class="nowlist" id="nowBody"></ol>
+  </div>
+</section>
+
 <section id="game">
   <div class="wrap">
     <header><p class="eyebrow">Live from Azeroth</p><h2>From the game</h2>
@@ -904,6 +920,8 @@ section:not(.fold) .foldwhy{display:none}
       </article>
     </div>
     <div class="ahcheck" id="ahCheck" hidden></div>
+    <!-- Bag cleanup (quest items): filled by renderQuestLog, which knows your quests. -->
+    <article class="card" id="bagClean" hidden></article>
     <dialog class="calcdlg" id="calcDlg" aria-labelledby="calcTitle">
       <div class="dlghead"><h3 id="calcTitle">Try an item</h3><button type="button" class="btn" id="calcClose" aria-label="Close">✕</button></div>
       <p class="muted">Quest reward, drop or AH listing: find it by name, or pick a slot and type its stats.</p>
@@ -1091,7 +1109,7 @@ section:not(.fold) .foldwhy{display:none}
           <li class="basic"><b>Pet bar:</b> the small row above your main bar. <b>Attack</b> (default <kbd>Ctrl</kbd>+<kbd>1</kbd>) sends it at your target; <b>Follow</b> / <b>Stay</b> / <b>Move To</b> position it.</li>
           <li class="basic"><b>Stance:</b> keep it on <b>Defensive</b>. Aggressive pulls extra mobs; Passive is for sneaking past packs.</li>
           <li class="basic"><b>Autocast:</b> right-click an ability to toggle it (gold moving border = on).</li>
-          <li><b>Imp:</b> Firebolt and Blood Pact on, Phase Shift <b>off</b>. Cast Fire Shield on the paladin.</li>
+          <li><b>Imp:</b> Firebolt and Blood Pact on, Phase Shift <b>off</b>. Cast Fire Shield on your healer.</li>
           <li data-lv="10" data-spell="Summon Voidwalker"><b>Voidwalker:</b> Torment on (its taunt). Suffering by hand when adds show up. Sacrifice only when you're about to die, then heal it back with Consume Shadows.</li>
           <li data-lv="20" data-spell="Summon Succubus|Summon Incubus"><b>Succubus:</b> Seduction autocast off. Seduce first, DoT later: damage breaks it.</li>
           <li data-lv="30" data-spell="Summon Felhunter"><b>Felhunter:</b> Spell Lock by hand to interrupt casters.</li>
@@ -1099,19 +1117,9 @@ section:not(.fold) .foldwhy{display:none}
           <li class="basic" data-lv="10">Every demon except the Imp costs a <b>Soul Shard</b> to summon.</li>
         </ul>
       </article>
-      <article class="card">
-        <span class="tag">Trouble &amp; dungeons</span>
-        <ul class="plain">
-          <li data-lv="8" data-spell="Fear">On an extra mob: <b>Fear</b> it, or let the Voidwalker taunt it with Suffering.</li>
-          <li>If the demon dies, finish the fight with DoTs and Drain Life, then resummon. Fel Domination is a Demonology talent you don't take.</li>
-          <li data-lv="10" data-spell="Create Healthstone"><b>Sacrifice</b> the Voidwalker for a shield, then <b>Healthstone</b>.</li>
-          <li data-lv="18" data-spell="Create Soulstone">Keep a <b>Soulstone</b> on yourself before risky pulls.</li>
-          <li data-lv="13">In dungeons, run the <b>Imp</b> (Blood Pact), or the <b>Succubus</b> if the tank needs crowd control. Apply <b>Curse of the Elements</b>, hand out Healthstones, and use <b>Ritual of Summoning</b> to bring players in.</li>
-        </ul>
-      </article>
     </div>
-    <!-- Shared by both characters: they level mostly together. -->
-    <article class="card duo">
+    <!-- Paladin view only: the warlock's usual partner is a healer friend (combat helper covers that). -->
+    <article class="card duo" data-only="pal">
       <span class="tag">Playing as a pair · Warlock + Paladin</span>
       <ul class="plain">
         <li><b>Pulls:</b> the Voidwalker opens, the paladin drops <b>Consecration</b> on the pack, and the warlock spreads <b>Corruption</b> and Banes. Let the Voidwalker hold threat for a couple of seconds first.</li>
@@ -1134,7 +1142,7 @@ section:not(.fold) .foldwhy{display:none}
       <!-- Talent plan: rows rendered by renderTalents() from TALENTS_WL, coloured by the level slider. -->
       <article class="card tplan-card">
         <span class="tag">Talent plan · one point per level from 10</span>
-        <p class="muted basic"><b>How to spend a point:</b> press <kbd>N</kbd>, open the tab shown under the talent (<b>Affliction</b> or <b>Demonology</b>), and left-click the talent named below; each click adds one point. A row of the tree unlocks after every 5 points you spend in that tree. Points can't be refunded one at a time; a full reset at your class trainer costs gold, starting at 1g.</p>
+        <p class="muted basic"><b>How to spend a point:</b> press <kbd>N</kbd> and left-click the talent named below; each click adds one point. Forever has <b>one talent tree</b>: the Affliction / Demonology label only says which side of it the talent sits on. A talent unlocks once the talents connected above it have points. Points can't be refunded one at a time; a full reset at your class trainer costs gold.</p>
         <p class="tnext" id="talentNext"></p>
         <div id="talentPlan"></div>
         <p class="muted">Order: the most common Affliction leveling path on <a href="https://talentsforever.com/warlock/leveling" target="_blank" rel="noopener">Talents Forever</a> (about 31% of warlock builds), with <a href="https://www.warcrafttavern.com/forever/guides/warlock-leveling/" target="_blank" rel="noopener">Warcraft Tavern</a>'s Unholy Power and Demonic Energies at 20–26 so your demon stays useful. Improved Drains is cut to one filler point because the Nov 2 patch made it Drain Mana only. <span class="badge unv">verify</span> Descriptions marked "read the tooltip" aren't documented yet, and the 50–60 data is thin. Want a tankier demon instead? At 40, use dual spec for Demonology.</p>
@@ -1258,7 +1266,7 @@ section:not(.fold) .foldwhy{display:none}
         <span class="tag">Mounts &amp; late demons · 40–60</span>
         <ul class="plain">
           <li><b>Felsteed (40):</b> Kaal Soulreaper in the Undercity, then Strahad Farsan in Ratchet teaches it. The mount is free; keep ~100g in case Riding isn't.</li>
-          <li><b>Inferno (50–55):</b> Niby the Almighty, Felwood (41.4, 44.9); ends with Kroshius, a level 55 elite. Bring the paladin.</li>
+          <li><b>Inferno (50–55):</b> Niby the Almighty, Felwood (41.4, 44.9); ends with Kroshius, a level 55 elite. Bring your healer.</li>
           <li><b>Ritual of Doom (60):</b> Daio the Decrepit, Blasted Lands (34.1, 50.1).</li>
           <li><b>Dreadsteed (60):</b> Martha Strain, Undercity; long chain through Scholomance ending in a 5-player ritual in Dire Maul West. Stock 25+ Soul Shards.</li>
         </ul>
@@ -1301,7 +1309,7 @@ section:not(.fold) .foldwhy{display:none}
           <li><b>Level Alchemy in Brill or Undercity</b> every few levels, using your own herbs. Make whatever is still orange or yellow. Once a recipe turns grey, sell the herbs instead.</li>
           <li><b>Sell or craft?</b> On a fresh server, raw herbs like Peacebloom, Silverleaf and Briarthorn often sell on the AH for more than the potions. The Item worth table shows the vendor value, and once you enter an AH price it shows the auction value too.</li>
           <li><b>Wands:</b> without Enchanting you can't make your own, so take wand quest rewards and check the AH around level 13–20.</li>
-          <li><b>Your partner:</b> the paladin mines, so you never compete for nodes. Give them healing potions before hard pulls.</li>
+          <li><b>Your healer:</b> brew them mana potions. Healer mana sets your pace, so every potion is faster leveling for both of you.</li>
         </ul>
         <p class="muted">Leveling crafting professions also earns Legacy Points.</p>
       </article>
@@ -1381,7 +1389,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-19T12:32:44Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-19T12:47:19Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -1519,13 +1527,19 @@ const PTIP = {
   r11:"Holy Wrath at 50 helps against the undead and demons in Felwood and Burning Steppes.",
   r12:"The Plaguelands are full of undead: Exorcism and Holy Wrath shine there. At 60, do the Forsaken Charger epic mount quest."
 };
-// Duo notes per bracket: shown on both characters' routes.
+// Duo notes per bracket. DUO: paladin view (paladin + warlock). DUO_WL: warlock view (you + your healer friend).
 const DUO = {
   r1:"Group up as soon as both of you reach Deathknell. Kill credit is shared, so the pair levels about as fast as solo with half the risk.",
   r2:"From here on, the Voidwalker tanks and the paladin uses Consecration and Holy Strike. Blessing of Wisdom goes on the warlock, Might on the paladin.",
   r4:"Wolfsbane's dungeons (Shadowfang Keep and others) are the ones the warlock wants too, so run them together.",
   r9:"Both of you get dual spec at 40. Protection paladin plus warlock is a two-player dungeon core.",
   r12:"Soulstone the paladin before risky pulls. The paladin can Redemption the warlock."
+};
+const DUO_WL = {
+  r2:"From here on, the Voidwalker tanks and your healer keeps it up. Life Tap freely; pull at the healer's mana pace.",
+  r4:"Shadowfang Keep and the Wolfsbane dungeons: you and the healer only need a tank and two damage dealers.",
+  r9:"At 40, dual spec: a second build for dungeons. Your healer can do the same.",
+  r12:"Soulstone on the healer before every risky pull, Healthstones for both of you."
 };
 
 // Checklist groups. Ids are stable keys in saved state AND in the addon (DEMON_SPELLS); don't rename them.
@@ -2137,7 +2151,7 @@ function ahLookup(it, v){
   if(it.bound || it.bop || !/ah|vendor|use/.test(v.k) || (it.q|0) < 1) return null;
   if((state.ah && state.ah[it.id]) || it.ah) return null;            // already has a price
   // Vendor-sold reagents (vials, thread, flux) never sell above the vendor's own price; your potions you drink.
-  if(/(Vial|Thread|Flux|Flask of Oil|Salt)/.test(it.name) || it.type==="Consumable") return null;
+  if(/\b(Vial|Thread|Flux|Flask of Oil|Salt)\b/.test(it.name) || it.type==="Consumable") return null;
   const min = Math.ceil((it.sell*it.n*1.3 + 500 + AH_FEE) / (0.95*it.n));
   const gear = it.type==="Armor" || it.type==="Weapon";
   if(gear && it.q >= 2) return {rank:0, why:"uncommon or better gear that isn't soulbound: other players pay well above vendor for these", min};
@@ -2514,6 +2528,7 @@ function renderWeights(){
    -> a verdict per quest (turn in / do now / on the way / dungeon run / needs a group / later / drop), a
    step-by-step plan that starts where you stand, and quest areas on the zone maps. */
 let questDB = {};          // quest id -> QuestieDB record (quests in your log only)
+let bagLast = null, qlLast = null;   // last bag-cleanup buckets and quest plan, read by renderNow
 let questBag = {};         // quest item id in your bags -> {name, uses:[{id,name,how,log,chain}]} (quest-data.mjs)
 let qFocus = null;         // quest id highlighted on the map (Map button); null = all quests
 async function autoFetchQuests(){
@@ -2709,7 +2724,9 @@ function questPlan(infos, here){
   }
   return out.map(s=>({...s, acts:s.acts.sort((x,y)=>x.k-y.k)})).concat(tail);
 }
-function renderQuestLog(){
+// Quest data arrives late (autoFetchQuests), so every quest-log render also refreshes the Now list.
+function renderQuestLog(){ renderQuestLogInner(); renderNow(); }
+function renderQuestLogInner(){
   const body = $("#qlBody"); if(!body) return;
   const g = state.game, ql = g && g.qlog, list = questList();
   if(!ql){ $("#qlSum").textContent = ""; body.innerHTML = `<p class="muted">Needs addon 0.6: <kbd>/reload</kbd> in game and your quest log shows up here after the next sync.</p>`; return; }
@@ -2758,7 +2775,9 @@ function renderQuestLog(){
   };
   // Full list is reference (the plan and the don't-do list carry the advice), so it starts closed.
   const listHTML = `<details class="ggp qall"><summary><h4>All ${list.length} quests, with objectives and quest text</h4></summary><ol class="qlist">${order.flatMap(k=>by(k)).map(card).join("")}</ol></details>`;
-  body.innerHTML = `<div class="qlgrid">${planHTML}<div>${notHTML}${bagCleanupHTML(infos)}</div></div>${listHTML}`+
+  const bc = $("#bagClean"); if(bc){ const h = bagCleanupHTML(infos); bc.innerHTML = h; bc.hidden = !h; }
+  qlLast = {plan, infos, here};
+  body.innerHTML = `<div class="qlgrid">${planHTML}<div>${notHTML}</div></div>${listHTML}`+
     `<p class="muted" style="font-size:.75rem;margin-top:var(--s2)">Locations, mobs and XP: Questie's Forever database (QuestieDB, GPL-3.0), Classic data converted to Forever's maps. New Forever quests aren't in it yet.</p>`;
 }
 // Quest items in your bags, sorted into: destroy now / destroy if you drop a quest / keep.
@@ -2799,6 +2818,7 @@ function bagCleanupHTML(infos){
       keep.push(row);
     }
   }
+  bagLast = {now, ifDrop, keep};
   if(!seen.size) return "";
   const li = r => `<li><b>${esc(r.name)}</b>${(r.it.n||1)>1?` <span class="mono">×${r.it.n}</span>`:""}<br><span class="muted">${r.why}</span></li>`;
   // Shredder pages, Blueleaf kit etc.: many rows for one reason fold into one line.
@@ -2919,7 +2939,7 @@ function focusOn(where){
 document.addEventListener("click", e=>{
   const t = e.target.closest && e.target.closest("[data-qmap],[data-qzone],[data-qall],[data-qdun]"); if(!t) return;
   const g = state.game; if(!g) return;
-  if(t.dataset.qdun){ setPlanDun(t.dataset.qdun, t.dataset.on==="1"); renderQuestLog(); if(zoneView) openZoneMap(zoneView, zoneIsCity); renderZoneInfo(); return; }
+  if(t.dataset.qdun){ setPlanDun(t.dataset.qdun, t.dataset.on==="1"); renderQuestLog(); renderNow(); if(zoneView) openZoneMap(zoneView, zoneIsCity); renderZoneInfo(); return; }
   if(t.dataset.qall!==undefined){ qFocus = null; if(zoneView) openZoneMap(zoneView, zoneIsCity); renderQuestLog(); return; }
   let where;
   if(t.dataset.qmap){
@@ -3241,7 +3261,7 @@ function renderRoute(){
       <div class="range">${r.lo}–${r.hi}<small>${now?"you are here":"levels"}</small></div>
       <div class="body">
         <div class="zones">${r.zones.map(z=>ZONES[z]&&ZONES[z].isNew?`${z} <span class="badge new">new</span>`:z).join(" · ")}</div>
-        <dl><dt>Hub</dt><dd>${r.hub}</dd><dt>Dungeons</dt><dd>${r.dun}</dd><dt>Tip</dt><dd>${CHAR==="pal" ? (PTIP[r.id]||"") : r.tip}</dd>${DUO[r.id] ? `<dt>Duo</dt><dd>${DUO[r.id]}</dd>` : ""}</dl>
+        <dl><dt>Hub</dt><dd>${r.hub}</dd><dt>Dungeons</dt><dd>${r.dun}</dd><dt>Tip</dt><dd>${CHAR==="pal" ? (PTIP[r.id]||"") : r.tip}</dd>${(CHAR==="pal" ? DUO : DUO_WL)[r.id] ? `<dt>Duo</dt><dd>${(CHAR==="pal" ? DUO : DUO_WL)[r.id]}</dd>` : ""}</dl>
         <label class="chk${done?" on":""}"><input type="checkbox" data-id="${r.id}" ${done?"checked":""}><span>Bracket finished</span></label>
       </div></li>`;
   }).join("");
@@ -3830,7 +3850,8 @@ function trainSkip(spell){
   const m=spell.match(/^(.*) (\d+)$/), name=m[1], rank=+m[2];
   if(/^(Shadowburn|Conflagrate|Incinerate)$/.test(name)) return "Higher rank of a talent spell your build doesn't take; you can't use it.";
   if(/^Create Firestone$/.test(name)) return "Spellstone is the better imbue for Shadow Bolt.";
-  if(/^(Rain of Fire|Hellfire)$/.test(name)) return "AoE you won't use while questing; the paladin's Consecration covers packs.";
+  if(rank>1 && name==="Searing Pain") return "Fire filler; this build casts Shadow Bolt instead.";
+  if(/^(Rain of Fire|Hellfire)$/.test(name)) return "AoE you won't use while questing: you DoT packs instead.";
   if(/^(Eye of Kilrogg|Sense Demons)$/.test(name)) return "Novelty; you'll never miss it.";
   if(rank>1 && /^(Curse of Weakness|Curse of Recklessness|Curse of Tongues|Drain Mana|Detect Invisibility|Subjugate Demon|Shadow Ward)$/.test(name)) return "Rarely used; rank 1 is enough.";
   return null;
@@ -3930,6 +3951,81 @@ function renderTraining(){
     + (known ? (missing.length ? `<br><b style="color:var(--warn)">Not learned yet (${missing.length}):</b> ${missing.join(", ")}. Visit your trainer.` : `<br><b>From the game:</b> everything up to your level is learned.`) : "");
 }
 
+/* ---- Now: what to do next ----
+   One ranked list pulled from the other sections: unspent talents, spells to train, Healthstone /
+   Soulstone / shards, the next quest-plan stop, bag cleanup, class quests due, professions.
+   Reads state.game plus qlLast / bagLast (set by renderQuestLog). Each item links to its section. */
+// Spells you could have trained by now but haven't, minus the ones trainSkip says this build skips.
+function trainDue(){
+  const known = state.game && state.game.spells; if(!known || CHAR!=="wl") return [];
+  const RL = state.game.level || state.level, hasRanks = Object.values(known).some(v=>v>1), out = [];
+  for(const [v, list] of Object.entries(TRAIN_WL)) if(+v <= RL) for(const s of list.split("|")){
+    if(trainSkip(s)) continue;
+    const m = s.match(/^(.*) (\d+)$/), have = +known[m[1]]||0;
+    // Without rank info in the spellbook, only "never learned" can be judged.
+    if(have >= +m[2] || (+m[2] > 1 && !hasRanks && have)) continue;
+    out.push(s.replace(/ 1$/,"").replace(/ (\d+)$/," $1"));
+  }
+  return out;
+}
+// Utility spells: worth a rank 1 eventually, never a reason to run to the trainer.
+const TRAIN_OPTIONAL = /^(Curse of Tongues|Detect Invisibility|Curse of the Elements|Unending Breath|Banish|Subjugate Demon|Shadow Ward|Drain Mana|Ritual of Summoning|Create Spellstone)\b/;
+function trainDueSplit(){
+  const all = trainDue();
+  return {core: all.filter(x=>!TRAIN_OPTIONAL.test(x)), opt: all.filter(x=>TRAIN_OPTIONAL.test(x))};
+}
+function renderNow(){
+  const box = $("#nowBody"), sum = $("#nowSum"); if(!box) return;
+  const g = state.game;
+  if(!g){ sum.textContent = ""; box.innerHTML = `<li><span class="ntag">Setup</span><span>No game data yet: connect the addon (<a href="#setup">Addon setup</a>).</span></li>`; return; }
+  const L = g.level || state.level, pct = g.xpMax ? Math.round(100*g.xp/g.xpMax) : 0;
+  const bags = arrOf(g.bags), cnt = re => bags.filter(it=>re.test(it.name||"")).reduce((a,it)=>a+(+it.n||1), 0);
+  const shards = cnt(/^Soul Shard$/), hs = cnt(/Healthstone$/), ss = cnt(/Soulstone$/);
+  const toGo = g.xpMax ? g.xpMax - g.xp : 0, k = n => n >= 1000 ? (n/1000).toFixed(1).replace(/\.0$/,"")+"k" : n;
+  sum.innerHTML = `Level <b>${L}</b> · ${pct}%${toGo?` (${k(toGo)} XP to ${L+1})`:""} · <b>${fmtMoney(g.money)}</b> · ${esc(g.zone||"?")}`+
+    (CHAR==="wl" && bags.length ? ` · ${shards} shards` : "")+` · synced ${esc(ago(g.addonTime||g.time))}`;
+  const items = [];   // {p: priority (low first), tag, html, hi: needs you now}
+  const add = (p, tag, html, hi) => items.push({p, tag, html, hi});
+  const sp = g.spells || {};
+
+  const free = +(g.talents && g.talents.free) || 0;
+  if(free > 0) add(1, "Talents", `<b>${free}</b> unspent talent point${free>1?"s":""}. Next in your plan: see <a href="#training">Talents</a>.`, true);
+  const {core: due, opt} = trainDueSplit();
+  const optTxt = opt.length ? ` <span class="muted">Optional while you're there: ${opt.join(", ")}.</span>` : "";
+  if(due.length) add(2, "Trainer", `Train <b>${due.join(", ")}</b> (Undercity Magic Quarter or Brill).${optTxt} <a href="#training">list</a>`, true);
+  else if(opt.length) add(9, "Trainer", `Nothing important to train.${optTxt}`);
+  if(!due.length && CHAR==="wl"){
+    const nxt = Object.keys(TRAIN_WL).map(Number).find(v=>v > L);
+    if(nxt) add(9, "Trainer", `Nothing to train now. Next visit at <b>${nxt}</b>: ${TRAIN_WL[nxt].split("|").filter(x=>!trainSkip(x)).map(x=>x.replace(/ 1$/,"")).join(", ")}.`);
+  }
+  if(CHAR==="wl" && bags.length){
+    const prep = [];
+    if(sp["Create Healthstone"] && !hs) prep.push("<b>Healthstones</b> <kbd>⇧8</kbd>: one for you, one for your healer");
+    if(sp["Create Soulstone"] && !ss) prep.push("a <b>Soulstone</b> <kbd>⇧9</kbd>: put it on your healer");
+    if(prep.length) add(3, "Prep", `Make ${prep.join("; ")}. <a href="#rotation">combat</a>`, true);
+    if(shards < 3) add(3, "Shards", `Only <b>${shards}</b> Soul Shards: finish the next few mobs with Drain Soul.`, true);
+  }
+  // Quest plan: first stop in full, then the next stop's name.
+  // Skip the "not in the quest database" bucket: it has no place to go.
+  const plan = qlLast && qlLast.plan && qlLast.plan.filter(st=>!st.unknown);
+  if(plan && plan.length){
+    const s0 = plan[0], acts = s0.acts.slice(0, 4).map(a=>`<li>${a.html}</li>`).join("");
+    const more = s0.acts.length > 4 ? `<li class="muted">+${s0.acts.length-4} more in <a href="#questlog">the plan</a></li>` : "";
+    const then = plan[1] ? ` Then <b>${esc(plan[1].dungeon||plan[1].zone)}</b>.` : "";
+    add(4, "Quests", `<b>${esc(s0.dungeon||s0.zone)}</b>${s0.zone===qlLast.here && !s0.dungeon ? " (you're here)" : ""}.${then}<ul>${acts}${more}</ul>`);
+  }
+  if(bagLast && bagLast.now.length) add(5, "Bags", `Destroy <b>${bagLast.now.map(r=>esc(r.name)).join(", ")}</b>: no quest needs ${bagLast.now.length>1?"them":"it"}. <a href="#items">bag cleanup</a>`);
+  // Class quest coming up (or overdue) and not ticked.
+  const cq = CHARS[CHAR].checks.flatMap(gr=>gr.items).find(([id, label])=>{ const lv = lvlOf(label); return lv != null && lv <= L + 4 && !state.checks[id]; });
+  if(cq) add(6, "Class quest", `${esc(cq[1])} <a href="#quests">details</a>`);
+  if(typeof profNeedsYou === "function" && profNeedsYou()) add(7, "Professions", `A profession needs you: capped skill or skill-ups to craft. <a href="#extras">helper</a>`);
+  if(CHAR==="wl" && L >= 25) add(8, "Legacy", `Unlocked at 25: open the Legacy screen. Suggested start: <b>Thrill of Adventure</b>, then Well Rested, then Frequent Flier if you can reach it.`);
+
+  items.sort((a,b)=>a.p-b.p);
+  box.innerHTML = items.map(it=>`<li${it.hi?' class="hi"':""}><span class="ntag">${it.tag}</span><div>${it.html}</div></li>`).join("")
+    || `<li><span class="ntag">All set</span><span>Nothing pressing. Keep questing: <a href="#questlog">quest plan</a>.</span></li>`;
+}
+
 /* ---- Warlock combat helper ----
    Keybind layout + "what do I press" per situation. Gated on what you know: synced spells when the
    addon has them, else the trainer level from TRAIN_WL. Shard / Healthstone counts come from bags. */
@@ -3961,21 +4057,45 @@ const WL_BAR = [
   ["9","Health Funnel","Heals the demon. Rarely needed: Demonic Energies heals it as you deal damage."],
   ["0","Healthstone","Emergency heal. It's an item: drag it from your bags."],
   ["⇧1","Immolate","Only for elites and long fights. Too much mana for normal mobs."],
-  ["⇧2","Curse of Weakness","Hard-hitting elites: less damage on whoever is tanking."],
+  ["⇧2","Curse of Weakness","Hard-hitting elites: less damage on the Voidwalker, so less healing needed."],
   ["⇧3","Curse of Recklessness","Rank 1 is cheap. Stops runners from fleeing at low health."],
   ["⇧4","Drain Mana","Drains a caster's mana so it stops casting and walks to you."],
   ["⇧5","Death Coil","Fear and heal in one instant spell: your panic button."],
   ["⇧6","Howl of Terror","Fears every mob near you."],
   ["⇧7","Demon Armor","Self-buff, about 30 min. Keep it up."],
   ["⇧8","Create Healthstone","Make one after each use."],
-  ["⇧9","Create Soulstone","Make one, then use it on yourself or the paladin before risky pulls."],
+  ["⇧9","Create Soulstone","Make one and put it on your healer before you head out."],
   ["⇧0","Will of the Forsaken","Breaks fear, charm and sleep effects."],
 ];
-const WL_SIT_KEY = "fg-wlsit";
-let wlSit = (()=>{ try{ return localStorage.getItem(WL_SIT_KEY) || "one"; }catch(e){ return "one"; } })();
+// Key bumped (fg-wlsit2) when "with your healer" became the default, so the old saved choice doesn't hide it.
+const WL_SIT_KEY = "fg-wlsit2";
+let wlSit = (()=>{ try{ return localStorage.getItem(WL_SIT_KEY) || "healer"; }catch(e){ return "healer"; } })();
 // Situations: each step is [text, spell that must be known (or null)]. Text may be a function of ctx (bag counts).
 const WL_SIT = [
-  {id:"one", label:"Normal mob", steps:[
+  {id:"healer", label:"With your healer", steps:[
+    ["The <b>Voidwalker</b> tanks every pull. Send it in and wait for one <b>Torment</b>; your healer keeps it alive.", "Summon Voidwalker"],
+    ["2–3 mobs is a normal pull together. The Voidwalker grabs them all with <b>Suffering</b>; you put <kbd>1</kbd> Corruption and <kbd>2</kbd> Bane on each.", "Corruption"],
+    ["Then damage: <kbd>3</kbd> <b>Shadow Bolt</b> on the main target. On elites or long fights, add <kbd>⇧1</kbd> <b>Immolate</b> first.", "Shadow Bolt"],
+    ["<kbd>7</kbd> <b>Life Tap</b> whenever your mana drops: the healer turns your health back into mana for you.", "Life Tap"],
+    ["<kbd>5</kbd> <b>Drain Life</b> only when the healer is out of mana or busy.", "Drain Life"],
+    ["Pull the next pack when <i>the healer</i> has mana, not when you do. Healer mana decides your pace.", null],
+    ["Keep a <b>Soulstone</b> on the healer (<kbd>⇧9</kbd>). If they die, the stone brings them back.", "Create Soulstone"],
+    ["Give the healer a <b>Healthstone</b> too: an emergency heal that costs them no mana.", "Create Healthstone"],
+  ]},
+  {id:"aggro", label:"Mob on the healer", steps:[
+    ["One mob on the healer: <kbd>8</kbd> <b>Fear</b> it right away. When it comes back, the Voidwalker <b>Torment</b>s it.", "Fear"],
+    ["Several mobs on the healer: Voidwalker <b>Suffering</b>, which taunts everything near it. Put it on manual and use it on purpose.", "Summon Voidwalker"],
+    ["You pulled aggro yourself: stop casting for 2 seconds and let Torment land. Suppression already cuts 20% of your threat.", null],
+    ["<kbd>⇧5</kbd> <b>Death Coil</b>: an instant fear for the mob chasing the healer.", "Death Coil"],
+  ]},
+  {id:"dungeon", label:"Dungeon (SFK)", steps:[
+    ["With a real tank, summon the <b>Imp</b>: <b>Blood Pact</b> gives the whole group Stamina. No tank? The Voidwalker tanks, as outside.", null],
+    ["<b>Don't Fear</b> in dungeons: feared mobs run into the next pack. Use the <b>Succubus</b>'s <b>Seduction</b> for crowd control.", "Summon Succubus"],
+    ["Bosses: <b>Curse of the Elements</b> on the boss gives you and the other casters more spell damage.", "Curse of the Elements"],
+    ["Before the first pull: Healthstones for everyone, and the Soulstone on the healer.", "Create Healthstone"],
+    ["Late players: <b>Ritual of Summoning</b> at the door brings them in. It needs two helpers to click the portal.", "Ritual of Summoning"],
+  ]},
+  {id:"one", label:"Solo: normal mob", steps:[
     ["Send the demon in (pet <kbd>Attack</kbd>). Your Suppression talent cuts your threat, so you can start DoTs right away.", null],
     ["<kbd>1</kbd> <b>Corruption</b>.", "Corruption"],
     ["<kbd>2</kbd> <b>Bane of Agony</b>.", "Bane of Agony"],
@@ -3984,7 +4104,7 @@ const WL_SIT = [
                         : `Below 25%: <kbd>6</kbd> <b>Drain Soul</b> until it dies, for a shard (you have ${c.shards}).`, "Drain Soul"],
     ["After the fight: <kbd>7</kbd> <b>Life Tap</b>, then <b>Cannibalize</b> on the corpse to get the health back.", "Life Tap"],
   ]},
-  {id:"multi", label:"2–3 mobs", steps:[
+  {id:"multi", label:"Solo: 2–3 mobs", steps:[
     ["Demon on the first mob. Don't Fear yet: a feared mob can run into more mobs.", null],
     ["<kbd>1</kbd> <b>Corruption</b> on every mob. Press <kbd>Tab</kbd> to switch targets.", "Corruption"],
     ["<kbd>2</kbd> <b>Bane of Agony</b> on every mob.", "Bane of Agony"],
@@ -4006,8 +4126,8 @@ const WL_SIT = [
     ["Or kill it before it can run: <kbd>3</kbd> <b>Shadow Bolt</b> at around 30%.", "Shadow Bolt"],
   ]},
   {id:"elite", label:"Elite / hard", steps:[
-    ["Before the pull: <kbd>⇧9</kbd> make a <b>Soulstone</b> and use it on yourself. If the paladin is with you, use it on them.", "Create Soulstone"],
-    ["<b>Voidwalker</b> out, or the paladin tanks.", "Summon Voidwalker"],
+    ["Before the pull: <kbd>⇧9</kbd> make a <b>Soulstone</b> and put it on your healer, or on yourself when you're solo.", "Create Soulstone"],
+    ["<b>Voidwalker</b> out: it tanks.", "Summon Voidwalker"],
     ["<kbd>⇧2</kbd> <b>Curse of Weakness</b> on it: it hits the tank less hard.", "Curse of Weakness"],
     ["<kbd>1</kbd> Corruption, <kbd>2</kbd> Bane, <kbd>⇧1</kbd> <b>Immolate</b>, then <kbd>3</kbd> <b>Shadow Bolt</b> repeatedly. This fight is worth the mana.", "Immolate"],
     ["Below 50% health: <kbd>0</kbd> <b>Healthstone</b>. Still in trouble: <b>Sacrifice</b> the Voidwalker for a shield.", null],
@@ -4030,13 +4150,6 @@ const WL_SIT = [
     ["Don't resummon mid-fight: it's a 10-second cast and the mob is hitting you.", null],
     ["<kbd>8</kbd> <b>Fear</b> the mob, put both DoTs on it, then <kbd>5</kbd> <b>Drain Life</b>. Fear it again when it comes back.", "Fear"],
     [c => `After the fight, resummon. The Voidwalker costs a Soul Shard (you have <b>${c.shards}</b>). The Imp is free.`, null],
-  ]},
-  {id:"duo", label:"With the paladin", steps:[
-    ["The paladin tanks and heals, so you can play greedier: more <kbd>3</kbd> Shadow Bolt, less wand.", null],
-    ["Summon the <b>Imp</b> instead of the Voidwalker: <b>Blood Pact</b> gives both of you Stamina. Put <b>Fire Shield</b> on the paladin.", null],
-    ["<kbd>1</kbd> Corruption and <kbd>2</kbd> Bane on <i>every</i> mob in the pack while the paladin holds them with Consecration.", "Corruption"],
-    ["Life Tap freely: the paladin heals you back up.", "Life Tap"],
-    ["Keep a <b>Soulstone</b> on the paladin. If they die, they can come back and keep fighting.", "Create Soulstone"],
   ]},
 ];
 // Talent -> how it changes your play; shown only for talents you have points in.
@@ -4071,8 +4184,8 @@ function renderCombat(){
   // [ok (null = unknown), text, how to fix]
   const prep = [
     [known("Demon Armor") ? null : false, "<b>Demon Armor</b> on (lasts 30 min)", null],
-    [hasBags ? ctx.hs > 0 : null, "<b>Healthstone</b> in your bags", hasBags && !ctx.hs ? "press <kbd>⇧8</kbd> to make one" : null],
-    [hasBags && known("Create Soulstone") ? ctx.ss > 0 : null, "<b>Soulstone</b> made", hasBags && !ctx.ss && known("Create Soulstone") ? "press <kbd>⇧9</kbd>, then use it on yourself or the paladin" : null],
+    [hasBags ? ctx.hs > 0 : null, "<b>Healthstone</b> in your bags", hasBags && !ctx.hs ? "press <kbd>⇧8</kbd> to make one, and one for your healer" : null],
+    [hasBags && known("Create Soulstone") ? ctx.ss > 0 : null, "<b>Soulstone</b> made", hasBags && !ctx.ss && known("Create Soulstone") ? "press <kbd>⇧9</kbd>, then put it on your healer" : null],
     [hasBags ? ctx.shards >= 3 : null, `<b>Soul Shards</b>: ${hasBags ? ctx.shards : "?"}`, hasBags && ctx.shards < 3 ? "below 3: finish the next few mobs with Drain Soul" : null],
   ].map(([ok, t, fix])=>`<li><span class="${ok===null?"muted":ok?"ok":"no"}">${ok===null?"·":ok?"✓":"✗"}</span> ${t}${fix?` <span class="muted">(${fix})</span>`:""}</li>`).join("");
   box.innerHTML = `<span class="tag">Combat helper${g ? " · from your last sync" : " · by level"}</span>
@@ -4130,6 +4243,7 @@ const lvlOf = label => { const m = /level (\d+)/i.exec(label); return m ? +m[1] 
 // Returns [open?, reason shown when folded].
 const FOLD_RULES = {
   newbie:  L => [L < 20 && basicsOn(), basicsOn() ? "for your first levels" : "beginner tips are off"],
+  now:     () => [true, ""],
   game:    () => [true, ""],
   // The Armory card mostly repeats "From the game"; only worth opening when it's the fresher source.
   armory:  () => { const a = armory[CHARS[CHAR].cls]; if(!a) return [false, "no Armory data"];
@@ -4199,7 +4313,7 @@ document.addEventListener("click", e => {
   if(sec && sec.classList.contains("fold")) setFold(id, true);
 });
 
-function renderAll(){ renderBar(); renderGame(); renderArmory(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderCombat(); renderItems(); renderProfs(); renderQuestLog();
+function renderAll(){ renderBar(); renderGame(); renderArmory(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderCombat(); renderItems(); renderProfs(); renderQuestLog(); renderNow();
   const nb=$("#notesBox"); if(document.activeElement!==nb) nb.value = state.notes||"";
   applyFolds(); }
 
@@ -4292,7 +4406,7 @@ function setChar(c){
 document.querySelectorAll(".charsw button").forEach(b=>b.addEventListener("click", ()=>setChar(b.dataset.char)));
 
 // ---------- events ----------
-$("#level").addEventListener("input", e=>{ state.level=+e.target.value; followLevel(); renderBar(); renderRoute(); renderDungeons(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderCombat(); renderItems(); applyFolds(); scheduleSave(); });
+$("#level").addEventListener("input", e=>{ state.level=+e.target.value; followLevel(); renderBar(); renderRoute(); renderDungeons(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderCombat(); renderItems(); renderNow(); applyFolds(); scheduleSave(); });
 document.addEventListener("change", e=>{
   if(e.target.id==="svFile"){ const f=e.target.files[0]; if(f) importFile(f); e.target.value=""; return; }
   const id = e.target && e.target.dataset && e.target.dataset.id; if(!id) return;
