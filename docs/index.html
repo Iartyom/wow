@@ -396,6 +396,28 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 .tplan .sp.skip{text-decoration:line-through;opacity:.55;cursor:help}
 @media (max-width:560px){.tplan li{grid-template-columns:3.6rem minmax(0,1fr)}.tplan .pips{grid-column:2}}
 
+/* Beginner tips (per character): .basic blocks only show while the toggle is on. */
+body.nobasics .basic{display:none!important}
+#basicsBtn[aria-pressed=true]{border-color:var(--fel);color:var(--fel)}
+/* ---- warlock combat helper ---- */
+.wlc{grid-column:1/-1}
+.wlc-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:var(--s4)}
+@media (max-width:860px){.wlc-cols{grid-template-columns:minmax(0,1fr)}}
+.wlc h4{margin:var(--s2) 0}
+.wbar{list-style:none;margin:0;padding:0;display:grid;gap:3px}
+.wbar li{display:grid;grid-template-columns:2.6rem 30px minmax(0,1fr);gap:8px;align-items:center;padding:3px 6px;border-radius:3px}
+.wbar li:nth-child(odd){background:rgba(255,255,255,.025)}
+.wbar li.lk{opacity:.5}
+.wbar kbd{justify-self:start}
+.wbar .wi{margin:0}
+.wbar small{display:block;color:var(--muted);font-size:.84rem;line-height:1.3}
+.wbar .rk{font-family:var(--f-mono);font-size:.72rem;color:var(--void);margin-left:4px}
+.wsit{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 var(--s3)}
+ol.rot li.lk{opacity:.55}
+.wtal{margin-top:var(--s3);font-size:.9rem}
+.wprep{list-style:none;padding:0;margin:0 0 var(--s3);display:grid;gap:3px;font-size:.92rem}
+.wprep .ok{color:var(--fel)} .wprep .no{color:var(--warn)}
+
 /* ---- item worth ---- */
 .namein{display:flex;align-items:center;gap:var(--s2);font-size:.85rem;color:var(--muted)}
 .namein input,.statgrid input,.calcslot select,.ahin{font:inherit;font-size:.9rem;background:var(--surface-2);color:var(--fg);border:1px solid var(--line);padding:4px 8px;min-width:0}
@@ -684,9 +706,9 @@ section:not(.fold) .foldwhy{display:none}
   </div>
   <div class="wrap">
     <nav class="toc" aria-label="Sections">
-      <a href="#newbie" data-only="pal">Start here</a><a href="#game">From the game</a><a href="#items">Item worth</a><a href="#kit">Your kit</a><a href="#questlog">Quest log</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#rotation">Your spec</a><a href="#training" data-only="wl">Talents &amp; trainer</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
+      <a href="#newbie" data-only="pal">Start here</a><a href="#game">From the game</a><a href="#items">Item worth</a><a href="#kit">Your kit</a><a href="#questlog">Quest log</a><a href="#rotation">Your spec</a><a href="#training" data-only="wl">Talents &amp; trainer</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
     </nav>
-    <div class="foldall"><button type="button" class="foldbtn" data-foldall="auto">Show only what matters now</button><button type="button" class="foldbtn" data-foldall="open">Open everything</button><span class="updline" id="updated"></span></div>
+    <div class="foldall"><button type="button" class="foldbtn" data-foldall="auto">Show only what matters now</button><button type="button" class="foldbtn" data-foldall="open">Open everything</button><button type="button" class="foldbtn" id="basicsBtn" aria-pressed="false">Beginner tips</button><span class="updline" id="updated"></span></div>
   </div>
 </div>
 
@@ -1017,6 +1039,118 @@ section:not(.fold) .foldwhy{display:none}
   </div>
 </section>
 
+<section id="rotation">
+  <div class="wrap">
+    <header data-only="wl"><p class="eyebrow">Right now</p><h2>Fighting as your Warlock</h2><p>What to put on which key, and what to press in each kind of fight. Built from the spells and talents in your last sync: spells you haven't learned show the level they come at.</p></header>
+    <header data-only="pal"><p class="eyebrow">Your class</p><h2>Playing Retribution</h2><p>Use a big two-hander and a Seal, judge on cooldown, and heal yourself between pulls. Current guides rate Retribution as the easiest paladin leveling spec. At 40, dual spec adds Protection for dungeons. <b>New player?</b> The buttons and the step-by-step fight in <a href="#newbie">Start here</a> are all you need. Use this section only for the talent list.</p></header>
+    <div class="grid" data-only="pal">
+      <article class="card">
+        <span class="tag">Talent priority</span>
+        <p class="muted basic">Press <kbd>N</kbd>, open the Retribution tab, and spend each new point going down this list. You get one point per level from 10.</p>
+        <dl class="talents">
+          <dt>10–20</dt><dd><b>Seal of Command</b> (a Retribution talent in Forever), then <b>Conviction</b> (+6% crit on everything) and <b>Sanctified Judgement</b>.</dd>
+          <dt>20–30</dt><dd><b>Unyielding Faith</b>, <b>Two-Handed Weapon Specialization</b> (more damage, less threat) and <b>Vengeance</b> (needs Seal of Command, stacks 5 times).</dd>
+          <dt>30–39</dt><dd><b>Champion of the Light</b> (spell damage from Intellect, faster Hammer of Wrath), and <b>Repentance</b>, which the capstone requires.</dd>
+          <dt>40</dt><dd><b>Unsealed Wrath</b>, the 31-point capstone, for Seal twisting.</dd>
+          <dt>Skip</dt><dd><b>Vindication</b> no longer gives Attack Power. Take <b>Turn Evil</b> only if you run Scarlet and Scholomance a lot.</dd>
+        </dl>
+        <p class="muted"><span class="badge unv">verify</span> Updated from Blizzard's Nov 2 notes (Twist of Light and Instrument of Law were removed). The order of talents those notes don't mention is still from beta, so check a Forever talent calculator.</p>
+      </article>
+      <article class="card">
+        <span class="tag">Solo pull</span>
+        <ol class="rot">
+          <li>Seal up: <b>Seal of Righteousness</b>.</li>
+          <li data-lv="10" data-spell="Seal of Command">With a slow two-hander, use <b>Seal of Command</b> instead.</li>
+          <li data-lv="4" data-spell="Judgement">Open with <b>Judgement</b>. Your Seal stays up.</li>
+          <li data-spell="Holy Strike"><b>Holy Strike</b> on cooldown, between swings.</li>
+          <li data-lv="20" data-spell="Consecration">On 2+ mobs, drop <b>Consecration</b> under them.</li>
+          <li data-lv="8" data-spell="Hammer of Justice">For burst, <b>Hammer of Justice</b>, then judge on the stunned target.</li>
+          <li>Between pulls: <b>Cannibalize</b> on humanoid or undead corpses, then <b>Holy Light</b> if you need more.</li>
+          <li data-lv="20" data-spell="Flash of Light">Use <b>Flash of Light</b> instead of Holy Light: cheaper and faster.</li>
+        </ol>
+      </article>
+      <article class="card">
+        <span class="tag">Trouble &amp; dungeons</span>
+        <ul class="plain">
+          <li data-lv="6" data-spell="Divine Protection">On a bad pull: <b>Divine Protection</b>, then a heal or a <b>Hearthstone</b>.</li>
+          <li data-lv="10" data-spell="Lay on Hands"><b>Lay on Hands</b> when you're nearly dead.</li>
+          <li data-lv="34" data-spell="Divine Shield"><b>Divine Shield</b> makes you immune: heal up or walk away.</li>
+          <li data-lv="22" data-spell="Seal of Justice">Stop runners with <b>Seal of Justice</b>.</li>
+          <li data-lv="44" data-spell="Hammer of Wrath">Finish runners at low health with <b>Hammer of Wrath</b>.</li>
+          <li data-lv="10" data-spell="Blessing of Protection">Put <b>Blessing of Protection</b> on a party member who pulls aggro. <b>Blessing of Freedom</b> breaks roots and slows.</li>
+          <li data-lv="12">In dungeons, use <b>Seal of Fury</b> to taunt if the tank dies, <b>Turn Undead</b> (24) in Scarlet and Scholomance, and <b>Redemption</b> after a wipe.</li>
+          <li>Blessings: Might on melee, Wisdom on casters and healers, Kings on everyone.</li>
+        </ul>
+      </article>
+    </div>
+    <div class="grid" data-only="wl">
+      <!-- Combat helper: rendered by renderCombat() from your synced spells, talents and bags. -->
+      <article class="card wlc" id="wlCombat"></article>
+      <article class="card">
+        <span class="tag">Controlling your demon</span>
+        <ul class="plain">
+          <li class="basic"><b>Pet bar:</b> the small row above your main bar. <b>Attack</b> (default <kbd>Ctrl</kbd>+<kbd>1</kbd>) sends it at your target; <b>Follow</b> / <b>Stay</b> / <b>Move To</b> position it.</li>
+          <li class="basic"><b>Stance:</b> keep it on <b>Defensive</b>. Aggressive pulls extra mobs; Passive is for sneaking past packs.</li>
+          <li class="basic"><b>Autocast:</b> right-click an ability to toggle it (gold moving border = on).</li>
+          <li><b>Imp:</b> Firebolt and Blood Pact on, Phase Shift <b>off</b>. Cast Fire Shield on the paladin.</li>
+          <li data-lv="10" data-spell="Summon Voidwalker"><b>Voidwalker:</b> Torment on (its taunt). Suffering by hand when adds show up. Sacrifice only when you're about to die, then heal it back with Consume Shadows.</li>
+          <li data-lv="20" data-spell="Summon Succubus|Summon Incubus"><b>Succubus:</b> Seduction autocast off. Seduce first, DoT later: damage breaks it.</li>
+          <li data-lv="30" data-spell="Summon Felhunter"><b>Felhunter:</b> Spell Lock by hand to interrupt casters.</li>
+          <li><b>Grimoires</b> are how your demons learn new ranks. Your trainer only teaches <i>you</i>. The demon trainer (the vendor next to your warlock trainer) sells books such as <i>Grimoire of Firebolt (Rank 2)</i>. Summon the demon the book is for, then right-click the book: it teaches whichever demon is out, and won't work with the wrong one.</li>
+          <li class="basic" data-lv="10">Every demon except the Imp costs a <b>Soul Shard</b> to summon.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <span class="tag">Trouble &amp; dungeons</span>
+        <ul class="plain">
+          <li data-lv="8" data-spell="Fear">On an extra mob: <b>Fear</b> it, or let the Voidwalker taunt it with Suffering.</li>
+          <li>If the demon dies, finish the fight with DoTs and Drain Life, then resummon. Fel Domination is a Demonology talent you don't take.</li>
+          <li data-lv="10" data-spell="Create Healthstone"><b>Sacrifice</b> the Voidwalker for a shield, then <b>Healthstone</b>.</li>
+          <li data-lv="18" data-spell="Create Soulstone">Keep a <b>Soulstone</b> on yourself before risky pulls.</li>
+          <li data-lv="13">In dungeons, run the <b>Imp</b> (Blood Pact), or the <b>Succubus</b> if the tank needs crowd control. Apply <b>Curse of the Elements</b>, hand out Healthstones, and use <b>Ritual of Summoning</b> to bring players in.</li>
+        </ul>
+      </article>
+    </div>
+    <!-- Shared by both characters: they level mostly together. -->
+    <article class="card duo">
+      <span class="tag">Playing as a pair · Warlock + Paladin</span>
+      <ul class="plain">
+        <li><b>Pulls:</b> the Voidwalker opens, the paladin drops <b>Consecration</b> on the pack, and the warlock spreads <b>Corruption</b> and Banes. Let the Voidwalker hold threat for a couple of seconds first.</li>
+        <li><b>Buffs:</b> <b>Blessing of Wisdom</b> or <b>Kings</b> on the warlock, <b>Might</b> on the paladin. The Imp's <b>Blood Pact</b> raises both of your Stamina early on.</li>
+        <li><b>Safety:</b> the warlock <b>Soulstones</b> the paladin, the paladin <b>Redemptions</b> the warlock, and Healthstones go to both. <b>Blessing of Protection</b> saves the warlock if something breaks through.</li>
+        <li><b>Downtime:</b> you both have <b>Cannibalize</b>, so split the corpses. The warlock <b>Life Taps</b> while the paladin heals them back up.</li>
+        <li><b>Professions:</b> Herbalism and Alchemy on the warlock, Mining and Blacksmithing on the paladin. The warlock brews potions for both of you. Swap materials instead of selling them.</li>
+        <li><b>Dungeons:</b> run the Wolfsbane dungeons together. After 40, a Protection paladin and a warlock can build a group around themselves.</li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<!-- Warlock-only: talent plan + trainer list, both follow the level slider (renderTalents / renderTraining). -->
+<section id="training" data-only="wl">
+  <div class="wrap">
+    <header><p class="eyebrow">Your build</p><h2>Talents &amp; trainer</h2><p>Where every talent point goes, and what to buy at each trainer visit. Both lists follow your level: what you're working on now stays open, finished and far-off steps fold away, and with the addon each one shows what you've really learned.</p></header>
+    <div class="grid">
+      
+      <!-- Talent plan: rows rendered by renderTalents() from TALENTS_WL, coloured by the level slider. -->
+      <article class="card tplan-card">
+        <span class="tag">Talent plan · one point per level from 10</span>
+        <p class="muted basic"><b>How to spend a point:</b> press <kbd>N</kbd>, open the tab shown under the talent (<b>Affliction</b> or <b>Demonology</b>), and left-click the talent named below; each click adds one point. A row of the tree unlocks after every 5 points you spend in that tree. Points can't be refunded one at a time; a full reset at your class trainer costs gold, starting at 1g.</p>
+        <p class="tnext" id="talentNext"></p>
+        <div id="talentPlan"></div>
+        <p class="muted">Order: the most common Affliction leveling path on <a href="https://talentsforever.com/warlock/leveling" target="_blank" rel="noopener">Talents Forever</a> (about 31% of warlock builds), with <a href="https://www.warcrafttavern.com/forever/guides/warlock-leveling/" target="_blank" rel="noopener">Warcraft Tavern</a>'s Unholy Power and Demonic Energies at 20–26 so your demon stays useful. Improved Drains is cut to one filler point because the Nov 2 patch made it Drain Mana only. <span class="badge unv">verify</span> Descriptions marked "read the tooltip" aren't documented yet, and the 50–60 data is thin. Want a tankier demon instead? At 40, use dual spec for Demonology.</p>
+      </article>
+      <!-- Trainer list: rows rendered by renderTraining() from TRAIN_WL; struck-through spells are safe to skip for this build. -->
+      <article class="card tplan-card">
+        <span class="tag">What to buy at the trainer</span>
+        <p class="muted">Visit your trainer at every even level (Brill, or the Undercity Magic Quarter). Buy the normal entries. <s>Struck-through</s> ones are safe to skip for this build; hover or tap one for the reason. Training 1–60 costs about 206g if you buy everything, so skipping saves real gold. Demons come from class quests and Grimoires, not from this list.</p>
+        <p class="tnext" id="trainNext"></p>
+        <div id="trainPlan" class="train"></div>
+        <p class="muted">Spell list from <a href="https://wowforever.wclbox.com/en/fashu/warlock/levels" target="_blank" rel="noopener">WCLBox</a>. <span class="badge unv">verify</span> The skip advice is my call for this build, not from a guide; if the trainer shows a spell that isn't here, buy it.</p>
+      </article>
+    </div>
+  </div>
+</section>
 <section id="map">
   <div class="wrap">
     <header><p class="eyebrow">Chapter II</p><h2>Route map</h2><p>The GitHub site shows the real Forever world maps, which you can zoom and drag. Claude pages can't load outside images, so here you get a drawn version. Green means your level, purple means on your route, gold marks new Forever zones, and the dashed line is your path. Tap a zone for details and its zone map. On the GitHub site you can also just zoom: zoom in on a zone to open its map, and zoom out to go back.</p></header>
@@ -1070,132 +1204,6 @@ section:not(.fold) .foldwhy{display:none}
   </div>
 </section>
 
-<section id="rotation">
-  <div class="wrap">
-    <header data-only="wl"><p class="eyebrow">Chapter IV</p><h2>Playing Affliction</h2><p>You put damage-over-time spells on everything, drain one target, and Life Tap instead of drinking. Your demon holds mobs while the DoTs work. At 40, dual spec lets you add a second build (for example Demonology) without giving this one up.</p></header>
-    <header data-only="pal"><p class="eyebrow">Chapter IV · advanced</p><h2>Playing Retribution</h2><p>Use a big two-hander and a Seal, judge on cooldown, and heal yourself between pulls. Current guides rate Retribution as the easiest paladin leveling spec. At 40, dual spec adds Protection for dungeons. <b>New player?</b> The buttons and the step-by-step fight in <a href="#newbie">Start here</a> are all you need. Use this section only for the talent list.</p></header>
-    <div class="grid" data-only="pal">
-      <article class="card">
-        <span class="tag">Talent priority</span>
-        <p class="muted">Press <kbd>N</kbd>, open the Retribution tab, and spend each new point going down this list. You get one point per level from 10.</p>
-        <dl class="talents">
-          <dt>10–20</dt><dd><b>Seal of Command</b> (a Retribution talent in Forever), then <b>Conviction</b> (+6% crit on everything) and <b>Sanctified Judgement</b>.</dd>
-          <dt>20–30</dt><dd><b>Unyielding Faith</b>, <b>Two-Handed Weapon Specialization</b> (more damage, less threat) and <b>Vengeance</b> (needs Seal of Command, stacks 5 times).</dd>
-          <dt>30–39</dt><dd><b>Champion of the Light</b> (spell damage from Intellect, faster Hammer of Wrath), and <b>Repentance</b>, which the capstone requires.</dd>
-          <dt>40</dt><dd><b>Unsealed Wrath</b>, the 31-point capstone, for Seal twisting.</dd>
-          <dt>Skip</dt><dd><b>Vindication</b> no longer gives Attack Power. Take <b>Turn Evil</b> only if you run Scarlet and Scholomance a lot.</dd>
-        </dl>
-        <p class="muted"><span class="badge unv">verify</span> Updated from Blizzard's Nov 2 notes (Twist of Light and Instrument of Law were removed). The order of talents those notes don't mention is still from beta, so check a Forever talent calculator.</p>
-      </article>
-      <article class="card">
-        <span class="tag">Solo pull</span>
-        <ol class="rot">
-          <li>Seal up: <b>Seal of Righteousness</b>.</li>
-          <li data-lv="10" data-spell="Seal of Command">With a slow two-hander, use <b>Seal of Command</b> instead.</li>
-          <li data-lv="4" data-spell="Judgement">Open with <b>Judgement</b>. Your Seal stays up.</li>
-          <li data-spell="Holy Strike"><b>Holy Strike</b> on cooldown, between swings.</li>
-          <li data-lv="20" data-spell="Consecration">On 2+ mobs, drop <b>Consecration</b> under them.</li>
-          <li data-lv="8" data-spell="Hammer of Justice">For burst, <b>Hammer of Justice</b>, then judge on the stunned target.</li>
-          <li>Between pulls: <b>Cannibalize</b> on humanoid or undead corpses, then <b>Holy Light</b> if you need more.</li>
-          <li data-lv="20" data-spell="Flash of Light">Use <b>Flash of Light</b> instead of Holy Light: cheaper and faster.</li>
-        </ol>
-      </article>
-      <article class="card">
-        <span class="tag">Trouble &amp; dungeons</span>
-        <ul class="plain">
-          <li data-lv="6" data-spell="Divine Protection">On a bad pull: <b>Divine Protection</b>, then a heal or a <b>Hearthstone</b>.</li>
-          <li data-lv="10" data-spell="Lay on Hands"><b>Lay on Hands</b> when you're nearly dead.</li>
-          <li data-lv="34" data-spell="Divine Shield"><b>Divine Shield</b> makes you immune: heal up or walk away.</li>
-          <li data-lv="22" data-spell="Seal of Justice">Stop runners with <b>Seal of Justice</b>.</li>
-          <li data-lv="44" data-spell="Hammer of Wrath">Finish runners at low health with <b>Hammer of Wrath</b>.</li>
-          <li data-lv="10" data-spell="Blessing of Protection">Put <b>Blessing of Protection</b> on a party member who pulls aggro. <b>Blessing of Freedom</b> breaks roots and slows.</li>
-          <li data-lv="12">In dungeons, use <b>Seal of Fury</b> to taunt if the tank dies, <b>Turn Undead</b> (24) in Scarlet and Scholomance, and <b>Redemption</b> after a wipe.</li>
-          <li>Blessings: Might on melee, Wisdom on casters and healers, Kings on everyone.</li>
-        </ul>
-      </article>
-    </div>
-    <div class="grid" data-only="wl">
-      <article class="card">
-        <span class="tag">Solo pull</span>
-        <ol class="rot">
-          <li data-lvmax="9">Send the <b>Imp</b> in first, or just open with Shadow Bolt: below 10 nothing hits hard enough to need a tank.</li>
-          <li data-lv="10" data-spell="Summon Voidwalker">Send the <b>Voidwalker</b> in. Wait for one Torment so it has threat.</li>
-          <li data-lv="4" data-spell="Corruption"><b>Corruption</b> (instant from 14 with the talent), then <b>Bane of Agony</b> (8).</li>
-          <li data-lv="42" data-spell="Siphon Life">Add <b>Siphon Life</b> as a third DoT.</li>
-          <li data-lv="8">Two or three mobs? Put the same DoTs on each one. That's where Affliction beats the other specs.</li>
-          <li><b>Wand</b> while the DoTs tick to save mana (no wand yet? Shadow Bolt instead).</li>
-          <li data-lv="40" data-spell="Nightfall">Cast <b>Shadow Bolt</b> when Nightfall makes it instant.</li>
-          <li data-lv="14" data-spell="Drain Life">Hurt? <b>Drain Life</b> the target: it damages it and heals you at once. Low on mana? <b>Life Tap</b>, then drain the health back.</li>
-          <li data-lv="10" data-spell="Drain Soul">Finish with <b>Drain Soul</b> for a guaranteed shard.</li>
-          <li data-lv="6" data-spell="Life Tap">Between pulls: <b>Life Tap</b>, then <b>Cannibalize</b>.</li>
-          <li data-lv="12" data-spell="Health Funnel">Use <b>Health Funnel</b> if the demon is low.</li>
-        </ol>
-      </article>
-      <article class="card">
-        <span class="tag">Controlling your demon</span>
-        <ul class="plain">
-          <li><b>Pet bar:</b> the small row above your main bar. <b>Attack</b> (default <kbd>Ctrl</kbd>+<kbd>1</kbd>) sends it at your target; <b>Follow</b> / <b>Stay</b> / <b>Move To</b> position it.</li>
-          <li><b>Stance:</b> keep it on <b>Defensive</b>. Aggressive pulls extra mobs; Passive is for sneaking past packs.</li>
-          <li><b>Autocast:</b> right-click an ability to toggle it (gold moving border = on).</li>
-          <li><b>Imp:</b> Firebolt and Blood Pact on, Phase Shift <b>off</b>. Cast Fire Shield on the paladin.</li>
-          <li data-lv="10" data-spell="Summon Voidwalker"><b>Voidwalker:</b> Torment on (its taunt). Suffering by hand when adds show up. Sacrifice only when you're about to die, then heal it back with Consume Shadows.</li>
-          <li data-lv="20" data-spell="Summon Succubus|Summon Incubus"><b>Succubus:</b> Seduction autocast off. Seduce first, DoT later: damage breaks it.</li>
-          <li data-lv="30" data-spell="Summon Felhunter"><b>Felhunter:</b> Spell Lock by hand to interrupt casters.</li>
-          <li><b>Grimoires</b> are how your demons learn new ranks. Your trainer only teaches <i>you</i>. The demon trainer (the vendor next to your warlock trainer) sells books such as <i>Grimoire of Firebolt (Rank 2)</i>. Summon the demon the book is for, then right-click the book: it teaches whichever demon is out, and won't work with the wrong one.</li>
-          <li data-lv="10">Every demon except the Imp costs a <b>Soul Shard</b> to summon.</li>
-        </ul>
-      </article>
-      <article class="card">
-        <span class="tag">Trouble &amp; dungeons</span>
-        <ul class="plain">
-          <li data-lv="8" data-spell="Fear">On an extra mob: <b>Fear</b> it, or let the Voidwalker taunt it with Suffering.</li>
-          <li>If the demon dies, finish the fight with DoTs and Drain Life, then resummon. Fel Domination is a Demonology talent you don't take.</li>
-          <li data-lv="10" data-spell="Create Healthstone"><b>Sacrifice</b> the Voidwalker for a shield, then <b>Healthstone</b>.</li>
-          <li data-lv="18" data-spell="Create Soulstone">Keep a <b>Soulstone</b> on yourself before risky pulls.</li>
-          <li data-lv="13">In dungeons, run the <b>Imp</b> (Blood Pact), or the <b>Succubus</b> if the tank needs crowd control. Apply <b>Curse of the Elements</b>, hand out Healthstones, and use <b>Ritual of Summoning</b> to bring players in.</li>
-        </ul>
-      </article>
-    </div>
-    <!-- Shared by both characters: they level mostly together. -->
-    <article class="card duo">
-      <span class="tag">Playing as a pair · Warlock + Paladin</span>
-      <ul class="plain">
-        <li><b>Pulls:</b> the Voidwalker opens, the paladin drops <b>Consecration</b> on the pack, and the warlock spreads <b>Corruption</b> and Banes. Let the Voidwalker hold threat for a couple of seconds first.</li>
-        <li><b>Buffs:</b> <b>Blessing of Wisdom</b> or <b>Kings</b> on the warlock, <b>Might</b> on the paladin. The Imp's <b>Blood Pact</b> raises both of your Stamina early on.</li>
-        <li><b>Safety:</b> the warlock <b>Soulstones</b> the paladin, the paladin <b>Redemptions</b> the warlock, and Healthstones go to both. <b>Blessing of Protection</b> saves the warlock if something breaks through.</li>
-        <li><b>Downtime:</b> you both have <b>Cannibalize</b>, so split the corpses. The warlock <b>Life Taps</b> while the paladin heals them back up.</li>
-        <li><b>Professions:</b> Herbalism and Alchemy on the warlock, Mining and Blacksmithing on the paladin. The warlock brews potions for both of you. Swap materials instead of selling them.</li>
-        <li><b>Dungeons:</b> run the Wolfsbane dungeons together. After 40, a Protection paladin and a warlock can build a group around themselves.</li>
-      </ul>
-    </article>
-  </div>
-</section>
-
-<!-- Warlock-only: talent plan + trainer list, both follow the level slider (renderTalents / renderTraining). -->
-<section id="training" data-only="wl">
-  <div class="wrap">
-    <header><p class="eyebrow">Your build</p><h2>Talents &amp; trainer</h2><p>Where every talent point goes, and what to buy at each trainer visit. Both lists follow your level: what you're working on now stays open, finished and far-off steps fold away, and with the addon each one shows what you've really learned.</p></header>
-    <div class="grid">
-      
-      <!-- Talent plan: rows rendered by renderTalents() from TALENTS_WL, coloured by the level slider. -->
-      <article class="card tplan-card">
-        <span class="tag">Talent plan · one point per level from 10</span>
-        <p class="muted"><b>How to spend a point:</b> press <kbd>N</kbd>, open the tab shown under the talent (<b>Affliction</b> or <b>Demonology</b>), and left-click the talent named below; each click adds one point. A row of the tree unlocks after every 5 points you spend in that tree. Points can't be refunded one at a time; a full reset at your class trainer costs gold, starting at 1g.</p>
-        <p class="tnext" id="talentNext"></p>
-        <div id="talentPlan"></div>
-        <p class="muted">Order: the most common Affliction leveling path on <a href="https://talentsforever.com/warlock/leveling" target="_blank" rel="noopener">Talents Forever</a> (about 31% of warlock builds), with <a href="https://www.warcrafttavern.com/forever/guides/warlock-leveling/" target="_blank" rel="noopener">Warcraft Tavern</a>'s Unholy Power and Demonic Energies at 20–26 so your demon stays useful. Improved Drains is cut to one filler point because the Nov 2 patch made it Drain Mana only. <span class="badge unv">verify</span> Descriptions marked "read the tooltip" aren't documented yet, and the 50–60 data is thin. Want a tankier demon instead? At 40, use dual spec for Demonology.</p>
-      </article>
-      <!-- Trainer list: rows rendered by renderTraining() from TRAIN_WL; struck-through spells are safe to skip for this build. -->
-      <article class="card tplan-card">
-        <span class="tag">What to buy at the trainer</span>
-        <p class="muted">Visit your trainer at every even level (Brill, or the Undercity Magic Quarter). Buy the normal entries. <s>Struck-through</s> ones are safe to skip for this build; hover or tap one for the reason. Training 1–60 costs about 206g if you buy everything, so skipping saves real gold. Demons come from class quests and Grimoires, not from this list.</p>
-        <p class="tnext" id="trainNext"></p>
-        <div id="trainPlan" class="train"></div>
-        <p class="muted">Spell list from <a href="https://wowforever.wclbox.com/en/fashu/warlock/levels" target="_blank" rel="noopener">WCLBox</a>. <span class="badge unv">verify</span> The skip advice is my call for this build, not from a guide; if the trainer shows a spell that isn't here, buy it.</p>
-      </article>
-    </div>
-  </div>
-</section>
 <section id="dungeons">
   <div class="wrap">
     <header><p class="eyebrow">Chapter V</p><h2>Every dungeon, by level</h2><p>Rows in your level range are highlighted. Levels are the minimum and recommended ranges from beta data. <span class="badge new">new</span> marks a dungeon added in Forever.</p></header>
@@ -1374,7 +1382,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-18T22:58:47Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-19T12:32:44Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -2805,7 +2813,7 @@ function bagCleanupHTML(infos){
         : rs.map(r=>`<b>${esc(r.name)}</b>`).join(", ");
       return `<li>${names}<br><span class="muted">${rs[0].why}</span></li>`; }).join("");
   return `<section class="ggp qbag"><h4>Bag cleanup: quest items</h4>`+
-    `<p class="muted gg-note">From your last sync. Destroying is permanent: pick the item up, drop it outside your bags and confirm.</p>`+
+    `<p class="muted gg-note">From your last sync.<span class="basic"> Destroying is permanent: pick the item up, drop it outside your bags and confirm.</span></p>`+
     (now.length ? `<p class="qbh"><span class="vchip v-drop">Destroy now</span></p><ul class="qnot">${now.map(li).join("")}</ul>` : `<p class="muted">Nothing to destroy right now.</p>`)+
     (ifDrop.length ? `<p class="qbh"><span class="vchip v-later">Only if you drop the quest</span></p><ul class="qnot">${grouped(ifDrop)}</ul>` : "")+
     (keep.length ? `<details class="qtxt"><summary>Keep: ${keep.length} item${keep.length>1?"s":""} a quest still needs</summary><ul class="qnot">${grouped(keep)}</ul></details>` : "")+
@@ -3923,6 +3931,172 @@ function renderTraining(){
     + (known ? (missing.length ? `<br><b style="color:var(--warn)">Not learned yet (${missing.length}):</b> ${missing.join(", ")}. Visit your trainer.` : `<br><b>From the game:</b> everything up to your level is learned.`) : "");
 }
 
+/* ---- Warlock combat helper ----
+   Keybind layout + "what do I press" per situation. Gated on what you know: synced spells when the
+   addon has them, else the trainer level from TRAIN_WL. Shard / Healthstone counts come from bags. */
+// First trainer level of each spell (rank 1 in TRAIN_WL); non-trainer spells listed by hand.
+const WL_LEARN = (()=>{
+  const m = {"Shoot":1, "Cannibalize":1, "Will of the Forsaken":1, "Summon Voidwalker":10, "Summon Succubus":20, "Summon Felhunter":30, "Siphon Life":30};
+  for(const [lv, list] of Object.entries(TRAIN_WL)) for(const x of list.split("|")){
+    const r = x.match(/^(.*) (\d+)$/); if(r && r[2]==="1" && m[r[1]]==null) m[r[1]] = +lv;
+  }
+  return m;
+})();
+const WL_ICON = {"Corruption":"spell_shadow_abominationexplosion","Bane of Agony":"spell_shadow_curseofsargeras","Shadow Bolt":"spell_shadow_shadowbolt",
+  "Shoot":"ability_shootwand","Drain Life":"spell_shadow_lifedrain02","Drain Soul":"spell_shadow_haunting","Life Tap":"spell_shadow_burningspirit",
+  "Fear":"spell_shadow_possession","Health Funnel":"spell_shadow_lifedrain","Healthstone":"inv_stone_04","Immolate":"spell_fire_immolation",
+  "Curse of Weakness":"spell_shadow_curseofmannoroth","Curse of Recklessness":"spell_shadow_unholystrength","Siphon Life":"spell_shadow_requiem",
+  "Death Coil":"spell_shadow_deathcoil","Howl of Terror":"spell_shadow_deathscream","Drain Mana":"spell_shadow_siphonmana",
+  "Demon Armor":"spell_shadow_ragingscream","Create Healthstone":"inv_stone_04","Create Soulstone":"spell_shadow_soulgem",
+  "Will of the Forsaken":"spell_shadow_raisedead"};
+// [key, spell (or item), why it sits there]. Order = how often you press it: 1–5 every pull, Shift (⇧) = situational.
+const WL_BAR = [
+  ["1","Corruption","Every target, first. Instant with your Improved Corruption."],
+  ["2","Bane of Agony","Second DoT. Weak at first and stronger later, so cast it early."],
+  ["3","Shadow Bolt","Pull from range, or extra damage when your mana is high."],
+  ["4","Shoot","Wand. Free damage while the DoTs tick."],
+  ["5","Drain Life","Damages the target and heals you: use it when you're taking hits."],
+  ["6","Drain Soul","Below 25% health: a kill with it gives a Soul Shard."],
+  ["7","Life Tap","Turns health into mana. Your talent also refills your demon's mana."],
+  ["8","Fear","Takes an extra mob out of the fight for a while. Damage breaks it."],
+  ["9","Health Funnel","Heals the demon. Rarely needed: Demonic Energies heals it as you deal damage."],
+  ["0","Healthstone","Emergency heal. It's an item: drag it from your bags."],
+  ["⇧1","Immolate","Only for elites and long fights. Too much mana for normal mobs."],
+  ["⇧2","Curse of Weakness","Hard-hitting elites: less damage on whoever is tanking."],
+  ["⇧3","Curse of Recklessness","Rank 1 is cheap. Stops runners from fleeing at low health."],
+  ["⇧4","Drain Mana","Drains a caster's mana so it stops casting and walks to you."],
+  ["⇧5","Death Coil","Fear and heal in one instant spell: your panic button."],
+  ["⇧6","Howl of Terror","Fears every mob near you."],
+  ["⇧7","Demon Armor","Self-buff, about 30 min. Keep it up."],
+  ["⇧8","Create Healthstone","Make one after each use."],
+  ["⇧9","Create Soulstone","Make one, then use it on yourself or the paladin before risky pulls."],
+  ["⇧0","Will of the Forsaken","Breaks fear, charm and sleep effects."],
+];
+const WL_SIT_KEY = "fg-wlsit";
+let wlSit = (()=>{ try{ return localStorage.getItem(WL_SIT_KEY) || "one"; }catch(e){ return "one"; } })();
+// Situations: each step is [text, spell that must be known (or null)]. Text may be a function of ctx (bag counts).
+const WL_SIT = [
+  {id:"one", label:"Normal mob", steps:[
+    ["Send the demon in (pet <kbd>Attack</kbd>). Your Suppression talent cuts your threat, so you can start DoTs right away.", null],
+    ["<kbd>1</kbd> <b>Corruption</b>.", "Corruption"],
+    ["<kbd>2</kbd> <b>Bane of Agony</b>.", "Bane of Agony"],
+    ["<kbd>4</kbd> <b>Wand</b> until it's nearly dead. Mana above half? Add a <kbd>3</kbd> <b>Shadow Bolt</b> or two to speed things up.", "Shoot"],
+    [c => c.shards >= 5 ? `Finish it with the wand. You have <b>${c.shards}</b> shards, so you don't need <kbd>6</kbd> Drain Soul.`
+                        : `Below 25%: <kbd>6</kbd> <b>Drain Soul</b> until it dies, for a shard (you have ${c.shards}).`, "Drain Soul"],
+    ["After the fight: <kbd>7</kbd> <b>Life Tap</b>, then <b>Cannibalize</b> on the corpse to get the health back.", "Life Tap"],
+  ]},
+  {id:"multi", label:"2–3 mobs", steps:[
+    ["Demon on the first mob. Don't Fear yet: a feared mob can run into more mobs.", null],
+    ["<kbd>1</kbd> <b>Corruption</b> on every mob. Press <kbd>Tab</kbd> to switch targets.", "Corruption"],
+    ["<kbd>2</kbd> <b>Bane of Agony</b> on every mob.", "Bane of Agony"],
+    ["<kbd>5</kbd> <b>Drain Life</b> on whichever mob is hitting <i>you</i>. DoTs plus Drain Life is how you win these fights.", "Drain Life"],
+    ["A third mob is hitting you hard? <kbd>8</kbd> <b>Fear</b> it, and don't damage it until the others are dead.", "Fear"],
+    ["Voidwalker out? Its <b>Suffering</b> taunts every mob near it.", "Summon Voidwalker"],
+    ["Packs of 4 or more: skip them, or pull one at a time with <kbd>3</kbd> <b>Shadow Bolt</b> from far away.", null],
+  ]},
+  {id:"caster", label:"Caster mob", steps:[
+    ["Casters stand back and shoot. Make them come to you: DoT them, then step behind a wall or a tree.", null],
+    ["<kbd>1</kbd> <b>Corruption</b>, <kbd>2</kbd> <b>Bane of Agony</b>, then get out of its line of sight.", "Corruption"],
+    ["Or <kbd>⇧4</kbd> <b>Drain Mana</b>: a caster with no mana walks to you and fights in melee.", "Drain Mana"],
+    ["Felhunter (from level 30): use <b>Spell Lock</b> yourself, at the moment it starts casting.", "Summon Felhunter"],
+  ]},
+  {id:"runner", label:"It runs away", steps:[
+    ["Humanoids flee at about 20% health and bring friends back. Plan for it before they get there.", null],
+    ["<kbd>⇧3</kbd> <b>Curse of Recklessness</b> on it first: it won't flee.", "Curse of Recklessness"],
+    ["No Recklessness yet? Keep <b>Corruption</b> and <b>Bane</b> on it. They usually finish it while it runs.", "Corruption"],
+    ["Or kill it before it can run: <kbd>3</kbd> <b>Shadow Bolt</b> at around 30%.", "Shadow Bolt"],
+  ]},
+  {id:"elite", label:"Elite / hard", steps:[
+    ["Before the pull: <kbd>⇧9</kbd> make a <b>Soulstone</b> and use it on yourself. If the paladin is with you, use it on them.", "Create Soulstone"],
+    ["<b>Voidwalker</b> out, or the paladin tanks.", "Summon Voidwalker"],
+    ["<kbd>⇧2</kbd> <b>Curse of Weakness</b> on it: it hits the tank less hard.", "Curse of Weakness"],
+    ["<kbd>1</kbd> Corruption, <kbd>2</kbd> Bane, <kbd>⇧1</kbd> <b>Immolate</b>, then <kbd>3</kbd> <b>Shadow Bolt</b> repeatedly. This fight is worth the mana.", "Immolate"],
+    ["Below 50% health: <kbd>0</kbd> <b>Healthstone</b>. Still in trouble: <b>Sacrifice</b> the Voidwalker for a shield.", null],
+    [c => `Shards: you have <b>${c.shards}</b>. Resummoning a demon costs 1, a Soulstone costs 1, a Healthstone costs 1.`, null],
+  ]},
+  {id:"mana", label:"Out of mana", steps:[
+    ["<kbd>7</kbd> <b>Life Tap</b> during the fight. Your Demonic Energies also refills the demon's mana.", "Life Tap"],
+    ["Then <kbd>5</kbd> <b>Drain Life</b> to get the health back from the mob.", "Drain Life"],
+    ["Stop casting Shadow Bolt. Let the DoTs and the wand finish it.", "Shoot"],
+    ["Between pulls: Life Tap to full mana, then <b>Cannibalize</b> on a humanoid or undead corpse.", "Cannibalize"],
+  ]},
+  {id:"hp", label:"Low health", steps:[
+    ["<kbd>5</kbd> <b>Drain Life</b> on the mob hitting you.", "Drain Life"],
+    ["<kbd>⇧5</kbd> <b>Death Coil</b>: it heals you and fears the mob.", "Death Coil"],
+    ["<kbd>8</kbd> <b>Fear</b> the mob, then <kbd>5</kbd> Drain Life while it runs. Breaking Fear with damage is fine.", "Fear"],
+    ["Below 30%: <kbd>0</kbd> <b>Healthstone</b>.", null],
+    ["Voidwalker out? <b>Sacrifice</b> it: you get a big shield. Resummon it after the fight.", "Summon Voidwalker"],
+  ]},
+  {id:"pet", label:"Demon died", steps:[
+    ["Don't resummon mid-fight: it's a 10-second cast and the mob is hitting you.", null],
+    ["<kbd>8</kbd> <b>Fear</b> the mob, put both DoTs on it, then <kbd>5</kbd> <b>Drain Life</b>. Fear it again when it comes back.", "Fear"],
+    [c => `After the fight, resummon. The Voidwalker costs a Soul Shard (you have <b>${c.shards}</b>). The Imp is free.`, null],
+  ]},
+  {id:"duo", label:"With the paladin", steps:[
+    ["The paladin tanks and heals, so you can play greedier: more <kbd>3</kbd> Shadow Bolt, less wand.", null],
+    ["Summon the <b>Imp</b> instead of the Voidwalker: <b>Blood Pact</b> gives both of you Stamina. Put <b>Fire Shield</b> on the paladin.", null],
+    ["<kbd>1</kbd> Corruption and <kbd>2</kbd> Bane on <i>every</i> mob in the pack while the paladin holds them with Consecration.", "Corruption"],
+    ["Life Tap freely: the paladin heals you back up.", "Life Tap"],
+    ["Keep a <b>Soulstone</b> on the paladin. If they die, they can come back and keep fighting.", "Create Soulstone"],
+  ]},
+];
+// Talent -> how it changes your play; shown only for talents you have points in.
+const WL_TAL_NOTE = {
+  "Improved Corruption":"Corruption is instant, so it's always your first spell on a new target.",
+  "Suppression":"You make 20% less threat, so you can start your DoTs as soon as the demon attacks.",
+  "Unholy Power":"Your demon hits 10% harder, so let it fight on its own longer.",
+  "Demonic Energies":"Your damage heals the demon, and Life Tap fills its mana too. You'll rarely need Health Funnel.",
+  "Nightfall":"When Shadow Bolt lights up and is instant, cast it right away.",
+};
+function renderCombat(){
+  const box = $("#wlCombat"); if(!box) return;
+  const L = state.level|0, g = state.game || null, sp = g && g.spells, ranks = (g && g.talents && g.talents.ranks) || {};
+  const bags = g ? arrOf(g.bags) : [];
+  const count = re => bags.filter(it=>re.test(it.name||"")).reduce((a,it)=>a+(+it.n||1), 0);
+  const ctx = {shards: count(/^Soul Shard$/), hs: count(/Healthstone$/), ss: count(/Soulstone$/)};
+  // Synced spellbook when present, else trainer level vs the level slider. Wand and Healthstone aren't spells.
+  const known = n => n==="Healthstone" || n==="Shoot" ? true : sp ? !!sp[n] : (WL_LEARN[n]||0) <= L;
+  const tag = n => { if(known(n)) return ""; const lv = WL_LEARN[n];
+    return lv && lv <= L ? `<span class="lvtag miss">train it</span>` : lv ? `<span class="lvtag">at ${lv}</span>` : `<span class="lvtag">not learned</span>`; };
+  const bar = WL_BAR.map(([k, n, why])=>{
+    const r = sp && sp[n] ? `<span class="rk">r${sp[n]}</span>` : "";
+    return `<li class="${known(n)?"":"lk"}"><kbd>${k}</kbd>${wi(WL_ICON[n])||"<span></span>"}<div><b>${n}</b>${r}${tag(n)}<small>${why}</small></div></li>`;
+  }).join("");
+  const sit = WL_SIT.find(x=>x.id===wlSit) || WL_SIT[0];
+  const steps = sit.steps.map(([t, need])=>{
+    const txt = typeof t === "function" ? t(ctx) : t;
+    return `<li class="${!need || known(need) ? "" : "lk"}">${txt}${need ? tag(need) : ""}</li>`;
+  }).join("");
+  const tal = Object.keys(WL_TAL_NOTE).filter(t=>+ranks[t] > 0).map(t=>`<li><b>${t}</b>: ${WL_TAL_NOTE[t]}</li>`).join("");
+  const hasBags = bags.length > 0;
+  // [ok (null = unknown), text, how to fix]
+  const prep = [
+    [known("Demon Armor") ? null : false, "<b>Demon Armor</b> on (lasts 30 min)", null],
+    [hasBags ? ctx.hs > 0 : null, "<b>Healthstone</b> in your bags", hasBags && !ctx.hs ? "press <kbd>⇧8</kbd> to make one" : null],
+    [hasBags && known("Create Soulstone") ? ctx.ss > 0 : null, "<b>Soulstone</b> made", hasBags && !ctx.ss && known("Create Soulstone") ? "press <kbd>⇧9</kbd>, then use it on yourself or the paladin" : null],
+    [hasBags ? ctx.shards >= 3 : null, `<b>Soul Shards</b>: ${hasBags ? ctx.shards : "?"}`, hasBags && ctx.shards < 3 ? "below 3: finish the next few mobs with Drain Soul" : null],
+  ].map(([ok, t, fix])=>`<li><span class="${ok===null?"muted":ok?"ok":"no"}">${ok===null?"·":ok?"✓":"✗"}</span> ${t}${fix?` <span class="muted">(${fix})</span>`:""}</li>`).join("");
+  box.innerHTML = `<span class="tag">Combat helper${g ? " · from your last sync" : " · by level"}</span>
+    <div class="wlc-cols">
+      <div><h4>Your bar</h4>
+        <p class="muted">Keys 1–5 are for every pull; Shift keys (⇧) are for special cases.<span class="basic"> One spell per key, kept there so it becomes muscle memory. Drag spells from the spellbook (<kbd>P</kbd>).</span></p>
+        <ul class="wbar">${bar}</ul>
+        <p class="muted">Off the bar (cast them from the spellbook): Summon demon, Ritual of Summoning, Unending Breath, Cannibalize. Searing Pain and Rain of Fire are fire spells; your build doesn't use them.</p>
+      </div>
+      <div><h4>Before you pull</h4><ul class="wprep">${prep}</ul>
+        <h4>What to press</h4>
+        <div class="wsit filters">${WL_SIT.map(x=>`<button type="button" data-wlsit="${x.id}" aria-pressed="${x.id===sit.id}">${x.label}</button>`).join("")}</div>
+        <ol class="rot">${steps}</ol>
+        ${tal ? `<div class="wtal"><h4>Your talents change this</h4><ul class="plain">${tal}</ul></div>` : ""}
+      </div>
+    </div>`;
+}
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-wlsit]"); if(!b) return;
+  wlSit = b.dataset.wlsit; try{ localStorage.setItem(WL_SIT_KEY, wlSit); }catch(_){}
+  renderCombat();
+});
+
 /* Spec cards: lines tagged data-lv / data-lvmax / data-spell follow your level and your spellbook. */
 function renderGates(){
   const L = state.level|0, known = state.game && state.game.spells;
@@ -3956,13 +4130,13 @@ function saveFoldOverrides(o){ try{ localStorage.setItem(FOLD_KEY, JSON.stringif
 const lvlOf = label => { const m = /level (\d+)/i.exec(label); return m ? +m[1] : null; };
 // Returns [open?, reason shown when folded].
 const FOLD_RULES = {
-  newbie:  L => [L < 20, "for your first levels"],
+  newbie:  L => [L < 20 && basicsOn(), basicsOn() ? "for your first levels" : "beginner tips are off"],
   game:    () => [true, ""],
   // The Armory card mostly repeats "From the game"; only worth opening when it's the fresher source.
   armory:  () => { const a = armory[CHARS[CHAR].cls]; if(!a) return [false, "no Armory data"];
                    return [armoryTime(a) > ((state.game && state.game.addonTime) || 0), "your addon data is newer"]; },
   items:   () => [true, ""],
-  kit:     L => [L < 10, "class basics, you're past them"],
+  kit:     L => [L < 10 && basicsOn(), "class basics, you're past them"],
   map:     () => [true, ""],
   route:   () => [true, ""],
   rotation:() => [true, ""],
@@ -4026,7 +4200,7 @@ document.addEventListener("click", e => {
   if(sec && sec.classList.contains("fold")) setFold(id, true);
 });
 
-function renderAll(){ renderBar(); renderGame(); renderArmory(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderItems(); renderProfs(); renderQuestLog();
+function renderAll(){ renderBar(); renderGame(); renderArmory(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderCombat(); renderItems(); renderProfs(); renderQuestLog();
   const nb=$("#notesBox"); if(document.activeElement!==nb) nb.value = state.notes||"";
   applyFolds(); }
 
@@ -4083,11 +4257,32 @@ async function initCloud(){
   }
 }
 
+// Beginner tips, per character. Default: on for the new paladin player, off for the warlock (an experienced player).
+const BASICS_DEF = {wl:false, pal:true};
+const basicsMem = {};
+function basicsOn(){
+  if(basicsMem[CHAR] != null) return basicsMem[CHAR];
+  try{ const v = localStorage.getItem("fg-basics-"+CHAR); if(v != null) return v === "1"; }catch(e){}
+  return BASICS_DEF[CHAR] ?? true;
+}
+function applyBasics(){
+  const on = basicsOn();
+  document.body.classList.toggle("nobasics", !on);
+  const b = $("#basicsBtn"); if(b){ b.setAttribute("aria-pressed", String(on)); b.textContent = on ? "Beginner tips: on" : "Beginner tips: off"; }
+}
+document.addEventListener("click", e=>{
+  if(!e.target.closest || !e.target.closest("#basicsBtn")) return;
+  const on = !basicsOn(); basicsMem[CHAR] = on;
+  try{ localStorage.setItem("fg-basics-"+CHAR, on ? "1" : "0"); }catch(_){}
+  applyBasics(); applyFolds();
+});
+
 // Switch the whole page to another character: theme (body class), class-only blocks, state.
 function setChar(c){
   if(!CHARS[c]) return;
   CHAR = c; state = states[c];
   document.body.classList.toggle("char-pal", c==="pal");
+  applyBasics();
   document.querySelectorAll(".charsw button").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.char===c)));
   try{ localStorage.setItem("fg-char", c); }catch(e){}
   // Keep ?char= in step with the switch, or a reload would jump back to the URL's character.
@@ -4098,7 +4293,7 @@ function setChar(c){
 document.querySelectorAll(".charsw button").forEach(b=>b.addEventListener("click", ()=>setChar(b.dataset.char)));
 
 // ---------- events ----------
-$("#level").addEventListener("input", e=>{ state.level=+e.target.value; followLevel(); renderBar(); renderRoute(); renderDungeons(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderItems(); applyFolds(); scheduleSave(); });
+$("#level").addEventListener("input", e=>{ state.level=+e.target.value; followLevel(); renderBar(); renderRoute(); renderDungeons(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderCombat(); renderItems(); applyFolds(); scheduleSave(); });
 document.addEventListener("change", e=>{
   if(e.target.id==="svFile"){ const f=e.target.files[0]; if(f) importFile(f); e.target.value=""; return; }
   const id = e.target && e.target.dataset && e.target.dataset.id; if(!id) return;
