@@ -1310,7 +1310,7 @@ section:not(.fold) .foldwhy{display:none}
           <li><b>Level Alchemy in Brill or Undercity</b> every few levels, using your own herbs. Make whatever is still orange or yellow. Once a recipe turns grey, sell the herbs instead.</li>
           <li><b>Sell or craft?</b> On a fresh server, raw herbs like Peacebloom, Silverleaf and Briarthorn often sell on the AH for more than the potions. The Item worth table shows the vendor value, and once you enter an AH price it shows the auction value too.</li>
           <li><b>Wands:</b> without Enchanting you can't make your own, so take wand quest rewards and check the AH around level 13–20.</li>
-          <li><b>Your healer:</b> brew them mana potions. Healer mana sets your pace, so every potion is faster leveling for both of you.</li>
+          <li><b>Your priest:</b> brew them mana potions. Healer mana sets your pace, so every potion is faster leveling for both of you.</li>
         </ul>
         <p class="muted">Leveling crafting professions also earns Legacy Points.</p>
       </article>
@@ -1390,7 +1390,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-19T12:47:19Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-19T13:08:55Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -1537,10 +1537,10 @@ const DUO = {
   r12:"Soulstone the paladin before risky pulls. The paladin can Redemption the warlock."
 };
 const DUO_WL = {
-  r2:"From here on, the Voidwalker tanks and your healer keeps it up. Life Tap freely; pull at the healer's mana pace.",
+  r2:"From here on, the Voidwalker tanks, the priest shields and heals it. Life Tap freely; pull at the priest's mana pace.",
   r4:"Shadowfang Keep and the Wolfsbane dungeons: you and the healer only need a tank and two damage dealers.",
   r9:"At 40, dual spec: a second build for dungeons. Your healer can do the same.",
-  r12:"Soulstone on the healer before every risky pull, Healthstones for both of you."
+  r12:"Soulstone on the priest before every risky pull, Healthstones for both of you."
 };
 
 // Checklist groups. Ids are stable keys in saved state AND in the addon (DEMON_SPELLS); don't rename them.
@@ -4073,21 +4073,26 @@ const WL_SIT_KEY = "fg-wlsit2";
 let wlSit = (()=>{ try{ return localStorage.getItem(WL_SIT_KEY) || "healer"; }catch(e){ return "healer"; } })();
 // Situations: each step is [text, spell that must be known (or null)]. Text may be a function of ctx (bag counts).
 const WL_SIT = [
-  {id:"healer", label:"With your healer", steps:[
-    ["The <b>Voidwalker</b> tanks every pull. Send it in and wait for one <b>Torment</b>; your healer keeps it alive.", "Summon Voidwalker"],
+  {id:"healer", label:"With your priest", steps:[
+    ["Before you go out: <b>Power Word: Fortitude</b> from the priest on you <i>and</i> the Voidwalker. More Stamina for the tank means less healing.", null],
+    ["The <b>Voidwalker</b> tanks every pull: priests are too fragile to take hits. Send it in and wait for one <b>Torment</b>.", "Summon Voidwalker"],
+    ["Big pulls: the priest puts <b>Power Word: Shield</b> on the Voidwalker first. A shield absorbs damage with no heal needed.", null],
     ["2–3 mobs is a normal pull together. The Voidwalker grabs them all with <b>Suffering</b>; you put <kbd>1</kbd> Corruption and <kbd>2</kbd> Bane on each.", "Corruption"],
     ["Then damage: <kbd>3</kbd> <b>Shadow Bolt</b> on the main target. On elites or long fights, add <kbd>⇧1</kbd> <b>Immolate</b> first.", "Shadow Bolt"],
     ["<kbd>7</kbd> <b>Life Tap</b> whenever your mana drops: the healer turns your health back into mana for you.", "Life Tap"],
     ["<kbd>5</kbd> <b>Drain Life</b> only when the healer is out of mana or busy.", "Drain Life"],
-    ["Pull the next pack when <i>the healer</i> has mana, not when you do. Healer mana decides your pace.", null],
-    ["Keep a <b>Soulstone</b> on the healer (<kbd>⇧9</kbd>). If they die, the stone brings them back.", "Create Soulstone"],
-    ["Give the healer a <b>Healthstone</b> too: an emergency heal that costs them no mana.", "Create Healthstone"],
+    ["Pull the next pack when <i>the priest</i> has mana, not when you do. Priest mana decides your pace.", null],
+    ["After the pull, split the corpses: you both have <b>Cannibalize</b>. The priest eats while drinking; you Life Tap, then eat.", "Cannibalize"],
+    ["Keep a <b>Soulstone</b> on the priest (<kbd>⇧9</kbd>). If they die, the stone brings them back.", "Create Soulstone"],
+    ["Give the priest a <b>Healthstone</b> too: an emergency heal that costs them no mana.", "Create Healthstone"],
   ]},
-  {id:"aggro", label:"Mob on the healer", steps:[
+  {id:"aggro", label:"Mob on the priest", steps:[
+    ["The priest presses <b>Fade</b> first: the mob drops them and goes back to the Voidwalker, if the Voidwalker has hit it.", null],
     ["One mob on the healer: <kbd>8</kbd> <b>Fear</b> it right away. When it comes back, the Voidwalker <b>Torment</b>s it.", "Fear"],
     ["Several mobs on the healer: Voidwalker <b>Suffering</b>, which taunts everything near it. Put it on manual and use it on purpose.", "Summon Voidwalker"],
     ["You pulled aggro yourself: stop casting for 2 seconds and let Torment land. Suppression already cuts 20% of your threat.", null],
     ["<kbd>⇧5</kbd> <b>Death Coil</b>: an instant fear for the mob chasing the healer.", "Death Coil"],
+    ["Too many at once: the priest's <b>Psychic Scream</b> fears everything around them. Only one of you fears at a time: feared mobs can pull more.", null],
   ]},
   {id:"dungeon", label:"Dungeon (SFK)", steps:[
     ["With a real tank, summon the <b>Imp</b>: <b>Blood Pact</b> gives the whole group Stamina. No tank? The Voidwalker tanks, as outside.", null],
