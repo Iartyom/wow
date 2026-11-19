@@ -398,6 +398,15 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 /* Beginner tips (per character): .basic blocks only show while the toggle is on. */
 body.nobasics .basic{display:none!important}
 #basicsBtn[aria-pressed=true]{border-color:var(--fel);color:var(--fel)}
+/* ---- Road ahead timeline ---- */
+.ahead{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.ahead>li{display:grid;grid-template-columns:3.4rem minmax(0,1fr);gap:var(--s3);padding:6px 10px;border-left:3px solid var(--line);border-radius:3px}
+.ahead>li:nth-child(even){background:rgba(255,255,255,.02)}
+.ahead>li.now{border-left-color:var(--fel);background:rgba(135,136,238,.08)}
+.ahead .alv{font-family:var(--f-mono);font-size:1.05rem;color:var(--void)}
+.ahead .alv small{display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:.06em}
+.ahead .ak{display:inline-block;min-width:5.2rem;font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.ahead .ak.warn{color:var(--warn)}
 /* ---- Now: do-next list ---- */
 .nowlist{list-style:none;margin:0;padding:0;display:grid;gap:6px}
 .nowlist>li{display:grid;grid-template-columns:7.5rem minmax(0,1fr);gap:var(--s3);align-items:baseline;padding:8px 12px;border-left:3px solid var(--fel-dim);background:rgba(135,136,238,.06);border-radius:3px}
@@ -713,7 +722,7 @@ section:not(.fold) .foldwhy{display:none}
   </div>
   <div class="wrap">
     <nav class="toc" aria-label="Sections">
-      <a href="#newbie" data-only="pal">Start here</a><a href="#now">Now</a><a href="#game">From the game</a><a href="#items">Item worth</a><a href="#kit">Your kit</a><a href="#questlog">Quest log</a><a href="#rotation">Your spec</a><a href="#training" data-only="wl">Talents &amp; trainer</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
+      <a href="#newbie" data-only="pal">Start here</a><a href="#now">Now</a><a href="#game">From the game</a><a href="#items">Item worth</a><a href="#kit">Your kit</a><a href="#questlog">Quest log</a><a href="#rotation">Your spec</a><a href="#training" data-only="wl">Talents &amp; trainer</a><a href="#ahead">Road ahead</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
     </nav>
     <div class="foldall"><button type="button" class="foldbtn" data-foldall="auto">Show only what matters now</button><button type="button" class="foldbtn" data-foldall="open">Open everything</button><button type="button" class="foldbtn" id="basicsBtn" aria-pressed="false">Beginner tips</button><span class="updline" id="updated"></span></div>
   </div>
@@ -1158,6 +1167,14 @@ section:not(.fold) .foldwhy{display:none}
     </div>
   </div>
 </section>
+<!-- Road ahead: next ~10 levels in one timeline (renderAhead). Route / Dungeons / Class quests below are the full reference. -->
+<section id="ahead">
+  <div class="wrap">
+    <header><p class="eyebrow">Next levels</p><h2>Road ahead</h2><p>Everything coming in the next 10 levels, level by level: trainer visits, talents, class quests, new zones and dungeons.</p></header>
+    <ol class="ahead" id="aheadBody"></ol>
+  </div>
+</section>
+
 <section id="map">
   <div class="wrap">
     <header><p class="eyebrow">Chapter II</p><h2>Route map</h2><p>The GitHub site shows the real Forever world maps, which you can zoom and drag. Claude pages can't load outside images, so here you get a drawn version. Green means your level, purple means on your route, gold marks new Forever zones, and the dashed line is your path. Tap a zone for details and its zone map. On the GitHub site you can also just zoom: zoom in on a zone to open its map, and zoom out to go back.</p></header>
@@ -1338,6 +1355,18 @@ section:not(.fold) .foldwhy{display:none}
         </ul>
         <p class="muted"><b>Safe installs:</b> use CurseForge, Wago, WoWInterface or the author's GitHub (ElvUI only from tukui.org). A real addon is just .lua/.toc/.xml/.tga/.blp files, so delete anything with an .exe, .bat or .dll. Skip "FPS optimizers", automation tools and WeakAuras strings from strangers. Back up your WTF and Interface folders before big changes.</p>
       </article>
+      <!-- Legacy build (Nov 19 research: Warcraft Tavern, Zockify, Warcraft Wiki; beta-era numbers, verify in game). -->
+      <article class="card" data-only="wl">
+        <span class="tag">Legacy build · 16 points</span>
+        <p>Points are shared by the account, but each character can spend only <b>16</b>. The first point comes at level 25, then one each for Alchemy 150, 225 and 300, and more from dungeon sets, raids and other classes. Extra points only unlock cosmetics (Innkeeper Wiley, Ratchet).</p>
+        <ol class="rot">
+          <li><b>Thrill of Adventure</b> (5): each kill restores health and mana outside dungeons. You kill all day, so it means less Life Tap and less waiting for the priest.</li>
+          <li><b>Well Rested</b> (5): rested XP builds faster and caps higher. Log out at inns.</li>
+          <li><b>Frequent Flier</b> (1): flights cost half and fly 20% faster. Take it as soon as the tree lets you reach it.</li>
+          <li>Rest: <b>Bountiful Harvest</b> (more scarce herbs, for gold) or <b>Working Overtime</b> (faster Alchemy skill-ups, which also earn Legacy points).</li>
+        </ol>
+        <p class="muted"><b>Skip:</b> Talented (one talent point early, nothing at 60), Reagent Economy (warlocks use Soul Shards, not bought reagents), and the reputation, honor, fishing and cooking perks. <span class="badge unv">verify</span> No source shows how many points each row of the tree needs, so check it in game. A respec costs about 10g at your class trainer.</p>
+      </article>
       <article class="card">
         <span class="tag">Systems to use</span>
         <ul class="plain">
@@ -1389,7 +1418,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-19T13:08:55Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-19T13:11:01Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -3951,6 +3980,49 @@ function renderTraining(){
     + (known ? (missing.length ? `<br><b style="color:var(--warn)">Not learned yet (${missing.length}):</b> ${missing.join(", ")}. Visit your trainer.` : `<br><b>From the game:</b> everything up to your level is learned.`) : "");
 }
 
+/* ---- Road ahead ----
+   One timeline for the next ~10 levels: trainer visits, talent rows, class quests and milestones,
+   dungeons opening up, new zone brackets. Pulls from TRAIN_WL / TALENTS_WL / CHECKS / DUNGEONS / ROUTE,
+   so the separate Route, Dungeons and Class-quest sections can stay folded as reference. */
+const AHEAD_SPAN = 10;
+function renderAhead(){
+  const box = $("#aheadBody"); if(!box) return;
+  const L = (state.game && state.game.level) || state.level || 1, top = Math.min(60, L + AHEAD_SPAN);
+  const known = (state.game && state.game.spells) || null;
+  const dStart = d => d[0] ?? (d[1] - 5);
+  const horde = d => !/Alliance/i.test(d[5] || "");
+  const rows = {};   // level -> [html]
+  const put = (lv, html) => (rows[lv] ||= []).push(html);
+  // Trainer: core spells per even level; optional ones listed dim.
+  for(let lv = L + 1; lv <= top; lv++){
+    if(CHAR==="wl" && TRAIN_WL[lv]){
+      const all = TRAIN_WL[lv].split("|").filter(x=>!trainSkip(x)).map(x=>x.replace(/ 1$/,""));
+      const core = all.filter(x=>!TRAIN_OPTIONAL.test(x)), opt = all.filter(x=>TRAIN_OPTIONAL.test(x));
+      if(core.length || opt.length) put(lv, `<span class="ak">Trainer</span> ${core.map(esc).join(", ")}${opt.length?` <span class="muted">· optional: ${opt.map(esc).join(", ")}</span>`:""}`);
+    }
+    if(CHAR==="wl"){ const t = TALENTS_WL.find(t=>t[0]===lv); if(t) put(lv, `<span class="ak">Talent</span> ${esc(t[2])} <span class="muted">(${t[1]-t[0]+1} point${t[1]>t[0]?"s":""}${t[1]>t[0]?`, levels ${t[0]}–${t[1]}`:""})</span>`); }
+    for(const r of ROUTE) if(r.lo === lv) put(lv, `<span class="ak">Zones</span> ${r.zones.map(esc).join(", ")} <span class="muted">· hub ${esc(r.hub)}</span>`);
+    for(const d of DUNGEONS) if(dStart(d) === lv && horde(d)) put(lv, `<span class="ak">Dungeon</span> ${esc(d[2])} opens <span class="muted">(${esc(d[3])}, best by ${d[1]})</span>`);
+  }
+  // Class quests and milestones: by the level in their label; overdue ones go to "now".
+  const overdue = [];
+  for(const [id, label] of CHARS[CHAR].checks.flatMap(g=>g.items)){
+    const lv = lvlOf(label); if(lv == null || state.checks[id]) continue;
+    if(lv <= L) overdue.push(esc(label)); else if(lv <= top) put(lv, `<span class="ak">Quest</span> ${esc(label)} <a href="#quests">details</a>`);
+  }
+  const bracket = ROUTE.find(r=>L >= r.lo && L < r.hi) || ROUTE[ROUTE.length-1];
+  const fitNow = DUNGEONS.filter(d=>horde(d) && dStart(d) <= L && L <= d[1] + 2).map(d=>esc(d[2]));
+  const nowRows = [
+    `<span class="ak">Zones</span> ${bracket.zones.map(esc).join(", ")} <span class="muted">· hub ${esc(bracket.hub)}</span>`,
+    fitNow.length ? `<span class="ak">Dungeons</span> ${fitNow.join(", ")} fit your level` : "",
+    overdue.length ? `<span class="ak warn">Overdue</span> ${overdue.join(" · ")}` : "",
+  ].filter(Boolean);
+  const lvls = Object.keys(rows).map(Number).sort((a,b)=>a-b);
+  box.innerHTML = `<li class="now"><span class="alv">${L}<small>now</small></span><div>${nowRows.map(h=>`<div>${h}</div>`).join("")}</div></li>`+
+    lvls.map(lv=>`<li><span class="alv">${lv}</span><div>${rows[lv].map(h=>`<div>${h}</div>`).join("")}</div></li>`).join("")+
+    (top < 60 ? `<li class="muted"><span class="alv">…</span><div>Beyond ${top}: see <a href="#route">Leveling route</a>, <a href="#dungeons">Dungeons</a> and <a href="#quests">Class quests</a>.</div></li>` : "");
+}
+
 /* ---- Now: what to do next ----
    One ranked list pulled from the other sections: unspent talents, spells to train, Healthstone /
    Soulstone / shards, the next quest-plan stop, bag cleanup, class quests due, professions.
@@ -4019,7 +4091,7 @@ function renderNow(){
   const cq = CHARS[CHAR].checks.flatMap(gr=>gr.items).find(([id, label])=>{ const lv = lvlOf(label); return lv != null && lv <= L + 4 && !state.checks[id]; });
   if(cq) add(6, "Class quest", `${esc(cq[1])} <a href="#quests">details</a>`);
   if(typeof profNeedsYou === "function" && profNeedsYou()) add(7, "Professions", `A profession needs you: capped skill or skill-ups to craft. <a href="#extras">helper</a>`);
-  if(CHAR==="wl" && L >= 25) add(8, "Legacy", `Unlocked at 25: open the Legacy screen. Suggested start: <b>Thrill of Adventure</b>, then Well Rested, then Frequent Flier if you can reach it.`);
+  if(CHAR==="wl" && L >= 25) add(8, "Legacy", `Unlocked at 25: open the Legacy screen. Suggested start: <b>Thrill of Adventure</b>, then Well Rested, then Frequent Flier if you can reach it. <a href="#extras">build</a>`);
 
   items.sort((a,b)=>a.p-b.p);
   box.innerHTML = items.map(it=>`<li${it.hi?' class="hi"':""}><span class="ntag">${it.tag}</span><div>${it.html}</div></li>`).join("")
@@ -4256,11 +4328,12 @@ const FOLD_RULES = {
   items:   () => [true, ""],
   kit:     L => [L < 10 && basicsOn(), "class basics, you're past them"],
   map:     () => [true, ""],
-  route:   () => [true, ""],
+  ahead:   () => [true, ""],
+  route:   () => [CHAR!=="wl", "summed up in Road ahead"],
   rotation:() => [true, ""],
   training:() => [true, ""],
-  dungeons:L => [DUNGEONS.some(d => (d[0] ?? d[1]) <= L + 2 && d[1] + 5 >= L), "no dungeon at your level"],
-  quests:  L => {
+  dungeons:L => CHAR==="wl" ? [false, "summed up in Road ahead"] : [DUNGEONS.some(d => (d[0] ?? d[1]) <= L + 2 && d[1] + 5 >= L), "no dungeon at your level"],
+  quests:  L => { if(CHAR==="wl") return [false, "summed up in Road ahead"];
     // Open when a class quest or milestone is due within NEAR levels (or overdue) and not ticked yet.
     const due = CHARS[CHAR].checks.flatMap(g => g.items).find(([id, label]) => {
       const lv = lvlOf(label); return lv != null && lv <= L + NEAR && !state.checks[id];
@@ -4318,7 +4391,7 @@ document.addEventListener("click", e => {
   if(sec && sec.classList.contains("fold")) setFold(id, true);
 });
 
-function renderAll(){ renderBar(); renderGame(); renderArmory(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderCombat(); renderItems(); renderProfs(); renderQuestLog(); renderNow();
+function renderAll(){ renderBar(); renderGame(); renderArmory(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderCombat(); renderAhead(); renderItems(); renderProfs(); renderQuestLog(); renderNow();
   const nb=$("#notesBox"); if(document.activeElement!==nb) nb.value = state.notes||"";
   applyFolds(); }
 
@@ -4411,7 +4484,7 @@ function setChar(c){
 document.querySelectorAll(".charsw button").forEach(b=>b.addEventListener("click", ()=>setChar(b.dataset.char)));
 
 // ---------- events ----------
-$("#level").addEventListener("input", e=>{ state.level=+e.target.value; followLevel(); renderBar(); renderRoute(); renderDungeons(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderCombat(); renderItems(); renderNow(); applyFolds(); scheduleSave(); });
+$("#level").addEventListener("input", e=>{ state.level=+e.target.value; followLevel(); renderBar(); renderRoute(); renderDungeons(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderCombat(); renderAhead(); renderItems(); renderNow(); applyFolds(); scheduleSave(); });
 document.addEventListener("change", e=>{
   if(e.target.id==="svFile"){ const f=e.target.files[0]; if(f) importFile(f); e.target.value=""; return; }
   const id = e.target && e.target.dataset && e.target.dataset.id; if(!id) return;
