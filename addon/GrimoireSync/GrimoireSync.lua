@@ -395,7 +395,7 @@ local function ahFinishScan()
   if n == 0 then ahSay("the scan came back empty. Blizzard allows one full scan about every 15 minutes; try again later.") return end
   local items = ahStore(mins)
   ahDB().full = time()
-  ahSay(("scanned %d auctions, %d items priced. Close the AH (or /reload) to send them to the site."):format(n, items))
+  ahSay(("scanned %d auctions, %d items priced. Type /reload to save them and send them to the site (WoW only writes addon data on /reload or logout)."):format(n, items))
 end
 
 local function ahStartScan()
