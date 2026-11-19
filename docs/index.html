@@ -880,7 +880,7 @@ section:not(.fold) .foldwhy{display:none}
 <section id="game">
   <div class="wrap">
     <header><p class="eyebrow">Live from Azeroth</p><h2>From the game</h2>
-      <p>The GrimoireSync addon records your level, zone, gold, talents, spells, gear, bags and professions every time you log out or type <kbd>/reload</kbd>. Importing that file updates your level and ticks the matching class quests and profession goals below.</p></header>
+      <p class="basic">The GrimoireSync addon records your level, zone, gold, talents, spells, gear, bags and professions every time you log out or type <kbd>/reload</kbd>. Importing that file updates your level and ticks the matching class quests and profession goals below.</p></header>
     <div class="gamecard" id="gameCard"></div>
     <div class="importrow">
       <label class="btn" for="svFile">Load GrimoireSync.lua</label>
@@ -906,7 +906,7 @@ section:not(.fold) .foldwhy{display:none}
 <section id="items">
   <div class="wrap">
     <header><p class="eyebrow">Your bags</p><h2>Item worth</h2>
-      <p>Every item in your bags gets one verdict: equip it, keep it for later, give it to your partner, auction it, or vendor it. "Points" are stats × your character's weights. A positive number means it beats what you're wearing in that slot.</p></header>
+      <p class="basic">Every item in your bags gets one verdict: equip it, keep it for later, give it to your partner, auction it, or vendor it. "Points" are stats × your character's weights. A positive number means it beats what you're wearing in that slot.</p></header>
     <div class="grid">
       <article class="card">
         <span class="tag">Equipped now</span>
@@ -1178,7 +1178,7 @@ section:not(.fold) .foldwhy{display:none}
 
 <section id="map">
   <div class="wrap">
-    <header><p class="eyebrow">Chapter II</p><h2>Route map</h2><p>The GitHub site shows the real Forever world maps, which you can zoom and drag. Claude pages can't load outside images, so here you get a drawn version. Green means your level, purple means on your route, gold marks new Forever zones, and the dashed line is your path. Tap a zone for details and its zone map. On the GitHub site you can also just zoom: zoom in on a zone to open its map, and zoom out to go back.</p></header>
+    <header><p class="eyebrow">Chapter II</p><h2>Route map</h2><p class="basic">The GitHub site shows the real Forever world maps, which you can zoom and drag. Claude pages can't load outside images, so here you get a drawn version. Green means your level, purple means on your route, gold marks new Forever zones, and the dashed line is your path. Tap a zone for details and its zone map. On the GitHub site you can also just zoom: zoom in on a zone to open its map, and zoom out to go back.</p></header>
     <div class="maplayout">
       <div>
         <div class="contabs" id="contabs" role="group" aria-label="Continent" hidden>
@@ -1419,7 +1419,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-19T13:11:01Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-19T13:11:56Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -2771,7 +2771,7 @@ function renderQuestLogInner(){
 
   // 1. The plan.
   const planHTML = plan.length ? `<section class="ggp qlplan"><h4>Your plan, step by step</h4>
-    <p class="muted gg-note">Starts where you are (${esc(here||"?")}), then the closest zones. Tap a <b>quest name</b> for its instructions and its spots on the map, or a zone to see all its quests.</p><ol class="qsteps">`+
+    <p class="muted gg-note">Starts where you are (${esc(here||"?")}), then the closest zones. <span class="basic">Tap a <b>quest name</b> for its instructions and its spots on the map, or a zone to see all its quests.</span></p><ol class="qsteps">`+
     plan.map((s,n)=>(n && !s.unknown && ZONES[s.zone]?.cont && ZONES[s.zone].cont!==ZONES[plan[n-1].zone]?.cont
       ? `<li class="qhop">Take the zeppelin to ${ZONES[s.zone].cont==="EK"?"the Eastern Kingdoms (Orgrimmar → Undercity tower, or Grom'gol)":"Kalimdor (Undercity tower → Orgrimmar)"}</li>` : "")+
       `<li${s.dungeon?' class="qdun"':""}><button type="button" class="qstop" data-qzone="${esc(s.zone)}"><span class="qn">${n+1}</span><b>${esc(s.dungeon||s.zone)}</b>`+
