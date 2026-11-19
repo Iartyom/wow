@@ -1,11 +1,11 @@
 {
- "fetched": "2026-11-17T22:56:47.886Z",
+ "fetched": "2026-11-19T03:35:49.526Z",
  "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/dark-bober",
  "character": {
   "avatar": {
    "url": "https://render.worldofwarcraft.com/forever-eu/character/180/11422388-avatar.jpg"
   },
-  "averageItemLevel": 20,
+  "averageItemLevel": 21,
   "class": {
    "id": 9,
    "name": "Warlock",
@@ -261,41 +261,38 @@
      "display_string": "Item Level 20"
     },
     "durability": {
-     "value": 54,
-     "display_string": "Durability 54 / 70"
+     "value": 70,
+     "display_string": "Durability 70 / 70"
     }
    },
    "foot": {
-    "id": 14174,
+    "id": 6482,
     "item": {
      "key": {
-      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/14174?namespace=static-forever-eu"
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/6482?namespace=static-forever-eu"
      },
-     "id": 14174
+     "id": 6482
     },
     "slot": {
      "type": "FEET",
      "name": "Feet"
     },
     "quantity": 1,
-    "context": 0,
-    "bonus_list": [
-     12719
-    ],
+    "context": 11,
     "quality": {
      "type": "UNCOMMON",
      "name": "Uncommon"
     },
-    "name": "Buccaneer's Boots of the Whale",
+    "name": "Firewalker Boots",
     "media": {
      "key": {
-      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/14174?namespace=static-forever-eu"
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/6482?namespace=static-forever-eu"
      },
-     "id": 14174,
+     "id": 6482,
      "content": {
       "_links": {
        "self": {
-        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/14174?namespace=static-forever-eu"
+        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/6482?namespace=static-forever-eu"
        }
       },
       "assets": [
@@ -325,21 +322,21 @@
      "name": "Feet"
     },
     "binding": {
-     "type": "ON_EQUIP",
-     "name": "Binds when equipped"
+     "type": "ON_ACQUIRE",
+     "name": "Binds when picked up"
     },
     "armor": {
-     "value": 22
+     "value": 26
     },
     "stats": [
      {
       "type": {
-       "type": "STAMINA",
-       "name": "Stamina"
+       "type": "INTELLECT",
+       "name": "Intellect"
       },
-      "value": 3,
+      "value": 1,
       "display": {
-       "display_string": "+3 Stamina",
+       "display_string": "+1 Intellect",
        "color": {
         "r": 255,
         "g": 255,
@@ -350,12 +347,29 @@
      },
      {
       "type": {
+       "type": "SPELL_POWER",
+       "name": "Spell Power"
+      },
+      "value": 2,
+      "display": {
+       "display_string": "+2 Spell Power",
+       "color": {
+        "r": 0,
+        "g": 255,
+        "b": 0,
+        "a": 1
+       }
+      },
+      "is_equip_bonus": true
+     },
+     {
+      "type": {
        "type": "SPIRIT",
        "name": "Spirit"
       },
-      "value": 3,
+      "value": 5,
       "display": {
-       "display_string": "+3 Spirit",
+       "display_string": "+5 Spirit",
        "color": {
         "r": 0,
         "g": 255,
@@ -367,27 +381,21 @@
      }
     ],
     "sell_price": {
-     "value": 368,
+     "value": 728,
      "display_strings": {
       "header": "Sell Price:",
       "gold": "0",
-      "silver": "3",
-      "copper": "68"
-     }
-    },
-    "requirements": {
-     "level": {
-      "value": 14,
-      "display_string": "Requires Level 14"
+      "silver": "7",
+      "copper": "28"
      }
     },
     "level": {
-     "value": 19,
-     "display_string": "Item Level 19"
+     "value": 24,
+     "display_string": "Item Level 24"
     },
     "durability": {
-     "value": 19,
-     "display_string": "Durability 19 / 30"
+     "value": 30,
+     "display_string": "Durability 30 / 30"
     }
    },
    "hand": {
@@ -508,17 +516,17 @@
      "display_string": "Item Level 23"
     },
     "durability": {
-     "value": 13,
-     "display_string": "Durability 13 / 20"
+     "value": 19,
+     "display_string": "Durability 19 / 20"
     }
    },
    "head": {
-    "id": 279391,
+    "id": 3732,
     "item": {
      "key": {
-      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/279391?namespace=static-forever-eu"
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/3732?namespace=static-forever-eu"
      },
-     "id": 279391
+     "id": 3732
     },
     "slot": {
      "type": "HEAD",
@@ -530,22 +538,22 @@
      "type": "COMMON",
      "name": "Common"
     },
-    "name": "Taurajo Headband",
+    "name": "Hooded Cowl",
     "media": {
      "key": {
-      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/279391?namespace=static-forever-eu"
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/3732?namespace=static-forever-eu"
      },
-     "id": 279391,
+     "id": 3732,
      "content": {
       "_links": {
        "self": {
-        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/279391?namespace=static-forever-eu"
+        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/3732?namespace=static-forever-eu"
        }
       },
       "assets": [
        {
         "key": "icon",
-        "value": "https://render.worldofwarcraft.com/forever-eu/icons/56/133693.jpg"
+        "value": "https://render.worldofwarcraft.com/forever-eu/icons/56/133136.jpg"
        }
       ]
      }
@@ -573,24 +581,24 @@
      "name": "Binds when picked up"
     },
     "armor": {
-     "value": 28
+     "value": 33
     },
     "sell_price": {
-     "value": 999,
+     "value": 801,
      "display_strings": {
       "header": "Sell Price:",
       "gold": "0",
-      "silver": "9",
-      "copper": "99"
+      "silver": "8",
+      "copper": "1"
      }
     },
     "level": {
-     "value": 23,
-     "display_string": "Item Level 23"
+     "value": 30,
+     "display_string": "Item Level 30"
     },
     "durability": {
-     "value": 23,
-     "display_string": "Durability 23 / 40"
+     "value": 45,
+     "display_string": "Durability 45 / 45"
     }
    },
    "leftFinger": {
@@ -807,8 +815,8 @@
      "display_string": "Item Level 24"
     },
     "durability": {
-     "value": 38,
-     "display_string": "Durability 38 / 50"
+     "value": 50,
+     "display_string": "Durability 50 / 50"
     }
    },
    "neck": {
@@ -1012,12 +1020,12 @@
     "is_subclass_hidden": true
    },
    "ranged": {
-    "id": 8071,
+    "id": 5250,
     "item": {
      "key": {
-      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/8071?namespace=static-forever-eu"
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/5250?namespace=static-forever-eu"
      },
-     "id": 8071
+     "id": 5250
     },
     "slot": {
      "type": "RANGED",
@@ -1029,16 +1037,16 @@
      "type": "UNCOMMON",
      "name": "Uncommon"
     },
-    "name": "Sizzle Stick",
+    "name": "Charred Wand",
     "media": {
      "key": {
-      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/8071?namespace=static-forever-eu"
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/5250?namespace=static-forever-eu"
      },
-     "id": 8071,
+     "id": 5250,
      "content": {
       "_links": {
        "self": {
-        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/8071?namespace=static-forever-eu"
+        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/5250?namespace=static-forever-eu"
        }
       },
       "assets": [
@@ -1073,24 +1081,40 @@
     },
     "weapon": {
      "damage": {
-      "min_value": 21,
-      "max_value": 39,
-      "display_string": "21 - 39 Fire Damage",
+      "min_value": 28,
+      "max_value": 52,
+      "display_string": "28 - 52 Fire Damage",
       "damage_class": {
        "type": "FIRE",
        "name": "Fire"
       }
      },
      "attack_speed": {
-      "value": 1700,
-      "display_string": "Speed 1.70"
+      "value": 1800,
+      "display_string": "Speed 1.80"
      },
      "dps": {
-      "value": 17.647058,
-      "display_string": "(17.6 damage per second)"
+      "value": 22.222221,
+      "display_string": "(22.2 damage per second)"
      }
     },
     "stats": [
+     {
+      "type": {
+       "type": "INTELLECT",
+       "name": "Intellect"
+      },
+      "value": 2,
+      "display": {
+       "display_string": "+2 Intellect",
+       "color": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+       }
+      }
+     },
      {
       "type": {
        "type": "SPELL_POWER",
@@ -1110,21 +1134,21 @@
      }
     ],
     "sell_price": {
-     "value": 1594,
+     "value": 2646,
      "display_strings": {
       "header": "Sell Price:",
       "gold": "0",
-      "silver": "15",
-      "copper": "94"
+      "silver": "26",
+      "copper": "46"
      }
     },
     "level": {
-     "value": 23,
-     "display_string": "Item Level 23"
+     "value": 28,
+     "display_string": "Item Level 28"
     },
     "durability": {
-     "value": 35,
-     "display_string": "Durability 35 / 45"
+     "value": 50,
+     "display_string": "Durability 50 / 50"
     }
    },
    "rightFinger": {
@@ -1363,8 +1387,8 @@
      "display_string": "Item Level 24"
     },
     "durability": {
-     "value": 32,
-     "display_string": "Durability 32 / 40"
+     "value": 38,
+     "display_string": "Durability 38 / 40"
     }
    },
    "waist": {
@@ -1483,8 +1507,8 @@
      "display_string": "Item Level 23"
     },
     "durability": {
-     "value": 13,
-     "display_string": "Durability 13 / 20"
+     "value": 19,
+     "display_string": "Durability 19 / 20"
     }
    },
    "weapon": {
@@ -1615,8 +1639,8 @@
      "display_string": "Item Level 24"
     },
     "durability": {
-     "value": 41,
-     "display_string": "Durability 41 / 45"
+     "value": 45,
+     "display_string": "Durability 45 / 45"
     }
    },
    "wrist": {
@@ -1731,8 +1755,8 @@
      "display_string": "Item Level 24"
     },
     "durability": {
-     "value": 14,
-     "display_string": "Durability 14 / 20"
+     "value": 20,
+     "display_string": "Durability 20 / 20"
     }
    }
   },
@@ -1744,10 +1768,10 @@
   },
   "isRemix": false,
   "lastUpdatedTimestamp": {
-   "epoch": 1794954686000,
-   "iso8601": "2026-11-17T22:31:26Z"
+   "epoch": 1795042724000,
+   "iso8601": "2026-11-18T22:58:44Z"
   },
-  "level": 25,
+  "level": 26,
   "media": {
    "main-sd-raw": {
     "url": "https://render.worldofwarcraft.com/forever-eu/character/180/11422388-main-sd-raw.png"
@@ -1777,7 +1801,7 @@
        "id": 2937,
        "maxSkillPoints": 75,
        "name": "Alchemy",
-       "skillPoints": 60
+       "skillPoints": 64
       }
      ]
     },
@@ -1793,7 +1817,7 @@
        "id": 2944,
        "maxSkillPoints": 150,
        "name": "Herbalism",
-       "skillPoints": 75
+       "skillPoints": 76
       }
      ]
     }
@@ -1895,7 +1919,7 @@
     },
     "id": "demonology",
     "name": "Demonology",
-    "spentPoints": 6,
+    "spentPoints": 7,
     "talents": [
      {
       "cast": "Passive",
@@ -1909,13 +1933,13 @@
      },
      {
       "cast": "Passive",
-      "description": "You heal your pet for 8% of all spell damage you deal. When you gain Mana from Life Tap, your summoned demon gains 50% of the Mana you gain.",
+      "description": "You heal your pet for 15% of all spell damage you deal. When you gain Mana from Life Tap, your summoned demon gains 100% of the Mana you gain.",
       "icon": {
        "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/237564.jpg"
       },
       "id": 135430,
       "name": "Demonic Energies",
-      "rank": 1
+      "rank": 2
      }
     ]
    }
@@ -1928,7 +1952,7 @@
       "slug": "health",
       "value": {
        "type": "WHOLE",
-       "value": 689
+       "value": 683
       }
      },
      {
@@ -1936,7 +1960,7 @@
       "slug": "mana",
       "value": {
        "type": "WHOLE",
-       "value": 1268
+       "value": 1360
       }
      },
      {
@@ -1944,7 +1968,7 @@
       "slug": "item-level",
       "value": {
        "type": "WHOLE",
-       "value": 20
+       "value": 21
       }
      },
      {
@@ -2018,7 +2042,7 @@
        "slug": "health",
        "value": {
         "type": "WHOLE",
-        "value": 689
+        "value": 683
        }
       },
       {
@@ -2026,7 +2050,7 @@
        "slug": "mana",
        "value": {
         "type": "WHOLE",
-        "value": 1268
+        "value": 1360
        }
       },
       {
@@ -2034,7 +2058,7 @@
        "slug": "item-level",
        "value": {
         "type": "WHOLE",
-        "value": 20
+        "value": 21
        }
       },
       {
@@ -2127,19 +2151,19 @@
        "details": {
         "base": {
          "type": "WHOLE",
-         "value": 48
+         "value": 49
         },
         "bonus": {
          "type": "WHOLE",
-         "value": 22
+         "value": 25
         },
         "effective": {
          "type": "WHOLE",
-         "value": 70
+         "value": 74
         },
         "rating": {
          "type": "WHOLE",
-         "value": 70
+         "value": 74
         },
         "type": "ENHANCED"
        },
@@ -2147,26 +2171,26 @@
        "slug": "intellect",
        "value": {
         "type": "WHOLE",
-        "value": 70
+        "value": 74
        }
       },
       {
        "details": {
         "base": {
          "type": "WHOLE",
-         "value": 36
+         "value": 37
         },
         "bonus": {
          "type": "WHOLE",
-         "value": 23
+         "value": 20
         },
         "effective": {
          "type": "WHOLE",
-         "value": 59
+         "value": 57
         },
         "rating": {
          "type": "WHOLE",
-         "value": 59
+         "value": 57
         },
         "type": "ENHANCED"
        },
@@ -2174,7 +2198,7 @@
        "slug": "stamina",
        "value": {
         "type": "WHOLE",
-        "value": 59
+        "value": 57
        }
       }
      ]
@@ -2206,7 +2230,7 @@
        "slug": "critical-strike",
        "value": {
         "type": "PERCENTAGE",
-        "value": 1.4906
+        "value": 1.2906001
        }
       },
       {
@@ -2386,7 +2410,7 @@
        "slug": "spell-power",
        "value": {
         "type": "WHOLE",
-        "value": 33
+        "value": 35
        }
       },
       {
@@ -2394,7 +2418,7 @@
        "slug": "mana-regen",
        "value": {
         "type": "DECIMAL",
-        "value": 81
+        "value": 83
        }
       }
      ]
@@ -2410,15 +2434,15 @@
         },
         "bonus": {
          "type": "WHOLE",
-         "value": 300
+         "value": 309
         },
         "effective": {
          "type": "WHOLE",
-         "value": 316
+         "value": 325
         },
         "rating": {
          "type": "WHOLE",
-         "value": 316
+         "value": 325
         },
         "type": "ENHANCED"
        },
@@ -2426,7 +2450,7 @@
        "slug": "armor",
        "value": {
         "type": "WHOLE",
-        "value": 316
+        "value": 325
        }
       },
       {
@@ -2453,7 +2477,7 @@
        "slug": "dodge",
        "value": {
         "type": "PERCENTAGE",
-        "value": 4.8106
+        "value": 4.8506
        }
       },
       {
@@ -2519,7 +2543,7 @@
      "slug": "health",
      "value": {
       "type": "WHOLE",
-      "value": 689
+      "value": 683
      }
     },
     {
@@ -2527,7 +2551,7 @@
      "slug": "mana",
      "value": {
       "type": "WHOLE",
-      "value": 1268
+      "value": 1360
      }
     },
     {
@@ -2561,19 +2585,19 @@
      "details": {
       "base": {
        "type": "WHOLE",
-       "value": 48
+       "value": 49
       },
       "bonus": {
        "type": "WHOLE",
-       "value": 22
+       "value": 25
       },
       "effective": {
        "type": "WHOLE",
-       "value": 70
+       "value": 74
       },
       "rating": {
        "type": "WHOLE",
-       "value": 70
+       "value": 74
       },
       "type": "ENHANCED"
      },
@@ -2581,7 +2605,7 @@
      "slug": "intellect",
      "value": {
       "type": "WHOLE",
-      "value": 70
+      "value": 74
      }
     },
     {
@@ -2615,19 +2639,19 @@
      "details": {
       "base": {
        "type": "WHOLE",
-       "value": 36
+       "value": 37
       },
       "bonus": {
        "type": "WHOLE",
-       "value": 23
+       "value": 20
       },
       "effective": {
        "type": "WHOLE",
-       "value": 59
+       "value": 57
       },
       "rating": {
        "type": "WHOLE",
-       "value": 59
+       "value": 57
       },
       "type": "ENHANCED"
      },
@@ -2635,7 +2659,7 @@
      "slug": "stamina",
      "value": {
       "type": "WHOLE",
-      "value": 59
+      "value": 57
      }
     },
     {
@@ -2662,26 +2686,26 @@
      "slug": "critical-strike",
      "value": {
       "type": "PERCENTAGE",
-      "value": 1.4906
+      "value": 1.2906001
      }
     },
     {
      "details": {
       "base": {
        "type": "WHOLE",
-       "value": 57
+       "value": 58
       },
       "bonus": {
        "type": "WHOLE",
-       "value": 23
+       "value": 25
       },
       "effective": {
        "type": "WHOLE",
-       "value": 80
+       "value": 83
       },
       "rating": {
        "type": "WHOLE",
-       "value": 80
+       "value": 83
       },
       "type": "ENHANCED"
      },
@@ -2689,7 +2713,7 @@
      "slug": "spirit",
      "value": {
       "type": "WHOLE",
-      "value": 80
+      "value": 83
      }
     }
    ]
@@ -2741,7 +2765,7 @@
        "enum": "FRIENDLY",
        "slug": "friendly"
       },
-      "value": 482
+      "value": 676
      },
      {
       "id": "orgrimmar",
@@ -2755,7 +2779,7 @@
        "enum": "FRIENDLY",
        "slug": "friendly"
       },
-      "value": 1457
+      "value": 1651
      },
      {
       "id": "thunder-bluff",
@@ -2769,7 +2793,7 @@
        "enum": "NEUTRAL",
        "slug": "neutral"
       },
-      "value": 2177
+      "value": 2483
      },
      {
       "id": "undercity",
@@ -2783,7 +2807,7 @@
        "enum": "HONORED",
        "slug": "honored"
       },
-      "value": 4195
+      "value": 4857
      }
     ]
    },
