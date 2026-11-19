@@ -400,7 +400,7 @@ local function ahFinishScan()
   ahDB().full = time()
   local ok, err = pcall(ahShopCollect, kind, n)
   if not ok then GrimoireSyncDB.ahShopDbg = { t = time(), err = tostring(err) }; ahSay("shopping list failed: " .. tostring(err)) end
-  ahSay(("scanned %d auctions, %d items priced. Building your shopping list, a few seconds..."):format(n, items))
+  ahSay(("scanned %d auctions, %d items priced. Prices saved."):format(n, items))
 end
 
 local function ahStartScan()
@@ -523,38 +523,53 @@ ahShopCollect = function(kind, n)
   if not GetItemInfoInstant then ahSay("shopping list: this client has no GetItemInfoInstant."); return end
   local _, cls = safe(UnitClass, "player")
   local L = safe(UnitLevel, "player") or 1
+  -- Nothing you can't afford, no grey junk: 0.8.1 kept 2825 candidates, far too many to load names for.
+  local money = math.max(safe(GetMoney) or 0, 10000)
   local best = {}   -- link -> { cat, price }
   for i = (kind == "modern" and 0 or 1), (kind == "modern" and n - 1 or n) do
-    local count, buyout, id, lvl
+    local count, buyout, id, lvl, q
     if kind == "modern" then
-      local r = { safe(C_AuctionHouse.GetReplicateItemInfo, i) }; count, lvl, buyout, id = r[3], r[6], r[10], r[17]
+      local r = { safe(C_AuctionHouse.GetReplicateItemInfo, i) }; count, q, lvl, buyout, id = r[3], r[4], r[6], r[10], r[17]
     else
-      local r = { safe(GetAuctionItemInfo, "list", i) }; count, lvl, buyout, id = r[3], r[6], r[10], r[17]
+      local r = { safe(GetAuctionItemInfo, "list", i) }; count, q, lvl, buyout, id = r[3], r[4], r[6], r[10], r[17]
     end
+    local unit = buyout and buyout > 0 and buyout / math.max(count or 1, 1)
     -- lvl is the listing's level field (required level on the old AH); a loose window, pass 2 checks the real one.
-    if id and buyout and buyout > 0 and (not lvl or lvl == 0 or (lvl <= L + 10 and lvl >= L - 12)) then
+    if id and unit and unit <= money and (q == nil or q >= 1)
+       and (not lvl or lvl == 0 or (lvl <= L + 10 and lvl >= L - 12)) then
       local cat = shopCat(id, cls)
       if cat then
         local link = kind == "modern" and safe(C_AuctionHouse.GetReplicateItemLink, i) or safe(GetAuctionItemLink, "list", i)
         if link then
-          local unit = buyout / math.max(count or 1, 1)
           local b = best[link]
           if not b or unit < b.p then best[link] = { cat = cat, p = unit } end
         end
       end
     end
   end
-  for link in pairs(best) do safe(GetItemInfo, link) end   -- start loading item data for pass 2
+  -- Item names/tooltips load asynchronously and the client throttles big batches, so pass 2 runs up to 8 times,
+  -- 10s apart: each run keeps the items whose data has arrived, re-requests the rest, and saves what it has
+  -- (a /reload at any point still sends a partial list).
+  local pending, items, tries, nCand = best, {}, 0, 0
+  for link in pairs(best) do nCand = nCand + 1; safe(GetItemInfo, link) end
+  local dbg = { t = time(), cand = nCand, sample = next(best) }
+  GrimoireSyncDB.ahShopDbg = dbg
+  if nCand > 0 then ahSay(("shopping list: loading %d items, about 10-60 seconds. Keep playing; it tells you when it's done."):format(nCand)) end
   local function pass2()
-    local items = {}
-    for link, b in pairs(best) do
+    tries = tries + 1
+    local still, left = {}, 0
+    for link, b in pairs(pending) do
       local r = itemRec(link, 1)
-      local req = r.req or 0
-      -- Gear: required level up to 3 above you (buy ahead), and not junk from 6+ levels ago.
-      local keep = r.name and (b.cat ~= "g" or (req <= L + 3 and (req >= L - 6 or (r.ilvl or 0) >= L)))
-      if keep and b.cat == "p" and req > L + 3 then keep = false end
-      if keep then r.cat = b.cat; r.ah = math.floor(b.p + 0.5); r.aht = time(); items[#items + 1] = r end
+      if not r.name then still[link] = b; left = left + 1; safe(GetItemInfo, link)
+      else
+        local req = r.req or 0
+        -- Gear: required level up to 3 above you (buy ahead), and not junk from 6+ levels ago.
+        local keep = b.cat ~= "g" or (req <= L + 3 and (req >= L - 6 or (r.ilvl or 0) >= L))
+        if keep and b.cat == "p" and req > L + 3 then keep = false end
+        if keep then r.cat = b.cat; r.ah = math.floor(b.p + 0.5); r.aht = time(); items[#items + 1] = r end
+      end
     end
+    pending = still
     -- Over the cap: keep every bag/potion/herb, then the cheapest gear.
     if #items > SHOP_MAX then
       table.sort(items, function(a, c) if (a.cat == "g") ~= (c.cat == "g") then return c.cat == "g" end return a.ah < c.ah end)
@@ -562,13 +577,21 @@ ahShopCollect = function(kind, n)
     end
     GrimoireSyncDB.ahShop = GrimoireSyncDB.ahShop or {}
     if cls then GrimoireSyncDB.ahShop[cls] = { t = time(), lvl = L, items = items } end
-    ahSay(("shopping list ready: %d items (gear, bags, potions, herbs). Type /reload to send it to the site."):format(#items))
+    dbg.tries, dbg.left, dbg.kept = tries, left, #items
+    if left > 0 and tries < 8 and C_Timer and C_Timer.After then
+      C_Timer.After(10, function()
+        local ok, err = pcall(pass2)
+        if not ok then dbg.err = tostring(err); ahSay("shopping list failed: " .. tostring(err)) end
+      end)
+    else
+      ahSay(("shopping list ready: %d items (gear, bags, potions, herbs)%s. Type /reload to send it to the site.")
+        :format(#items, left > 0 and (", " .. left .. " never loaded") or ""))
+    end
   end
-  local nCand = 0; for _ in pairs(best) do nCand = nCand + 1 end
-  GrimoireSyncDB.ahShopDbg = { t = time(), cand = nCand }
+  if nCand == 0 then ahSay("shopping list: no matching listings.") return end
   local function run()
     local ok, err = pcall(pass2)
-    if not ok then GrimoireSyncDB.ahShopDbg.err = tostring(err); ahSay("shopping list failed: " .. tostring(err)) end
+    if not ok then dbg.err = tostring(err); ahSay("shopping list failed: " .. tostring(err)) end
   end
   if C_Timer and C_Timer.After then C_Timer.After(6, run) else run() end
 end
