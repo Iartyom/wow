@@ -1451,7 +1451,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-19T14:47:44Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-19T16:23:54Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -4081,14 +4081,22 @@ function marketPlan(){
   const emptySlots = Math.max(0, 4 - bi.filter(b=>+b.bag > 0).length);
   const smallest = normal.slice().sort((a,b)=>a.size-b.size)[0];
   const bagsAH = shop.filter(x=>x.cat==="b" && x.slots && (x.req||0) <= L);
-  const target = emptySlots ? 0 : (smallest ? smallest.size : 99);
-  const bagPick = bagsAH.filter(x=>!x.soul && x.slots > target && x.ah <= Math.max(money*0.15, 2000))
-    .sort((a,b)=> b.slots-a.slots || a.ah-b.ah)[0];
-  if(bagPick){
-    const small = normal.filter(b=>b.size < bagPick.slots), n = Math.min(4, emptySlots + small.length);
-    const gain = emptySlots*bagPick.slots + small.reduce((a,b)=>a+bagPick.slots-b.size, 0);
-    const what = [emptySlots ? `${emptySlots} empty bag slot${emptySlots>1?"s":""}` : "", ...small.map(b=>`${esc(b.name||"bag")} (${b.size})`)].filter(Boolean).join(", ");
-    plan.buy.push({it:bagPick, n, kind:"bag", why:`${bagPick.slots} slots each, replaces ${what}: <b>+${gain} slots</b>`});
+  // A bag is only worth suggesting when it is a real jump: each bag it replaces must be at least 4 slots smaller,
+  // and the whole swap must cost at most 15s per extra slot (Nov 19: it told you to swap two fresh 12-slot bags for
+  // 14-slot ones at 1g 55s each, ~58s per slot). Pick: most slots gained, then cheapest.
+  let bagPick = null, best = null;
+  for(const x of bagsAH.filter(x=>!x.soul && x.ah <= Math.max(money*0.1, 2000))){
+    const repl = normal.filter(b=>b.size <= x.slots - 4).sort((a,b)=>a.size-b.size);
+    const n = Math.min(4, emptySlots + repl.length); if(!n) continue;
+    const used = repl.slice(0, n - Math.min(n, emptySlots));
+    const gain = Math.min(n, emptySlots)*x.slots + used.reduce((a,b)=>a + x.slots - b.size, 0);
+    if(gain < 4 || x.ah*n/gain > 1500) continue;
+    if(!best || gain > best.gain || (gain === best.gain && x.ah < best.it.ah)) best = {it:x, n, gain, used};
+  }
+  if(best){
+    bagPick = best.it;
+    const what = [emptySlots ? `${Math.min(best.n, emptySlots)} empty bag slot${emptySlots>1?"s":""}` : "", ...best.used.map(b=>`${esc(b.name||"bag")} (${b.size})`)].filter(Boolean).join(", ");
+    plan.buy.push({it:bagPick, n:best.n, kind:"bag", why:`${bagPick.slots} slots each, replaces ${what}: <b>+${best.gain} slots</b>`});
   }
   if(c==="wl" && soul){
     const shards = arrOf(g.bags).filter(it=>/^Soul Shard$/.test(it.name||"")).reduce((a,it)=>a+(+it.n||1),0);

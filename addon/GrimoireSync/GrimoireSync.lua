@@ -420,10 +420,11 @@ local function ahRead()
         count = count + 1
         local unit = buyout / math.max(cnt or 1, 1)
         if not mins[id] or unit < mins[id] then mins[id] = unit end
-        -- Candidate: affordable, not grey; lvl is a loose window (its meaning differs per API), pass 2 checks the real level.
-        if unit <= money and (q == nil or q >= 1) and (not lvl or lvl == 0 or (lvl <= L + 10 and lvl >= L - 12)) then
+        -- Candidate: affordable, not grey. The level window (loose: lvl means item level on the modern AH) only
+        -- applies to gear and potions; herbs and bags are low item level but still worth listing (0.9 lost them).
+        if unit <= money and (q == nil or q >= 1) then
           local cat = shopCat(id, cls)
-          if cat then
+          if cat and (cat == "b" or cat == "h" or not lvl or lvl == 0 or (lvl <= L + 10 and lvl >= L - 12)) then
             local link = modern and safe(C_AuctionHouse.GetReplicateItemLink, i) or safe(GetAuctionItemLink, "list", i)
             local key = link or ("id:" .. id)
             local c = cands[key]
@@ -568,7 +569,7 @@ end
 -- 0.8.x failed here: it gave up after one try at 6s and kept 0 of 2825. A link that never resolves now falls back
 -- to the plain item ID (loses a random-suffix name like "of the Owl", keeps the item and its price).
 -- GrimoireSyncDB.ahShopDbg records counts and one probe so a failure can be read from the file.
-local SHOP_MAX = 400   -- size cap for the saved file (it is pushed to the public repo on every sync)
+local SHOP_MAX = 400   -- trim above this (the saved file is pushed to the public repo on every sync)
 ahShopBegin = function(cands, cls, L)
   local list = {}
   for _, c in pairs(cands) do list[#list + 1] = c end
@@ -594,10 +595,21 @@ ahShopBegin = function(cands, cls, L)
     return r and r.name and r or nil
   end
   local function save()
-    -- Over the cap: keep every bag/potion/herb, then the cheapest gear.
+    -- Size caps with separate budgets, so neither crowds out the other (a big-AH test lost all gear to herbs):
+    -- gear: per slot type the 25 highest item levels (cheaper first on ties); the page scores them with your stat
+    -- weights, and keeping the cheapest instead (0.9) dropped the real upgrades. Bags/potions/herbs: the 150 cheapest.
     if #items > SHOP_MAX then
-      table.sort(items, function(a, b) if (a.cat == "g") ~= (b.cat == "g") then return b.cat == "g" end return a.ah < b.ah end)
-      for k = #items, SHOP_MAX + 1, -1 do items[k] = nil end
+      local gear, other, perLoc, keep = {}, {}, {}, {}
+      for _, r in ipairs(items) do if r.cat == "g" then gear[#gear + 1] = r else other[#other + 1] = r end end
+      table.sort(gear, function(a, b) if (a.ilvl or 0) ~= (b.ilvl or 0) then return (a.ilvl or 0) > (b.ilvl or 0) end return a.ah < b.ah end)
+      table.sort(other, function(a, b) return a.ah < b.ah end)
+      for _, r in ipairs(gear) do
+        local k = r.loc or "?"
+        perLoc[k] = (perLoc[k] or 0) + 1
+        if perLoc[k] <= 25 then keep[#keep + 1] = r end
+      end
+      for k = 1, math.min(#other, 150) do keep[#keep + 1] = other[k] end
+      items = keep
     end
     GrimoireSyncDB.ahShop = GrimoireSyncDB.ahShop or {}
     if cls then GrimoireSyncDB.ahShop[cls] = { t = time(), lvl = L, items = items } end
