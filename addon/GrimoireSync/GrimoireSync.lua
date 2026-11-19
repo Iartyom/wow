@@ -307,6 +307,8 @@ end
 -- is prefixed with "!" so the page knows what this character can't use. A right-hand column
 -- (armor type, weapon speed) follows a tab.
 local GetItemInfo = GetItemInfo or (C_Item and C_Item.GetItemInfo)
+-- Forever (1.60) only has the C_Item version of this one; without the fallback the shopping list silently did nothing.
+local GetItemInfoInstant = GetItemInfoInstant or (C_Item and C_Item.GetItemInfoInstant)
 local tip
 local tipCache = {}   -- link -> lines; item links are stable within a session
 local function tipLines(link)
@@ -396,7 +398,8 @@ local function ahFinishScan()
   if n == 0 then ahSay("the scan came back empty. Blizzard allows one full scan about every 15 minutes; try again later.") return end
   local items = ahStore(mins)
   ahDB().full = time()
-  pcall(ahShopCollect, kind, n)
+  local ok, err = pcall(ahShopCollect, kind, n)
+  if not ok then GrimoireSyncDB.ahShopDbg = { t = time(), err = tostring(err) }; ahSay("shopping list failed: " .. tostring(err)) end
   ahSay(("scanned %d auctions, %d items priced. Building your shopping list, a few seconds..."):format(n, items))
 end
 
@@ -517,7 +520,7 @@ local function shopCat(id, cls)
 end
 
 ahShopCollect = function(kind, n)
-  if not GetItemInfoInstant then return end
+  if not GetItemInfoInstant then ahSay("shopping list: this client has no GetItemInfoInstant."); return end
   local _, cls = safe(UnitClass, "player")
   local L = safe(UnitLevel, "player") or 1
   local best = {}   -- link -> { cat, price }
@@ -561,7 +564,13 @@ ahShopCollect = function(kind, n)
     if cls then GrimoireSyncDB.ahShop[cls] = { t = time(), lvl = L, items = items } end
     ahSay(("shopping list ready: %d items (gear, bags, potions, herbs). Type /reload to send it to the site."):format(#items))
   end
-  if C_Timer and C_Timer.After then C_Timer.After(6, function() pcall(pass2) end) else pcall(pass2) end
+  local nCand = 0; for _ in pairs(best) do nCand = nCand + 1 end
+  GrimoireSyncDB.ahShopDbg = { t = time(), cand = nCand }
+  local function run()
+    local ok, err = pcall(pass2)
+    if not ok then GrimoireSyncDB.ahShopDbg.err = tostring(err); ahSay("shopping list failed: " .. tostring(err)) end
+  end
+  if C_Timer and C_Timer.After then C_Timer.After(6, run) else run() end
 end
 
 -- Container API moved into C_Container in newer clients; support both shapes.
