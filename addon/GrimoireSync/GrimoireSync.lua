@@ -389,13 +389,15 @@ local function ahReadAll(kind)
   return mins, n
 end
 
+local ahShopCollect   -- assigned after itemRec (it builds full item records)
 local function ahFinishScan()
   local kind = ahScanning; ahScanning = nil
   local mins, n = ahReadAll(kind)
   if n == 0 then ahSay("the scan came back empty. Blizzard allows one full scan about every 15 minutes; try again later.") return end
   local items = ahStore(mins)
   ahDB().full = time()
-  ahSay(("scanned %d auctions, %d items priced. Type /reload to save them and send them to the site (WoW only writes addon data on /reload or logout)."):format(n, items))
+  pcall(ahShopCollect, kind, n)
+  ahSay(("scanned %d auctions, %d items priced. Building your shopping list, a few seconds..."):format(n, items))
 end
 
 local function ahStartScan()
@@ -488,6 +490,80 @@ local function itemRec(link, count, bound)
   return r
 end
 
+-- ---- AH shopping data (0.8) ----
+-- After a full scan, keep full item records (name, tooltip, icon, exact listing price) for what the page's
+-- Market card can recommend: gear this class can wear near its level (cheapest listing per exact link, so
+-- "of the Owl" and "of the Bear" stay separate), bags (tooltip says the slot count), potions and herbs.
+-- Stored per class in GrimoireSyncDB.ahShop[classFile] = { t, lvl, items = { itemRec + cat } }.
+-- Item data may not be cached yet: pass 1 picks candidates via GetItemInfoInstant (always answers) and asks
+-- the client to load them; pass 2, 6 seconds later, builds the records with tooltips.
+-- classID/subclassID: 0 Consumable (1 potion), 1 Container (0 bag, 1 soul bag), 2 Weapon, 4 Armor, 7 Tradeskill (9 herb).
+local GEAR_OK = {
+  WARLOCK = { [4] = { [0] = true, [1] = true }, [2] = { [7] = true, [10] = true, [15] = true, [19] = true } },
+  PALADIN = { [4] = { [0] = true, [1] = true, [2] = true, [3] = true, [4] = true, [6] = true, [7] = true },
+              [2] = { [0] = true, [1] = true, [4] = true, [5] = true, [6] = true, [7] = true, [8] = true } },
+}
+local SKIP_LOC = { [""] = true, INVTYPE_BODY = true, INVTYPE_TABARD = true, INVTYPE_AMMO = true, INVTYPE_QUIVER = true, INVTYPE_BAG = true }
+local SHOP_MAX = 400   -- size cap for the saved file (it is pushed to the public repo on every sync)
+
+local function shopCat(id, cls)
+  local _, _, _, loc, _, classID, subID = safe(GetItemInfoInstant, id)
+  if not classID then return end
+  if classID == 1 and (subID == 0 or subID == 1) then return "b" end
+  if classID == 0 and subID == 1 then return "p" end
+  if classID == 7 and subID == 9 then return "h" end
+  local ok = GEAR_OK[cls] and GEAR_OK[cls][classID]
+  if ok and ok[subID] and not SKIP_LOC[loc or ""] then return "g" end
+end
+
+ahShopCollect = function(kind, n)
+  if not GetItemInfoInstant then return end
+  local _, cls = safe(UnitClass, "player")
+  local L = safe(UnitLevel, "player") or 1
+  local best = {}   -- link -> { cat, price }
+  for i = (kind == "modern" and 0 or 1), (kind == "modern" and n - 1 or n) do
+    local count, buyout, id, lvl
+    if kind == "modern" then
+      local r = { safe(C_AuctionHouse.GetReplicateItemInfo, i) }; count, lvl, buyout, id = r[3], r[6], r[10], r[17]
+    else
+      local r = { safe(GetAuctionItemInfo, "list", i) }; count, lvl, buyout, id = r[3], r[6], r[10], r[17]
+    end
+    -- lvl is the listing's level field (required level on the old AH); a loose window, pass 2 checks the real one.
+    if id and buyout and buyout > 0 and (not lvl or lvl == 0 or (lvl <= L + 10 and lvl >= L - 12)) then
+      local cat = shopCat(id, cls)
+      if cat then
+        local link = kind == "modern" and safe(C_AuctionHouse.GetReplicateItemLink, i) or safe(GetAuctionItemLink, "list", i)
+        if link then
+          local unit = buyout / math.max(count or 1, 1)
+          local b = best[link]
+          if not b or unit < b.p then best[link] = { cat = cat, p = unit } end
+        end
+      end
+    end
+  end
+  for link in pairs(best) do safe(GetItemInfo, link) end   -- start loading item data for pass 2
+  local function pass2()
+    local items = {}
+    for link, b in pairs(best) do
+      local r = itemRec(link, 1)
+      local req = r.req or 0
+      -- Gear: required level up to 3 above you (buy ahead), and not junk from 6+ levels ago.
+      local keep = r.name and (b.cat ~= "g" or (req <= L + 3 and (req >= L - 6 or (r.ilvl or 0) >= L)))
+      if keep and b.cat == "p" and req > L + 3 then keep = false end
+      if keep then r.cat = b.cat; r.ah = math.floor(b.p + 0.5); r.aht = time(); items[#items + 1] = r end
+    end
+    -- Over the cap: keep every bag/potion/herb, then the cheapest gear.
+    if #items > SHOP_MAX then
+      table.sort(items, function(a, c) if (a.cat == "g") ~= (c.cat == "g") then return c.cat == "g" end return a.ah < c.ah end)
+      for i = #items, SHOP_MAX + 1, -1 do items[i] = nil end
+    end
+    GrimoireSyncDB.ahShop = GrimoireSyncDB.ahShop or {}
+    if cls then GrimoireSyncDB.ahShop[cls] = { t = time(), lvl = L, items = items } end
+    ahSay(("shopping list ready: %d items (gear, bags, potions, herbs). Type /reload to send it to the site."):format(#items))
+  end
+  if C_Timer and C_Timer.After then C_Timer.After(6, function() pcall(pass2) end) else pcall(pass2) end
+end
+
 -- Container API moved into C_Container in newer clients; support both shapes.
 local function slotInfo(bag, slot)
   if C_Container and C_Container.GetContainerItemInfo then
@@ -542,7 +618,16 @@ local function scanInventory()
   if not probed then probed = true; pcall(probe) end
   local bags = {}
   for b = 0, NUM_BAG_SLOTS or 4 do bags[#bags + 1] = b end
-  invState = { time = time(), bags = scanBags(bags), gear = scanGear() }
+  local bagInfo = {}
+  for _, b in ipairs(bags) do
+    local name = b == 0 and "Backpack" or (C_Container and C_Container.GetBagName and safe(C_Container.GetBagName, b)) or (GetBagName and safe(GetBagName, b))
+    local free, fam
+    if C_Container and C_Container.GetContainerNumFreeSlots then free, fam = safe(C_Container.GetContainerNumFreeSlots, b)
+    else free, fam = safe(GetContainerNumFreeSlots, b) end
+    local size = numSlots(b)
+    if size > 0 then bagInfo[#bagInfo + 1] = { bag = b, name = name, size = size, free = free, fam = fam } end
+  end
+  invState = { time = time(), bags = scanBags(bags), gear = scanGear(), bagInfo = bagInfo }
 end
 
 local pendingLevel -- PLAYER_LEVEL_UP passes the new level before UnitLevel updates

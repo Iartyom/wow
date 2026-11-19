@@ -398,6 +398,29 @@ kbd{font-family:var(--f-mono);font-size:.82em;background:var(--surface-2);border
 /* Beginner tips (per character): .basic blocks only show while the toggle is on. */
 body.nobasics .basic{display:none!important}
 #basicsBtn[aria-pressed=true]{border-color:var(--fel);color:var(--fel)}
+/* ---- Market ---- */
+.mhead{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:var(--s4)}
+.mpill{font-family:var(--f-mono);font-size:.75rem;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);color:var(--muted)}
+.mpill b{color:var(--fg);font-weight:600}
+.mpill.gold{border-color:rgba(214,178,94,.5);color:var(--gold)} .mpill.gold b{color:var(--gold)}
+.mpill.warn{border-color:var(--warn);color:var(--warn)}
+.mk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,21rem),1fr));gap:var(--s4);align-items:start}
+.mk .tag{margin-bottom:2px}
+.mlist{list-style:none;margin:0;padding:0}
+.mrow{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.mrow:first-child{border-top:0;padding-top:2px}
+.mrow .wi{width:34px;height:34px;border-radius:5px;border:1px solid var(--line);margin:0}
+.mnoicon{display:block;background:var(--surface-2)}
+.mtxt{min-width:0}
+.mname{font-weight:600;overflow-wrap:anywhere}
+.msub{display:block;color:var(--muted);font-size:.8rem;line-height:1.35;margin-top:1px}
+.mprice{font-family:var(--f-mono);font-size:.85rem;color:var(--wgold,var(--gold));white-space:nowrap;text-align:right}
+.mprice small{display:block;font-size:.7rem;color:var(--muted)}
+.mgain,.mtag{display:inline-block;font-family:var(--f-mono);font-size:.68rem;padding:0 6px;border-radius:999px;margin-left:6px;vertical-align:1px}
+.mgain{background:rgba(155,212,74,.14);color:#9bd44a}
+.mtag.best{background:rgba(214,178,94,.16);color:var(--gold)}
+.mtag.later{background:rgba(165,127,224,.16);color:var(--void)}
+.mfoot{margin:6px 0 0;padding-top:8px;border-top:1px dashed var(--line);font-size:.85rem}
 /* ---- Road ahead timeline ---- */
 .ahead{list-style:none;margin:0;padding:0;display:grid;gap:4px}
 .ahead>li{display:grid;grid-template-columns:3.4rem minmax(0,1fr);gap:var(--s3);padding:6px 10px;border-left:3px solid var(--line);border-radius:3px}
@@ -722,7 +745,7 @@ section:not(.fold) .foldwhy{display:none}
   </div>
   <div class="wrap">
     <nav class="toc" aria-label="Sections">
-      <a href="#newbie" data-only="pal">Start here</a><a href="#now">Now</a><a href="#game">From the game</a><a href="#items">Item worth</a><a href="#kit">Your kit</a><a href="#questlog">Quest log</a><a href="#rotation">Your spec</a><a href="#training" data-only="wl">Talents &amp; trainer</a><a href="#ahead">Road ahead</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
+      <a href="#newbie" data-only="pal">Start here</a><a href="#now">Now</a><a href="#market">Market</a><a href="#game">From the game</a><a href="#items">Item worth</a><a href="#kit">Your kit</a><a href="#questlog">Quest log</a><a href="#rotation">Your spec</a><a href="#training" data-only="wl">Talents &amp; trainer</a><a href="#ahead">Road ahead</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
     </nav>
     <div class="foldall"><button type="button" class="foldbtn" data-foldall="auto">Show only what matters now</button><button type="button" class="foldbtn" data-foldall="open">Open everything</button><button type="button" class="foldbtn" id="basicsBtn" aria-pressed="false">Beginner tips</button><span class="updline" id="updated"></span></div>
   </div>
@@ -873,6 +896,15 @@ section:not(.fold) .foldwhy{display:none}
   <div class="wrap">
     <header><p class="eyebrow">Right now</p><h2>Do next</h2><p id="nowSum"></p></header>
     <ol class="nowlist" id="nowBody"></ol>
+  </div>
+</section>
+
+<!-- Market: buy / sell / swap from the addon's AH scan (renderMarket). -->
+<section id="market">
+  <div class="wrap">
+    <header><p class="eyebrow">Auction House</p><h2>Market</h2><p class="basic">From your own AH scan: gear upgrades worth buying, bags and potions to stock, what to list, and the cheapest way to level Alchemy.</p></header>
+    <div class="mhead" id="marketHead"></div>
+    <div class="mk-grid" id="marketBody"></div>
   </div>
 </section>
 
@@ -1419,7 +1451,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-19T14:03:26Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-19T14:47:44Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -1711,16 +1743,21 @@ function parseLuaSV(s){
 // Merge an addon file into the matching characters' states. The addon keeps one snapshot per class
 // (GrimoireSyncDB.byClass) plus `last`; older files only have `last` (no class = the warlock).
 // Returns a message for the import line.
+// Every AH price from the addon scan (itemID -> copper per unit); declared here because applyGame fills it.
+let AH_P = {};
 function applyGame(sv, source){
   const db = sv && sv.GrimoireSyncDB;
   const snaps = {...((db && db.byClass) || {})};
   const last = db && db.last;
   if(last && last.level){ const k = last.class || "WARLOCK"; if(!snaps[k] || (+last.time||0) > (+snaps[k].time||0)) snaps[k] = last; }
+  if(db && db.ah && db.ah.p) AH_P = Object.fromEntries(Object.entries(db.ah.p).map(([k,v])=>[+k, +v]));
   const msgs = []; let matched = 0;
   for(const [c,def] of Object.entries(CHARS)){
     let s = snaps[def.cls]; if(!s || !s.level) continue;
     matched++;
     const bank = db.bank && db.bank[def.cls]; if(bank && !s.bank) s = {...s, bank};
+    // AH (addon 0.7+): prices are account-wide; the shopping records are per class (0.8).
+    const shop = db.ahShop && db.ahShop[def.cls]; if(shop) s = {...s, ahShop: shop};
     const m = applySnap(c, s, source); if(m) msgs.push(`${def.label}: ${m}`);
   }
   if(!matched) throw new Error("This file has no Warlock or Paladin snapshot yet. Log in with the addon enabled, then log out or /reload.");
@@ -1749,7 +1786,9 @@ function applySnap(c, s, source){
     bank: bank ? {time:+bank.time||0, items:compactList(bank.items)} : null, addonTime:+s.time||0,
     addonGear: inv ? gear : null,
     // addon 0.4+: where you stood, NPCs you talked to. 0.5+: skill caps and recipes from profession windows.
-    ahInfo: objOrNull(s.ahInfo), pos: objOrNull(s.pos), npcs: objOrNull(s.npcs), profMax: objOrNull(s.profMax), crafts: objOrNull(s.crafts), qlog: objOrNull(s.qlog)};
+    ahInfo: objOrNull(s.ahInfo),
+    ahShop: objOrNull(s.ahShop) ? {t:+s.ahShop.t||0, items:compactList(s.ahShop.items)} : null,
+    bagInfo: inv && inv.bagInfo ? arrOf(inv.bagInfo).map(b=>({bag:+b.bag, name:b.name||"", size:+b.size||0, free:+b.free||0, fam:+b.fam||0})) : null, pos: objOrNull(s.pos), npcs: objOrNull(s.npcs), profMax: objOrNull(s.profMax), crafts: objOrNull(s.crafts), qlog: objOrNull(s.qlog)};
   // 0.2+ files keep the character name in `who` (items use `name`); older files used `name`.
   const who = s.who || (!inv && s.name); if(who) st.charName = String(who);
   st.level = Math.max(1, Math.min(60, Math.round(s.level)));
@@ -2074,7 +2113,13 @@ function compactItem(r){
   const p = parseTip(r.tip);
   return {id:+r.id, name:r.name||("Item "+r.id), q:(r.q==null?1:+r.q), ilvl:+r.ilvl||0, req:+r.req||0, type:r.type||"", sub:r.sub||"",
     loc:r.loc||"", sell:+r.sell||0, ah:r.ah?+r.ah:0, aht:+r.aht||0, n:+r.n||1, bound:!!r.bound, bag:r.bag??null,
-    st:p.st, un:p.unusable, bop:p.bop, quest:p.quest, cls:p.classes, tex:+r.tex||0};
+    st:p.st, un:p.unusable, bop:p.bop, quest:p.quest, cls:p.classes, tex:+r.tex||0, ...bagMeta(r)};
+}
+// Addon 0.8 shop records: category (g/b/p/h) plus, for bags, slots from the "10 Slot Bag" tooltip line.
+function bagMeta(r){
+  if(!r.cat) return {};
+  const tt = (Array.isArray(r.tip)?r.tip:Object.values(r.tip||{})).join("\n"), m = /(\d+) Slot (Soul )?(Bag|Pouch|Box)?/i.exec(tt);
+  return {cat:r.cat, slots: m ? +m[1] : 0, soul: /Soul/i.test(m ? m[0] : "") || /Soul Shards? only/i.test(tt)};
 }
 function compactList(a){ return (Array.isArray(a)?a:Object.values(a||{})).map(compactItem).filter(Boolean); }
 
@@ -3996,6 +4041,135 @@ function renderTraining(){
     + (known ? (missing.length ? `<br><b style="color:var(--warn)">Not learned yet (${missing.length}):</b> ${missing.join(", ")}. Visit your trainer.` : `<br><b>From the game:</b> everything up to your level is learned.`) : "");
 }
 
+/* ---- Market: what to buy, sell and swap, from the addon's own AH scan ----
+   Inputs: AH_P (every price from GrimoireSyncDB.ah, account-wide), g.ahShop (0.8: full records of gear your class
+   can wear near your level, bags, potions, herbs, each with its cheapest listing), g.bagInfo (bag sizes),
+   g.crafts.Alchemy (recipes + reagents). Output: four cards in #marketBody and a summary for the Now list. */
+const REAGENT_NAME = {765:"Silverleaf",785:"Mageroyal",2447:"Peacebloom",2449:"Earthroot",2450:"Briarthorn",2452:"Swiftthistle",
+  2453:"Bruiseweed",3355:"Wild Steelbloom",3356:"Kingsblood",3357:"Liferoot",3369:"Grave Moss",3820:"Stranglekelp",3818:"Fadeleaf",
+  3821:"Goldthorn",3358:"Khadgar's Whisker",3371:"Empty Vial",3372:"Leaded Vial",8925:"Crystal Vial",6370:"Blackmouth Oil",6371:"Fire Oil"};
+function reagentName(x, g){
+  const id = +x.id, pools = [arrOf(g.bags), arrOf(g.ahShop && g.ahShop.items), arrOf(g.bank && g.bank.items)];
+  for(const pool of pools){ const it = pool.find(y=>y.id===id); if(it && it.name) return it.name; }
+  return x.name || REAGENT_NAME[id] || "item "+id;
+}
+const VENDOR_REAGENT = {3371: 4, 3372: 40, 8925: 1800};   // vials are sold by alchemy vendors; AH may be dearer
+function mPrice(id){ const a = AH_P[id], v = VENDOR_REAGENT[id]; return a && v ? Math.min(a, v) : (a || v || 0); }
+// One recommendation row: icon, coloured name, reason line, price on the right.
+function mRow(it, sub, price, extra = ""){
+  if(it.tex) texById[it.id] = it.tex;
+  return `<li class="mrow">${itemIcon(it.id) || `<span class="wi ii mnoicon"></span>`}<div class="mtxt"><span class="mname" style="color:${QCOL[it.q]||"var(--fg)"}">${esc(it.name||("Item "+it.id))}</span>${extra}<span class="msub">${sub}</span></div><span class="mprice">${price}</span></li>`;
+}
+function marketPlan(){
+  const g = state.game; if(!g) return null;
+  const c = CHAR, L = g.level || state.level, money = +g.money || 0;
+  const shop = arrOf(g.ahShop && g.ahShop.items);
+  const plan = {gear:[], buy:[], sell:[], alch:null, cost:0};
+  // 1. Gear: best upgrade per slot (ties go to the cheaper one), biggest gain first.
+  const perSlot = {};
+  for(const it of shop.filter(x=>x.cat==="g")){
+    const gain = upgradeFor(it, c); if(!(gain > 0.5)) continue;
+    const slot = (LOC_SLOTS[it.loc]||[])[0], cur = perSlot[slot];
+    if(!cur || gain > cur.gain + 0.5 || (Math.abs(gain-cur.gain) <= 0.5 && it.ah < cur.it.ah)) perSlot[slot] = {it, gain, slot};
+  }
+  plan.gear = Object.values(perSlot).sort((a,b)=>b.gain-a.gain).slice(0, 8);
+  // "Best value" = most points per gold among the ones you can wear now.
+  const now = plan.gear.filter(x=>(x.it.req||0) <= L);
+  if(now.length) now.reduce((a,b)=> b.gain/Math.max(b.it.ah,100) > a.gain/Math.max(a.it.ah,100) ? b : a).best = true;
+  // 2. Bags: replace the smallest normal bag (or fill an empty bag slot) with the most slots per gold you can afford.
+  const bi = arrOf(g.bagInfo), normal = bi.filter(b=>!+b.fam && +b.bag > 0), soul = bi.find(b=>+b.fam);
+  const emptySlots = Math.max(0, 4 - bi.filter(b=>+b.bag > 0).length);
+  const smallest = normal.slice().sort((a,b)=>a.size-b.size)[0];
+  const bagsAH = shop.filter(x=>x.cat==="b" && x.slots && (x.req||0) <= L);
+  const target = emptySlots ? 0 : (smallest ? smallest.size : 99);
+  const bagPick = bagsAH.filter(x=>!x.soul && x.slots > target && x.ah <= Math.max(money*0.15, 2000))
+    .sort((a,b)=> b.slots-a.slots || a.ah-b.ah)[0];
+  if(bagPick){
+    const small = normal.filter(b=>b.size < bagPick.slots), n = Math.min(4, emptySlots + small.length);
+    const gain = emptySlots*bagPick.slots + small.reduce((a,b)=>a+bagPick.slots-b.size, 0);
+    const what = [emptySlots ? `${emptySlots} empty bag slot${emptySlots>1?"s":""}` : "", ...small.map(b=>`${esc(b.name||"bag")} (${b.size})`)].filter(Boolean).join(", ");
+    plan.buy.push({it:bagPick, n, kind:"bag", why:`${bagPick.slots} slots each, replaces ${what}: <b>+${gain} slots</b>`});
+  }
+  if(c==="wl" && soul){
+    const shards = arrOf(g.bags).filter(it=>/^Soul Shard$/.test(it.name||"")).reduce((a,it)=>a+(+it.n||1),0);
+    const sp = bagsAH.filter(x=>x.soul && x.slots > soul.size && x.ah <= money*0.3).sort((a,b)=>a.ah-b.ah)[0];
+    if(sp && shards >= soul.size - 2) plan.buy.push({it:sp, n:1, kind:"bag", why:`your soul bag is nearly full (${shards}/${soul.size}): +${sp.slots-soul.size} shard slots`});
+  }
+  // 3. Potions: strongest healing and mana potion you can use, 5 of each.
+  for(const re of [/Healing Potion$/, /Mana Potion$/]){
+    const p = shop.filter(x=>x.cat==="p" && re.test(x.name||"") && (x.req||0) <= L).sort((a,b)=>(b.req||0)-(a.req||0) || a.ah-b.ah)[0];
+    if(p) plan.buy.push({it:p, n:5, kind:"pot", why:`strongest you can drink now, for elites and dungeons`});
+  }
+  // 4. Alchemy: cheapest guaranteed skill-up (orange), else cheapest yellow; capped skill = train first.
+  const al = g.crafts && g.crafts.Alchemy, rank = +((g.profs||{}).Alchemy) || 0;
+  if(al && rank){
+    const max = +al.max || 0;
+    const recs = arrOf(al.list).filter(r=>r.d==="o" || r.d==="y").map(r=>{
+      const rg = arrOf(r.r); let cost = 0, ok = true;
+      for(const x of rg){ const p = mPrice(+x.id); if(!p) ok = false; cost += p*(+x.n||1); }
+      return ok ? {name:r.name, d:r.d, cost, rg} : null;
+    }).filter(Boolean).sort((a,b)=>(a.d==="o"?0:1)-(b.d==="o"?0:1) || a.cost-b.cost);
+    plan.alch = {rank, max, best: recs[0] || null, capped: max && rank >= max};
+  }
+  // 5. Sell: bag items the AH beats the vendor on (the verdict already does the maths), minus herbs Alchemy needs.
+  const alchIds = new Set(plan.alch && plan.alch.best ? plan.alch.best.rg.map(x=>+x.id) : []);
+  plan.sell = arrOf(g.bags).map(it=>({it, v:verdict(it)})).filter(x=>x.v.k==="ah" && !(plan.alch && !plan.alch.capped && alchIds.has(x.it.id)));
+  plan.cost = plan.buy.reduce((a,b)=>a+b.it.ah*b.n, 0);
+  return plan;
+}
+function renderMarket(){
+  const box = $("#marketBody"), head = $("#marketHead"); if(!box) return;
+  const g = state.game, info = g && g.ahInfo;
+  if(!g || !info || !info.n){
+    head.innerHTML = "";
+    box.innerHTML = `<article class="card mk-empty"><span class="tag">No auction data yet</span><ol class="rot"><li>In game, open the Auction House.</li><li>Type <code>/grimoire scan</code> and keep the window open until chat says the shopping list is ready.</li><li>Type <code>/reload</code>. The site updates a minute later.</li></ol><p class="muted">Read-only: the addon only reads the listings Blizzard shows you. It never buys or posts anything.</p></article>`;
+    return;
+  }
+  const p = marketPlan(), L = g.level || state.level, money = +g.money || 0;
+  const hasShop = !!(g.ahShop && arrOf(g.ahShop.items).length);
+  const old = info.full && Date.now()/1000 - info.full > 2*86400;
+  head.innerHTML = `<span class="mpill">${(+info.n).toLocaleString()} prices</span><span class="mpill${old?" warn":""}">scanned ${esc(ago(info.full||info.t))}${old?" · rescan":""}</span><span class="mpill">you have <b>${fmtCoin(money)}</b></span>`+
+    (p.cost ? `<span class="mpill gold">shopping list <b>${fmtCoin(p.cost)}</b></span>` : "");
+  const card = (tag, rows, empty, foot = "") => `<article class="card mk"><span class="tag">${tag}</span>${rows.length ? `<ul class="mlist">${rows.join("")}</ul>` : `<p class="muted">${empty}</p>`}${foot}</article>`;
+  const need = hasShop ? "" : ` <span class="muted">Needs addon 0.8: run <code>/grimoire scan</code> once more.</span>`;
+  const gearRows = p.gear.map(({it, gain, slot, best})=>{
+    const cur = g.gear && g.gear[String(slot)];
+    const later = (it.req||0) > L ? `<span class="mtag later">at ${it.req}</span>` : "";
+    return mRow(it, `${esc(SLOT_NAMES[slot]||"")} · replaces ${cur ? esc(cur.name) : "an empty slot"}`, fmtCoin(it.ah),
+      `<span class="mgain">+${gain} pts</span>${best?`<span class="mtag best">best value</span>`:""}${later}`);
+  });
+  const buyRows = p.buy.map(b=>mRow(b.it, b.why, b.n>1 ? `${b.n} × ${fmtCoin(b.it.ah)}<small>${fmtCoin(b.it.ah*b.n)}</small>` : fmtCoin(b.it.ah)));
+  const sellTotal = p.sell.reduce((a,x)=>a+(x.v.val||0), 0);
+  const sellRows = p.sell.map(({it, v})=>mRow(it, `${it.n>1?`${it.n} × ${fmtCoin(ahOf(it))} · `:""}vendor pays ${fmtCoin(it.sell*it.n)}`, `+${fmtCoin(v.val)}`));
+  let alch = "";
+  if(p.alch){
+    const a = p.alch, b = a.best, left = Math.max(0, a.max - a.rank);
+    const reag = b ? b.rg.map(x=>`${+x.n||1} ${esc(reagentName(x, g))}`).join(" + ") : "";
+    alch = `<article class="card mk"><span class="tag">Alchemy · ${a.rank}/${a.max}</span>`+
+      (a.capped ? `<p><b>Capped.</b> Train the next Alchemy rank at a trainer (Undercity, Apothecarium) before buying herbs. Alchemy 150 earns a Legacy point.</p>`
+      : b ? `<p>Cheapest ${b.d==="o"?"<b>guaranteed</b>":"likely"} skill-up: <b>${esc(b.name)}</b> (${reag}), about <b>${fmtCoin(b.cost)}</b> each.</p><p class="muted">${left} points to the cap of ${a.max}: roughly ${fmtCoin(b.cost*left*(b.d==="o"?1:1.6))} at today's prices. Alchemy 150 earns a Legacy point; craft for skill, not to sell, since potions sell for copper here.</p>`
+      : `<p class="muted">No priced skill-up recipe: open your Alchemy window once so the addon reads your recipes.</p>`)+`</article>`;
+  }
+  box.innerHTML =
+    card(`Gear upgrades on the AH`, gearRows, (hasShop ? "Nothing on the AH beats your gear right now." : "No gear data yet.") + need,
+      gearRows.length ? `<p class="muted mfoot">Points use your stat weights (Item worth). Cheapest listing of that exact item; check it in game before buying.</p>` : "")+
+    card(`Shopping list`, buyRows, (hasShop ? "Nothing you need right now." : "No bag or potion data yet.") + need,
+      p.cost ? `<p class="mfoot">Total <b>${fmtCoin(p.cost)}</b> of your ${fmtCoin(money)}.</p>` : "")+
+    card(`Sell on the AH`, sellRows, `Nothing in your bags sells for clearly more than a vendor pays. Vendor the rest.`,
+      sellRows.length ? `<p class="mfoot">About <b>${fmtCoin(sellTotal)}</b> after the 5% cut and listing fees.</p>` : "")+
+    alch;
+}
+// Now-list line: the single most useful market action.
+function marketNow(){
+  const p = marketPlan(); if(!p || !(state.game && state.game.ahInfo && state.game.ahInfo.n)) return "";
+  const bits = [];
+  const g0 = p.gear.find(x=>x.best) || p.gear.find(x=>(x.it.req||0) <= ((state.game.level)||state.level));
+  if(g0) bits.push(`<b>${esc(g0.it.name)}</b> (+${g0.gain} pts, ${fmtCoin(g0.it.ah)})`);
+  const bag = p.buy.find(b=>b.kind==="bag"); if(bag) bits.push(`<b>${esc(bag.it.name)}</b> (${fmtCoin(bag.it.ah)})`);
+  if(p.sell.length) bits.push(`sell ${p.sell.length} item${p.sell.length>1?"s":""} on the AH`);
+  return bits.length ? `Buy ${bits.filter(b=>!b.startsWith("sell")).join(" and ") || "nothing"}${p.sell.length?`; ${bits[bits.length-1]}`:""}. <a href="#market">market</a>` : "";
+}
+
 /* ---- Road ahead ----
    One timeline for the next ~10 levels: trainer visits, talent rows, class quests and milestones,
    dungeons opening up, new zone brackets. Pulls from TRAIN_WL / TALENTS_WL / CHECKS / DUNGEONS / ROUTE,
@@ -4107,6 +4281,7 @@ function renderNow(){
   const cq = CHARS[CHAR].checks.flatMap(gr=>gr.items).find(([id, label])=>{ const lv = lvlOf(label); return lv != null && lv <= L + 4 && !state.checks[id]; });
   if(cq) add(6, "Class quest", `${esc(cq[1])} <a href="#quests">details</a>`);
   if(typeof profNeedsYou === "function" && profNeedsYou()) add(7, "Professions", `A profession needs you: capped skill or skill-ups to craft. <a href="#extras">helper</a>`);
+  const mk = marketNow(); if(mk) add(4.5, "Market", mk);
   if(CHAR==="wl" && L >= 25) add(8, "Legacy", `Unlocked at 25: open the Legacy screen. Suggested start: <b>Thrill of Adventure</b>, then Well Rested, then Frequent Flier if you can reach it. <a href="#extras">build</a>`);
 
   items.sort((a,b)=>a.p-b.p);
@@ -4337,6 +4512,7 @@ const lvlOf = label => { const m = /level (\d+)/i.exec(label); return m ? +m[1] 
 const FOLD_RULES = {
   newbie:  L => [L < 20 && basicsOn(), basicsOn() ? "for your first levels" : "beginner tips are off"],
   now:     () => [true, ""],
+  market:  () => [true, ""],
   game:    () => [true, ""],
   // The Armory card mostly repeats "From the game"; only worth opening when it's the fresher source.
   armory:  () => { const a = armory[CHARS[CHAR].cls]; if(!a) return [false, "no Armory data"];
@@ -4407,7 +4583,7 @@ document.addEventListener("click", e => {
   if(sec && sec.classList.contains("fold")) setFold(id, true);
 });
 
-function renderAll(){ renderBar(); renderGame(); renderArmory(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderCombat(); renderAhead(); renderItems(); renderProfs(); renderQuestLog(); renderNow();
+function renderAll(){ renderBar(); renderGame(); renderArmory(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderCombat(); renderAhead(); renderItems(); renderMarket(); renderProfs(); renderQuestLog(); renderNow();
   const nb=$("#notesBox"); if(document.activeElement!==nb) nb.value = state.notes||"";
   applyFolds(); }
 
@@ -4500,7 +4676,7 @@ function setChar(c){
 document.querySelectorAll(".charsw button").forEach(b=>b.addEventListener("click", ()=>setChar(b.dataset.char)));
 
 // ---------- events ----------
-$("#level").addEventListener("input", e=>{ state.level=+e.target.value; followLevel(); renderBar(); renderRoute(); renderDungeons(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderCombat(); renderAhead(); renderItems(); renderNow(); applyFolds(); scheduleSave(); });
+$("#level").addEventListener("input", e=>{ state.level=+e.target.value; followLevel(); renderBar(); renderRoute(); renderDungeons(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderCombat(); renderAhead(); renderItems(); renderMarket(); renderNow(); applyFolds(); scheduleSave(); });
 document.addEventListener("change", e=>{
   if(e.target.id==="svFile"){ const f=e.target.files[0]; if(f) importFile(f); e.target.value=""; return; }
   const id = e.target && e.target.dataset && e.target.dataset.id; if(!id) return;
