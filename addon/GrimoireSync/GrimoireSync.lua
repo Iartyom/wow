@@ -337,14 +337,18 @@ local function tipLines(link)
   return out
 end
 
--- ---- Auction House prices (0.7) ----
--- GrimoireSyncDB.ah = { full = time of last full scan, t = last update, n = items priced,
+-- ---- Auction House prices (0.7; scan reworked in 0.9) ----
+-- GrimoireSyncDB.ah = { full = time of last full scan, t = last update, n = items priced, listings,
 --                       p = { [itemID] = lowest buyout per unit, copper }, at = { [itemID] = when that price was seen } }
 -- READ-ONLY by design: it only reads listings Blizzard already sends to the AH window. Nothing here bids,
--- buys, posts or cancels (those need a hardware click anyway). Two sources:
---   1. /grimoire scan with the AH open: Blizzard's own full-scan call (ReplicateItems on the modern AH,
---      QueryAuctionItems getAll on the old one). The server throttles it to about once per 15 min.
---   2. Passive: whatever you browse or search in the AH window is recorded too.
+-- buys, posts or cancels (those need a hardware click anyway).
+-- How the full scan works, and why (sources: warcraft.wiki.gg C_AuctionHouse.ReplicateItems / GetReplicateItemInfo,
+-- and forever-crafter's Scanner.lua, an addon written for this same Forever client):
+--   * ReplicateItems() is throttled to one successful call per 15 min, account-wide.
+--   * REPLICATE_ITEM_LIST_UPDATE can arrive in parts, so reading starts 2s after the LAST one (0.7-0.8 read on the first).
+--   * Listings are read 2000 per frame (C_Timer.After(0)) so a big AH doesn't freeze the game.
+--   * Index base isn't documented for Forever: read 0..n and skip empty slots.
+--   * Only count/buyout/itemID are reliable right away; names load later (handled by the shopping pass below itemRec).
 local function ahDB()
   GrimoireSyncDB.ah = GrimoireSyncDB.ah or {}
   local db = GrimoireSyncDB.ah
@@ -367,64 +371,108 @@ local function ahMin(mins, id, total, count)
   local u = total / math.max(count or 1, 1)
   if not mins[id] or u < mins[id] then mins[id] = u end
 end
-
-local ahOpen, ahScanning = false, nil   -- ahScanning = "modern" | "classic" while a full scan is pending
 local function ahSay(msg) print("|cff8fdc5aGrimoire Sync|r " .. msg) end
 
--- Full-scan results: both APIs return the same fields (count 3rd, buyout 10th, itemID 17th).
--- Modern indexes from 0, the old "list" API from 1.
-local function ahReadAll(kind)
-  local mins, n = {}, 0
-  if kind == "modern" then
-    n = safe(C_AuctionHouse.GetNumReplicateItems) or 0
-    for i = 0, n - 1 do
-      local _, _, count, _, _, _, _, _, _, buyout, _, _, _, _, _, _, id = safe(C_AuctionHouse.GetReplicateItemInfo, i)
-      ahMin(mins, id, buyout, count)
-    end
-  else
-    n = safe(GetNumAuctionItems, "list") or 0
-    for i = 1, n do
-      local _, _, count, _, _, _, _, _, _, buyout, _, _, _, _, _, _, id = safe(GetAuctionItemInfo, "list", i)
-      ahMin(mins, id, buyout, count)
-    end
-  end
-  return mins, n
+-- Shopping candidates: what the Market card can recommend. classID/subclassID (Classic numbering, GetItemInfoInstant):
+-- 0 Consumable (1 potion), 1 Container (0 bag, 1 soul bag), 2 Weapon, 4 Armor, 7 Tradeskill (9 herb).
+local GEAR_OK = {
+  WARLOCK = { [4] = { [0] = true, [1] = true }, [2] = { [7] = true, [10] = true, [15] = true, [19] = true } },
+  PALADIN = { [4] = { [0] = true, [1] = true, [2] = true, [3] = true, [4] = true, [6] = true, [7] = true },
+              [2] = { [0] = true, [1] = true, [4] = true, [5] = true, [6] = true, [7] = true, [8] = true } },
+}
+local SKIP_LOC = { [""] = true, INVTYPE_BODY = true, INVTYPE_TABARD = true, INVTYPE_AMMO = true, INVTYPE_QUIVER = true, INVTYPE_BAG = true }
+local function shopCat(id, cls)
+  if not GetItemInfoInstant then return end
+  local _, _, _, loc, _, classID, subID = safe(GetItemInfoInstant, id)
+  if not classID then return end
+  if classID == 1 and (subID == 0 or subID == 1) then return "b" end
+  if classID == 0 and subID == 1 then return "p" end
+  if classID == 7 and subID == 9 then return "h" end
+  local ok = GEAR_OK[cls] and GEAR_OK[cls][classID]
+  if ok and ok[subID] and not SKIP_LOC[loc or ""] then return "g" end
 end
 
-local ahShopCollect   -- assigned after itemRec (it builds full item records)
-local function ahFinishScan()
-  local kind = ahScanning; ahScanning = nil
-  local mins, n = ahReadAll(kind)
-  if n == 0 then ahSay("the scan came back empty. Blizzard allows one full scan about every 15 minutes; try again later.") return end
-  local items = ahStore(mins)
-  ahDB().full = time()
-  local ok, err = pcall(ahShopCollect, kind, n)
-  if not ok then GrimoireSyncDB.ahShopDbg = { t = time(), err = tostring(err) }; ahSay("shopping list failed: " .. tostring(err)) end
-  ahSay(("scanned %d auctions, %d items priced. Prices saved."):format(n, items))
+local ahOpen, ahState, ahKind, ahUpdates = false, "idle", nil, 0   -- ahState: idle | waiting | reading
+local ahShopBegin   -- assigned after itemRec: turns candidates into full item records
+local AH_BATCH = 2000
+
+-- Reads the whole result list in batches: prices for every item + shopping candidates, then hands off.
+local function ahRead()
+  if ahState ~= "waiting" then return end
+  ahState = "reading"
+  local modern = ahKind == "modern"
+  local total = modern and (safe(C_AuctionHouse.GetNumReplicateItems) or 0) or (safe(GetNumAuctionItems, "list") or 0)
+  if total <= 0 then ahState = "idle"; ahSay("the scan came back empty (the 15-minute limit, most likely). Try again later.") return end
+  local _, cls = safe(UnitClass, "player")
+  local L = safe(UnitLevel, "player") or 1
+  local money = math.max(safe(GetMoney) or 0, 10000)
+  local mins, cands, count = {}, {}, 0
+  local i, last = (modern and 0 or 1), total
+  ahSay(("reading %d auctions..."):format(total))
+  local function step()
+    if not ahOpen then ahState = "idle"; ahSay("AH closed before the scan finished; nothing saved. Scan again in 15 min.") return end
+    local stop = math.min(i + AH_BATCH - 1, last)
+    while i <= stop do
+      local r
+      if modern then r = { safe(C_AuctionHouse.GetReplicateItemInfo, i) } else r = { safe(GetAuctionItemInfo, "list", i) } end
+      local cnt, q, lvl, buyout, id = r[3], r[4], r[6], r[10], r[17]
+      if id and buyout and buyout > 0 then
+        count = count + 1
+        local unit = buyout / math.max(cnt or 1, 1)
+        if not mins[id] or unit < mins[id] then mins[id] = unit end
+        -- Candidate: affordable, not grey; lvl is a loose window (its meaning differs per API), pass 2 checks the real level.
+        if unit <= money and (q == nil or q >= 1) and (not lvl or lvl == 0 or (lvl <= L + 10 and lvl >= L - 12)) then
+          local cat = shopCat(id, cls)
+          if cat then
+            local link = modern and safe(C_AuctionHouse.GetReplicateItemLink, i) or safe(GetAuctionItemLink, "list", i)
+            local key = link or ("id:" .. id)
+            local c = cands[key]
+            if not c or unit < c.p then cands[key] = { id = id, link = link, cat = cat, p = unit } end
+          end
+        end
+      end
+      i = i + 1
+    end
+    if i <= last then C_Timer.After(0, function() local ok, err = pcall(step) if not ok then ahState = "idle"; ahSay("scan failed: " .. tostring(err)) end end) return end
+    ahState = "idle"
+    local items = ahStore(mins)
+    local db = ahDB(); db.full = time(); db.listings = count
+    ahSay(("scanned %d auctions, %d items priced."):format(count, items))
+    if ahShopBegin then
+      local ok, err = pcall(ahShopBegin, cands, cls, L)
+      if not ok then GrimoireSyncDB.ahShopDbg = { t = time(), err = tostring(err) }; ahSay("shopping list failed: " .. tostring(err)) end
+    end
+  end
+  local ok, err = pcall(step)
+  if not ok then ahState = "idle"; ahSay("scan failed: " .. tostring(err)) end
 end
 
 local function ahStartScan()
   if not ahOpen then ahSay("open the Auction House first, then type /grimoire scan.") return end
-  if ahScanning then ahSay("a scan is already running.") return end
+  if ahState ~= "idle" then ahSay("a scan is already running.") return end
+  if not (C_Timer and C_Timer.After) then ahSay("this client has no C_Timer; full scan not supported.") return end
   if C_AuctionHouse and C_AuctionHouse.ReplicateItems then
-    ahScanning = "modern"
-    if not pcall(C_AuctionHouse.ReplicateItems) then ahScanning = nil; ahSay("this client refused the full scan.") return end
+    ahKind = "modern"
+    if not pcall(C_AuctionHouse.ReplicateItems) then ahSay("this client refused the full scan.") return end
   elseif QueryAuctionItems and CanSendAuctionQuery then
     local _, canAll = safe(CanSendAuctionQuery)
-    if not canAll then ahSay("full scan is on cooldown (Blizzard allows one about every 15 minutes). Browsing still records prices.") return end
-    ahScanning = "classic"
-    if not pcall(QueryAuctionItems, "", nil, nil, 0, nil, nil, true) then ahScanning = nil; ahSay("this client refused the full scan.") return end
+    if not canAll then ahSay("full scan is on cooldown (one every 15 minutes). Browsing still records prices.") return end
+    ahKind = "classic"
+    if not pcall(QueryAuctionItems, "", nil, nil, 0, nil, nil, true) then ahSay("this client refused the full scan.") return end
   else
     ahSay("this client has no full-scan API. Prices from what you browse are still recorded.") return
   end
-  ahSay("scanning the Auction House, keep the window open (can take up to a minute)...")
-  -- No answer at all usually means the server throttle: give up quietly after 90s.
-  if C_Timer and C_Timer.After then
-    C_Timer.After(90, function() if ahScanning then ahScanning = nil; ahSay("no answer from the AH, probably the 15-minute limit. Try again later.") end end)
-  end
+  ahState, ahUpdates = "waiting", 0
+  ahSay("scan requested. Keep the Auction House open until it says done (up to a minute).")
+  -- No update at all within 60s: read whatever is there, or report the throttle.
+  C_Timer.After(60, function()
+    if ahState ~= "waiting" then return end
+    local n = ahKind == "modern" and (safe(C_AuctionHouse.GetNumReplicateItems) or 0) or 0
+    if n > 0 then ahRead() else ahState = "idle"; ahSay("no answer from the AH, probably the 15-minute limit. Try again later.") end
+  end)
 end
 
--- Passive capture from normal browsing/searching on the modern AH.
+-- Passive capture from normal browsing/searching on the modern AH (only when no full scan is running).
 local function ahBrowse()
   local res = safe(C_AuctionHouse.GetBrowseResults); if type(res) ~= "table" then return end
   local mins = {}
@@ -448,19 +496,36 @@ local function ahItemSearch(key)
   end
   if best then ahStore({ [key.itemID] = best }) end
 end
+local function ahClassicPage()
+  local mins = {}
+  for i = 1, safe(GetNumAuctionItems, "list") or 0 do
+    local _, _, count, _, _, _, _, _, _, buyout, _, _, _, _, _, _, id = safe(GetAuctionItemInfo, "list", i)
+    ahMin(mins, id, buyout, count)
+  end
+  ahStore(mins)
+end
 
 local AH_EVENTS = { REPLICATE_ITEM_LIST_UPDATE = true, AUCTION_ITEM_LIST_UPDATE = true,
                     AUCTION_HOUSE_BROWSE_RESULTS_UPDATED = true, AUCTION_HOUSE_BROWSE_RESULTS_ADDED = true,
                     COMMODITY_SEARCH_RESULTS_UPDATED = true, ITEM_SEARCH_RESULTS_UPDATED = true }
 local function ahEvent(event, arg1)
   if event == "AUCTION_HOUSE_SHOW" then ahOpen = true return end
-  if event == "AUCTION_HOUSE_CLOSED" then ahOpen = false; ahScanning = nil return end
-  if event == "REPLICATE_ITEM_LIST_UPDATE" then if ahScanning == "modern" then ahFinishScan() end return end
-  if event == "AUCTION_ITEM_LIST_UPDATE" then
-    if ahScanning == "classic" then ahFinishScan() return end
-    -- Old AH, normal search: one page of results is the current market for those items.
-    local mins = ahReadAll("classic"); ahStore(mins) return
+  if event == "AUCTION_HOUSE_CLOSED" then ahOpen = false; if ahState == "waiting" then ahState = "idle" end return end
+  if event == "REPLICATE_ITEM_LIST_UPDATE" then
+    -- Also fires ~2000x per frame while item data caches during reading: only the waiting state cares.
+    if ahState == "waiting" and ahKind == "modern" then
+      ahUpdates = ahUpdates + 1
+      local mine = ahUpdates
+      C_Timer.After(2, function() if mine == ahUpdates then ahRead() end end)
+    end
+    return
   end
+  if event == "AUCTION_ITEM_LIST_UPDATE" then
+    -- Old AH: the getAll answer arrives in one go; outside a scan, one search page = current market for those items.
+    if ahKind == "classic" and ahState == "waiting" then ahRead() elseif ahState == "idle" then ahClassicPage() end
+    return
+  end
+  if ahState ~= "idle" then return end
   if event == "COMMODITY_SEARCH_RESULTS_UPDATED" then ahCommodity(arg1) return end
   if event == "ITEM_SEARCH_RESULTS_UPDATED" then ahItemSearch(arg1) return end
   ahBrowse()
@@ -493,107 +558,89 @@ local function itemRec(link, count, bound)
   return r
 end
 
--- ---- AH shopping data (0.8) ----
--- After a full scan, keep full item records (name, tooltip, icon, exact listing price) for what the page's
--- Market card can recommend: gear this class can wear near its level (cheapest listing per exact link, so
--- "of the Owl" and "of the Bear" stay separate), bags (tooltip says the slot count), potions and herbs.
--- Stored per class in GrimoireSyncDB.ahShop[classFile] = { t, lvl, items = { itemRec + cat } }.
--- Item data may not be cached yet: pass 1 picks candidates via GetItemInfoInstant (always answers) and asks
--- the client to load them; pass 2, 6 seconds later, builds the records with tooltips.
--- classID/subclassID: 0 Consumable (1 potion), 1 Container (0 bag, 1 soul bag), 2 Weapon, 4 Armor, 7 Tradeskill (9 herb).
-local GEAR_OK = {
-  WARLOCK = { [4] = { [0] = true, [1] = true }, [2] = { [7] = true, [10] = true, [15] = true, [19] = true } },
-  PALADIN = { [4] = { [0] = true, [1] = true, [2] = true, [3] = true, [4] = true, [6] = true, [7] = true },
-              [2] = { [0] = true, [1] = true, [4] = true, [5] = true, [6] = true, [7] = true, [8] = true } },
-}
-local SKIP_LOC = { [""] = true, INVTYPE_BODY = true, INVTYPE_TABARD = true, INVTYPE_AMMO = true, INVTYPE_QUIVER = true, INVTYPE_BAG = true }
+-- ---- AH shopping data (0.8; loading reworked in 0.9) ----
+-- Turns scan candidates into full item records (name, tooltip, icon, exact cheapest listing) for the page's Market
+-- card: gear this class can wear near its level, bags (tooltip gives the slot count), potions, herbs.
+-- Stored per class: GrimoireSyncDB.ahShop[classFile] = { t, lvl, items = { itemRec + cat } }.
+-- Item data loads asynchronously (warcraft.wiki.gg ItemMixin: some items never answer), so: request every item,
+-- then build records 100 per frame; items still without a name are re-requested and retried every 5s, up to
+-- 12 rounds (~1 min). Progress is saved after each round, so a /reload at any time sends what is there.
+-- 0.8.x failed here: it gave up after one try at 6s and kept 0 of 2825. A link that never resolves now falls back
+-- to the plain item ID (loses a random-suffix name like "of the Owl", keeps the item and its price).
+-- GrimoireSyncDB.ahShopDbg records counts and one probe so a failure can be read from the file.
 local SHOP_MAX = 400   -- size cap for the saved file (it is pushed to the public repo on every sync)
-
-local function shopCat(id, cls)
-  local _, _, _, loc, _, classID, subID = safe(GetItemInfoInstant, id)
-  if not classID then return end
-  if classID == 1 and (subID == 0 or subID == 1) then return "b" end
-  if classID == 0 and subID == 1 then return "p" end
-  if classID == 7 and subID == 9 then return "h" end
-  local ok = GEAR_OK[cls] and GEAR_OK[cls][classID]
-  if ok and ok[subID] and not SKIP_LOC[loc or ""] then return "g" end
-end
-
-ahShopCollect = function(kind, n)
-  if not GetItemInfoInstant then ahSay("shopping list: this client has no GetItemInfoInstant."); return end
-  local _, cls = safe(UnitClass, "player")
-  local L = safe(UnitLevel, "player") or 1
-  -- Nothing you can't afford, no grey junk: 0.8.1 kept 2825 candidates, far too many to load names for.
-  local money = math.max(safe(GetMoney) or 0, 10000)
-  local best = {}   -- link -> { cat, price }
-  for i = (kind == "modern" and 0 or 1), (kind == "modern" and n - 1 or n) do
-    local count, buyout, id, lvl, q
-    if kind == "modern" then
-      local r = { safe(C_AuctionHouse.GetReplicateItemInfo, i) }; count, q, lvl, buyout, id = r[3], r[4], r[6], r[10], r[17]
-    else
-      local r = { safe(GetAuctionItemInfo, "list", i) }; count, q, lvl, buyout, id = r[3], r[4], r[6], r[10], r[17]
-    end
-    local unit = buyout and buyout > 0 and buyout / math.max(count or 1, 1)
-    -- lvl is the listing's level field (required level on the old AH); a loose window, pass 2 checks the real one.
-    if id and unit and unit <= money and (q == nil or q >= 1)
-       and (not lvl or lvl == 0 or (lvl <= L + 10 and lvl >= L - 12)) then
-      local cat = shopCat(id, cls)
-      if cat then
-        local link = kind == "modern" and safe(C_AuctionHouse.GetReplicateItemLink, i) or safe(GetAuctionItemLink, "list", i)
-        if link then
-          local b = best[link]
-          if not b or unit < b.p then best[link] = { cat = cat, p = unit } end
-        end
-      end
-    end
+ahShopBegin = function(cands, cls, L)
+  local list = {}
+  for _, c in pairs(cands) do list[#list + 1] = c end
+  if #list == 0 then ahSay("shopping list: no matching listings.") return end
+  local function request(c)
+    if C_Item and C_Item.RequestLoadItemDataByID then safe(C_Item.RequestLoadItemDataByID, c.id) end
+    if c.link then safe(GetItemInfo, c.link) end
+    safe(GetItemInfo, c.id)
   end
-  -- Item names/tooltips load asynchronously and the client throttles big batches, so pass 2 runs up to 8 times,
-  -- 10s apart: each run keeps the items whose data has arrived, re-requests the rest, and saves what it has
-  -- (a /reload at any point still sends a partial list).
-  local pending, items, tries, nCand = best, {}, 0, 0
-  for link in pairs(best) do nCand = nCand + 1; safe(GetItemInfo, link) end
-  local dbg = { t = time(), cand = nCand, sample = next(best) }
+  for _, c in ipairs(list) do request(c) end
+  local c1 = list[1]
+  local dbg = { t = time(), cand = #list, probe = { link = c1.link, id = c1.id } }
   GrimoireSyncDB.ahShopDbg = dbg
-  if nCand > 0 then ahSay(("shopping list: loading %d items, about 10-60 seconds. Keep playing; it tells you when it's done."):format(nCand)) end
-  local function pass2()
-    tries = tries + 1
-    local still, left = {}, 0
-    for link, b in pairs(pending) do
-      local r = itemRec(link, 1)
-      if not r.name then still[link] = b; left = left + 1; safe(GetItemInfo, link)
-      else
-        local req = r.req or 0
-        -- Gear: required level up to 3 above you (buy ahead), and not junk from 6+ levels ago.
-        local keep = b.cat ~= "g" or (req <= L + 3 and (req >= L - 6 or (r.ilvl or 0) >= L))
-        if keep and b.cat == "p" and req > L + 3 then keep = false end
-        if keep then r.cat = b.cat; r.ah = math.floor(b.p + 0.5); r.aht = time(); items[#items + 1] = r end
-      end
+  ahSay(("shopping list: loading %d items, up to a minute. You can close the AH and keep playing."):format(#list))
+
+  local items, pending, tries = {}, list, 0
+  local function build(c)
+    local r = c.link and itemRec(c.link, 1)
+    if not (r and r.name) then
+      local _, lk = safe(GetItemInfo, c.id)
+      if lk then r = itemRec(lk, 1) end
     end
-    pending = still
+    return r and r.name and r or nil
+  end
+  local function save()
     -- Over the cap: keep every bag/potion/herb, then the cheapest gear.
     if #items > SHOP_MAX then
-      table.sort(items, function(a, c) if (a.cat == "g") ~= (c.cat == "g") then return c.cat == "g" end return a.ah < c.ah end)
-      for i = #items, SHOP_MAX + 1, -1 do items[i] = nil end
+      table.sort(items, function(a, b) if (a.cat == "g") ~= (b.cat == "g") then return b.cat == "g" end return a.ah < b.ah end)
+      for k = #items, SHOP_MAX + 1, -1 do items[k] = nil end
     end
     GrimoireSyncDB.ahShop = GrimoireSyncDB.ahShop or {}
     if cls then GrimoireSyncDB.ahShop[cls] = { t = time(), lvl = L, items = items } end
-    dbg.tries, dbg.left, dbg.kept = tries, left, #items
-    if left > 0 and tries < 8 and C_Timer and C_Timer.After then
-      C_Timer.After(10, function()
-        local ok, err = pcall(pass2)
-        if not ok then dbg.err = tostring(err); ahSay("shopping list failed: " .. tostring(err)) end
-      end)
-    else
-      ahSay(("shopping list ready: %d items (gear, bags, potions, herbs)%s. Type /reload to send it to the site.")
-        :format(#items, left > 0 and (", " .. left .. " never loaded") or ""))
+  end
+  local function fail(err) dbg.err = tostring(err); ahSay("shopping list failed: " .. tostring(err)) end
+  local round
+  round = function()
+    tries = tries + 1
+    if tries == 1 then   -- what the first candidate resolves to, for debugging from the saved file
+      dbg.probe.byLink = c1.link and (safe(GetItemInfo, c1.link)) or nil
+      dbg.probe.byId = (safe(GetItemInfo, c1.id))
     end
+    local still, i = {}, 1
+    local step
+    step = function()
+      local stop = math.min(i + 99, #pending)
+      for k = i, stop do
+        local c = pending[k]
+        local r = build(c)
+        if not r then still[#still + 1] = c; request(c)
+        else
+          local req = r.req or 0
+          -- Gear: required level up to 3 above you (buy ahead), and not junk from 6+ levels ago. Potions: drinkable soon.
+          local keep = (c.cat ~= "g" or (req <= L + 3 and (req >= L - 6 or (r.ilvl or 0) >= L)))
+                       and not (c.cat == "p" and req > L + 3)
+          if keep then r.cat = c.cat; r.ah = math.floor(c.p + 0.5); r.aht = time(); items[#items + 1] = r end
+        end
+      end
+      i = stop + 1
+      if i <= #pending then C_Timer.After(0, function() local ok, err = pcall(step) if not ok then fail(err) end end) return end
+      pending = still
+      save()
+      dbg.tries, dbg.left, dbg.kept = tries, #still, #items
+      if #still > 0 and tries < 12 then
+        C_Timer.After(5, function() local ok, err = pcall(round) if not ok then fail(err) end end)
+      else
+        ahSay(("shopping list ready: %d items (gear, bags, potions, herbs)%s. Type /reload to send it to the site.")
+          :format(#items, #still > 0 and (", " .. #still .. " never loaded") or ""))
+      end
+    end
+    step()
   end
-  if nCand == 0 then ahSay("shopping list: no matching listings.") return end
-  local function run()
-    local ok, err = pcall(pass2)
-    if not ok then dbg.err = tostring(err); ahSay("shopping list failed: " .. tostring(err)) end
-  end
-  if C_Timer and C_Timer.After then C_Timer.After(6, run) else run() end
+  C_Timer.After(3, function() local ok, err = pcall(round) if not ok then fail(err) end end)
 end
 
 -- Container API moved into C_Container in newer clients; support both shapes.
