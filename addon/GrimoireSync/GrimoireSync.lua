@@ -335,6 +335,138 @@ local function tipLines(link)
   return out
 end
 
+-- ---- Auction House prices (0.7) ----
+-- GrimoireSyncDB.ah = { full = time of last full scan, t = last update, n = items priced,
+--                       p = { [itemID] = lowest buyout per unit, copper }, at = { [itemID] = when that price was seen } }
+-- READ-ONLY by design: it only reads listings Blizzard already sends to the AH window. Nothing here bids,
+-- buys, posts or cancels (those need a hardware click anyway). Two sources:
+--   1. /grimoire scan with the AH open: Blizzard's own full-scan call (ReplicateItems on the modern AH,
+--      QueryAuctionItems getAll on the old one). The server throttles it to about once per 15 min.
+--   2. Passive: whatever you browse or search in the AH window is recorded too.
+local function ahDB()
+  GrimoireSyncDB.ah = GrimoireSyncDB.ah or {}
+  local db = GrimoireSyncDB.ah
+  db.p = db.p or {}; db.at = db.at or {}
+  return db
+end
+-- Store a batch of {itemID = unit price}. Each batch is the current market for those items, so it replaces older prices.
+local function ahStore(mins)
+  local db, now, n = ahDB(), time(), 0
+  for id, u in pairs(mins) do db.p[id] = math.floor(u + 0.5); db.at[id] = now; n = n + 1 end
+  if n > 0 then
+    db.t = now
+    local c = 0; for _ in pairs(db.p) do c = c + 1 end
+    db.n = c
+  end
+  return n
+end
+local function ahMin(mins, id, total, count)
+  if not id or not total or total <= 0 then return end
+  local u = total / math.max(count or 1, 1)
+  if not mins[id] or u < mins[id] then mins[id] = u end
+end
+
+local ahOpen, ahScanning = false, nil   -- ahScanning = "modern" | "classic" while a full scan is pending
+local function ahSay(msg) print("|cff8fdc5aGrimoire Sync|r " .. msg) end
+
+-- Full-scan results: both APIs return the same fields (count 3rd, buyout 10th, itemID 17th).
+-- Modern indexes from 0, the old "list" API from 1.
+local function ahReadAll(kind)
+  local mins, n = {}, 0
+  if kind == "modern" then
+    n = safe(C_AuctionHouse.GetNumReplicateItems) or 0
+    for i = 0, n - 1 do
+      local _, _, count, _, _, _, _, _, _, buyout, _, _, _, _, _, _, id = safe(C_AuctionHouse.GetReplicateItemInfo, i)
+      ahMin(mins, id, buyout, count)
+    end
+  else
+    n = safe(GetNumAuctionItems, "list") or 0
+    for i = 1, n do
+      local _, _, count, _, _, _, _, _, _, buyout, _, _, _, _, _, _, id = safe(GetAuctionItemInfo, "list", i)
+      ahMin(mins, id, buyout, count)
+    end
+  end
+  return mins, n
+end
+
+local function ahFinishScan()
+  local kind = ahScanning; ahScanning = nil
+  local mins, n = ahReadAll(kind)
+  if n == 0 then ahSay("the scan came back empty. Blizzard allows one full scan about every 15 minutes; try again later.") return end
+  local items = ahStore(mins)
+  ahDB().full = time()
+  ahSay(("scanned %d auctions, %d items priced. Close the AH (or /reload) to send them to the site."):format(n, items))
+end
+
+local function ahStartScan()
+  if not ahOpen then ahSay("open the Auction House first, then type /grimoire scan.") return end
+  if ahScanning then ahSay("a scan is already running.") return end
+  if C_AuctionHouse and C_AuctionHouse.ReplicateItems then
+    ahScanning = "modern"
+    if not pcall(C_AuctionHouse.ReplicateItems) then ahScanning = nil; ahSay("this client refused the full scan.") return end
+  elseif QueryAuctionItems and CanSendAuctionQuery then
+    local _, canAll = safe(CanSendAuctionQuery)
+    if not canAll then ahSay("full scan is on cooldown (Blizzard allows one about every 15 minutes). Browsing still records prices.") return end
+    ahScanning = "classic"
+    if not pcall(QueryAuctionItems, "", nil, nil, 0, nil, nil, true) then ahScanning = nil; ahSay("this client refused the full scan.") return end
+  else
+    ahSay("this client has no full-scan API. Prices from what you browse are still recorded.") return
+  end
+  ahSay("scanning the Auction House, keep the window open (can take up to a minute)...")
+  -- No answer at all usually means the server throttle: give up quietly after 90s.
+  if C_Timer and C_Timer.After then
+    C_Timer.After(90, function() if ahScanning then ahScanning = nil; ahSay("no answer from the AH, probably the 15-minute limit. Try again later.") end end)
+  end
+end
+
+-- Passive capture from normal browsing/searching on the modern AH.
+local function ahBrowse()
+  local res = safe(C_AuctionHouse.GetBrowseResults); if type(res) ~= "table" then return end
+  local mins = {}
+  for _, r in ipairs(res) do
+    local id = r.itemKey and r.itemKey.itemID
+    if id and r.minPrice and r.minPrice > 0 then ahMin(mins, id, r.minPrice, 1) end
+  end
+  ahStore(mins)
+end
+local function ahCommodity(id)
+  local r = id and safe(C_AuctionHouse.GetCommoditySearchResultInfo, id, 1)   -- results come sorted, cheapest first
+  if r and r.unitPrice then ahStore({ [id] = r.unitPrice }) end
+end
+local function ahItemSearch(key)
+  if type(key) ~= "table" or not key.itemID then return end
+  local n, best = safe(C_AuctionHouse.GetNumItemSearchResults, key) or 0, nil
+  for i = 1, math.min(n, 50) do
+    local r = safe(C_AuctionHouse.GetItemSearchResultInfo, key, i)
+    local b = r and r.buyoutAmount
+    if b and b > 0 and (not best or b < best) then best = b end
+  end
+  if best then ahStore({ [key.itemID] = best }) end
+end
+
+local AH_EVENTS = { REPLICATE_ITEM_LIST_UPDATE = true, AUCTION_ITEM_LIST_UPDATE = true,
+                    AUCTION_HOUSE_BROWSE_RESULTS_UPDATED = true, AUCTION_HOUSE_BROWSE_RESULTS_ADDED = true,
+                    COMMODITY_SEARCH_RESULTS_UPDATED = true, ITEM_SEARCH_RESULTS_UPDATED = true }
+local function ahEvent(event, arg1)
+  if event == "AUCTION_HOUSE_SHOW" then ahOpen = true return end
+  if event == "AUCTION_HOUSE_CLOSED" then ahOpen = false; ahScanning = nil return end
+  if event == "REPLICATE_ITEM_LIST_UPDATE" then if ahScanning == "modern" then ahFinishScan() end return end
+  if event == "AUCTION_ITEM_LIST_UPDATE" then
+    if ahScanning == "classic" then ahFinishScan() return end
+    -- Old AH, normal search: one page of results is the current market for those items.
+    local mins = ahReadAll("classic"); ahStore(mins) return
+  end
+  if event == "COMMODITY_SEARCH_RESULTS_UPDATED" then ahCommodity(arg1) return end
+  if event == "ITEM_SEARCH_RESULTS_UPDATED" then ahItemSearch(arg1) return end
+  ahBrowse()
+end
+
+-- Scanned price for one item (copper per unit) and when it was seen, for itemRec().
+local function ahPriceOf(id)
+  local db = GrimoireSyncDB.ah
+  if id and db and db.p and db.p[id] then return db.p[id], db.at and db.at[id] end
+end
+
 -- One item record. bound comes from the container API (Soulbound isn't in a hyperlink tooltip).
 local function itemRec(link, count, bound)
   local name, _, quality, ilvl, reqLevel, itype, subType, _, equipLoc, tex, sellPrice = safe(GetItemInfo, link)
@@ -343,8 +475,9 @@ local function itemRec(link, count, bound)
               type = itype, sub = subType, loc = equipLoc, sell = sellPrice, bound = bound and true or nil,
               tex = tonumber(tex),   -- icon file id: the page builds the icon URL from it (Wowhead lacks Forever items)
               tip = tipLines(link) }
-  -- Auction price per unit (copper) if Auctionator or TSM is installed; both are optional.
-  if id and Auctionator and Auctionator.API and Auctionator.API.v1 then
+  -- Auction price per unit (copper): our own AH scan first (aht = when seen), else Auctionator or TSM if installed.
+  r.ah, r.aht = ahPriceOf(id)
+  if not r.ah and id and Auctionator and Auctionator.API and Auctionator.API.v1 then
     r.ah = safe(Auctionator.API.v1.GetAuctionPriceByItemLink, "GrimoireSync", link)
         or safe(Auctionator.API.v1.GetAuctionPriceByItemID, "GrimoireSync", id)
   end
@@ -627,6 +760,8 @@ local function snapshot(event)
     spells = scanSpells(),
     time = time(),
     inv = invState,
+    -- AH scan summary only; the full price table stays in GrimoireSyncDB.ah (account-wide, read by the page too).
+    ahInfo = GrimoireSyncDB.ah and { full = GrimoireSyncDB.ah.full, t = GrimoireSyncDB.ah.t, n = GrimoireSyncDB.ah.n } or nil,
   }
   -- SavedVariables are account-wide, so `last` gets overwritten by whichever character logged in last.
   -- Keep a copy per class too, so the Warlock and the Paladin each keep their own snapshot on the page.
@@ -666,6 +801,8 @@ local function queueQuest()
   if C_Timer and C_Timer.After then C_Timer.After(1, run) else run() end
 end
 pcall(f.RegisterEvent, f, "GET_ITEM_INFO_RECEIVED")
+-- AH price events; pcall because each client has only one of the two AH APIs.
+for e in pairs(AH_EVENTS) do pcall(f.RegisterEvent, f, e) end
 local bankOpen, invPending = false, false
 -- pcall: one odd item must not throw a Lua error popup from a timer callback.
 local function invRescan()
@@ -680,6 +817,9 @@ local function queueInv()
   if C_Timer and C_Timer.After then C_Timer.After(1, invRescan) else invRescan() end
 end
 f:SetScript("OnEvent", function(_, event, arg1, arg2)
+  if AH_EVENTS[event] then pcall(ahEvent, event, arg1) return end
+  -- AH open/close also feed the NPC map and the bag rescan below, so they fall through.
+  if event == "AUCTION_HOUSE_SHOW" or event == "AUCTION_HOUSE_CLOSED" then pcall(ahEvent, event) end
   if QUEST_EVENTS[event] then
     if event == "QUEST_ACCEPTED" then pcall(noteQuestAccepted, arg1, arg2) end
     queueQuest(); return
@@ -702,11 +842,15 @@ f:SetScript("OnEvent", function(_, event, arg1, arg2)
 end)
 
 SLASH_GRIMOIRESYNC1 = "/grimoire"
-SlashCmdList.GRIMOIRESYNC = function()
+SlashCmdList.GRIMOIRESYNC = function(msg)
+  if msg and msg:lower():match("^%s*scan") then ahStartScan() return end
   snapshot()
   local s = GrimoireSyncDB.last
   if not s then print("|cff8fdc5aGrimoire Sync|r no data yet, try again in a few seconds.") return end
   local nInv = s.inv and #s.inv.bags or 0
   print(("|cff8fdc5aGrimoire Sync|r %s level %s in %s, %d class milestone(s), %d bag item(s). Type /reload to write the file now.")
     :format(tostring(s.class), tostring(s.level), tostring(s.zone), #s.demons, nInv))
+  local ah = GrimoireSyncDB.ah
+  print(ah and ah.n and ("  AH prices: %d items. Open the AH and type /grimoire scan to refresh."):format(ah.n)
+        or "  No AH prices yet: open the Auction House and type /grimoire scan.")
 end

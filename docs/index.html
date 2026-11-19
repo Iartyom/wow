@@ -929,6 +929,7 @@ section:not(.fold) .foldwhy{display:none}
         <p class="muted" style="font-size:.8rem">Hover or tap an item for the reason. Soulbound items can only go to a vendor. "Give" needs the other character's addon data too.</p>
       </article>
     </div>
+    <p class="muted" id="ahStatus"></p>
     <div class="ahcheck" id="ahCheck" hidden></div>
     <!-- Bag cleanup (quest items): filled by renderQuestLog, which knows your quests. -->
     <article class="card" id="bagClean" hidden></article>
@@ -1419,7 +1420,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-19T13:11:56Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-19T14:03:26Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -1749,7 +1750,7 @@ function applySnap(c, s, source){
     bank: bank ? {time:+bank.time||0, items:compactList(bank.items)} : null, addonTime:+s.time||0,
     addonGear: inv ? gear : null,
     // addon 0.4+: where you stood, NPCs you talked to. 0.5+: skill caps and recipes from profession windows.
-    pos: objOrNull(s.pos), npcs: objOrNull(s.npcs), profMax: objOrNull(s.profMax), crafts: objOrNull(s.crafts), qlog: objOrNull(s.qlog)};
+    ahInfo: objOrNull(s.ahInfo), pos: objOrNull(s.pos), npcs: objOrNull(s.npcs), profMax: objOrNull(s.profMax), crafts: objOrNull(s.crafts), qlog: objOrNull(s.qlog)};
   // 0.2+ files keep the character name in `who` (items use `name`); older files used `name`.
   const who = s.who || (!inv && s.name); if(who) st.charName = String(who);
   st.level = Math.max(1, Math.min(60, Math.round(s.level)));
@@ -2073,7 +2074,7 @@ function compactItem(r){
   if(!r || !r.id) return null;
   const p = parseTip(r.tip);
   return {id:+r.id, name:r.name||("Item "+r.id), q:(r.q==null?1:+r.q), ilvl:+r.ilvl||0, req:+r.req||0, type:r.type||"", sub:r.sub||"",
-    loc:r.loc||"", sell:+r.sell||0, ah:r.ah?+r.ah:0, n:+r.n||1, bound:!!r.bound, bag:r.bag??null,
+    loc:r.loc||"", sell:+r.sell||0, ah:r.ah?+r.ah:0, aht:+r.aht||0, n:+r.n||1, bound:!!r.bound, bag:r.bag??null,
     st:p.st, un:p.unusable, bop:p.bop, quest:p.quest, cls:p.classes, tex:+r.tex||0};
 }
 function compactList(a){ return (Array.isArray(a)?a:Object.values(a||{})).map(compactItem).filter(Boolean); }
@@ -2137,9 +2138,12 @@ const charName = c => (states[c] && states[c].charName) || CHARS[c].label;
 // Cost of one AH listing in copper. Player saw 1s in Forever (Nov 7); the deposit is lost if the item doesn't sell,
 // so it's subtracted from every auction estimate as if paid once.
 const AH_FEE = 100;
+// Per-unit AH price for an item. Addon 0.7 scans the AH itself (it.aht = when seen): that beats a price you typed
+// earlier, which can be stale. Then your typed price, then Auctionator/TSM (also it.ah, no time).
+function ahOf(it){ return (it.aht && it.ah) || (state.ah && state.ah[it.id]) || it.ah || 0; }
 function verdict(it){
   const c = CHAR, o = partnerOf(c), lvl = (state.game && state.game.level) || state.level;
-  const ahPer = (state.ah && state.ah[it.id]) || it.ah || 0;
+  const ahPer = ahOf(it);
   const vendor = it.sell * it.n, ahNet = Math.round(ahPer * it.n * 0.95) - AH_FEE;   // AH keeps 5%, plus the listing fee
   const sellable = !it.bound && !it.bop;
   const sell = ()=> sellable && ahPer && ahNet > vendor*1.3 + 500
@@ -2179,7 +2183,7 @@ function verdict(it){
    Returns {rank, why, min} or null. `min` mirrors sell(): ahNet > vendor*1.3 + 50s, per unit. */
 function ahLookup(it, v){
   if(it.bound || it.bop || !/ah|vendor|use/.test(v.k) || (it.q|0) < 1) return null;
-  if((state.ah && state.ah[it.id]) || it.ah) return null;            // already has a price
+  if(ahOf(it)) return null;            // already has a price
   // Vendor-sold reagents (vials, thread, flux) never sell above the vendor's own price; your potions you drink.
   if(/\b(Vial|Thread|Flux|Flask of Oil|Salt)\b/.test(it.name) || it.type==="Consumable") return null;
   const min = Math.ceil((it.sell*it.n*1.3 + 500 + AH_FEE) / (0.95*it.n));
@@ -2194,6 +2198,7 @@ function ahLookup(it, v){
 // "look these up at the AH" list was noise. Flip to true to bring it back; ahLookup() is unchanged.
 const AH_LOOKUP_ON = false;
 function renderAhCheck(inv){
+  renderAhStatus(inv);
   const el = $("#ahCheck"); if(!el) return;
   if(!AH_LOOKUP_ON){ el.hidden = true; el.innerHTML = ""; return; }
   const list = (inv||[]).map(it=>({it, a:ahLookup(it, verdict(it))})).filter(x=>x.a)
@@ -2202,6 +2207,17 @@ function renderAhCheck(inv){
   el.innerHTML = `<p class="ah-h"><b>Look these up at the auction house</b> (${list.length}). Search each name, take the cheapest listing, and type that price into its AH box below. The page then tells you whether to list it or vendor it. The price shown is the point where the auction, after its 5% cut and the ${fmtCoin(AH_FEE)} listing fee, earns at least 50s more than the vendor would pay for the whole stack. Below that, vendor it.</p><ol>`+
     list.map(({it,a})=>`<li>${itemIcon(it.id)}<a href="#" data-ahgo="${it.id}" style="color:${QCOL[it.q]||""}">${esc(it.name)}</a>${it.n>1?` <span class="muted">×${it.n}</span>`:""}`+
       ` <span class="mono ah-min">list it if above ${fmtCoin(a.min)}${it.n>1?` each (${fmtCoin(a.min*it.n)} for all ${it.n})`:""}</span><span class="isub">${esc(a.why)}</span></li>`).join("")+`</ol>`;
+}
+// One line under the bags: scan age, and which bag items the AH beats the vendor on (verdict "Auction").
+function renderAhStatus(inv){
+  const el = $("#ahStatus"); if(!el) return;
+  const info = state.game && state.game.ahInfo;
+  if(!info || !info.n){ el.innerHTML = `<b>AH prices:</b> none yet. In game, open the Auction House and type <code>/grimoire scan</code>, then close the AH. Searching items there also records their prices.`; return; }
+  const sell = (inv||[]).map(it=>({it, v:verdict(it)})).filter(x=>x.v.k==="ah");
+  const total = sell.reduce((a,x)=>a+(x.v.val||0), 0);
+  const old = info.full && Date.now()/1000 - info.full > 3*86400;
+  el.innerHTML = `<b>AH prices:</b> ${info.n} items, full scan ${info.full ? ago(info.full) : "never (only what you searched)"}${old?` <span class="badge unv">old</span> <code>/grimoire scan</code> at the AH to refresh`:""}. `+
+    (sell.length ? `Worth listing: ${sell.map(x=>`<b style="color:${QCOL[x.it.q]||""}">${esc(x.it.name)}</b>`).join(", ")} (about ${fmtCoin(total)} after fees).` : `Nothing in your bags beats the vendor at the AH right now.`);
 }
 // Clicking a name jumps to that item's AH box in the table (switching to the Bags filter if needed).
 document.addEventListener("click", e=>{
@@ -2246,8 +2262,8 @@ function itemCardHTML(it){
   // A searched item (Try-an-item) has no sell price or bag verdict of its own, so skip both lines.
   const searched = typeof calcItem !== "undefined" && it === calcItem;
   if(!searched) lines.push(`<div class="itt-dim">Vendor: ${per}${it.n>1 && it.sell?` each · ${fmtCoin(it.sell*it.n)} for ${it.n}`:""}</div>`);
-  const ah = (state.ah && state.ah[it.id]) || it.ah;
-  if(ah) lines.push(`<div class="itt-dim">AH: ${fmtCoin(ah)} each</div>`);
+  const ah = ahOf(it);
+  if(ah) lines.push(`<div class="itt-dim">AH: ${fmtCoin(ah)} each${it.aht && it.ah===ah ? ` · seen ${ago(it.aht)}` : ""}</div>`);
   // Page's own read on it.
   const sc = itemScore(it, CHAR), me = equipped ? null : upgradeFor(it, CHAR);
   const extra = [];
