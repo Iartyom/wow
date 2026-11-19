@@ -1,5 +1,5 @@
 {
- "fetched": "2026-11-19T03:35:49.526Z",
+ "fetched": "2026-11-19T22:12:35.273Z",
  "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/dark-bober",
  "character": {
   "avatar": {
@@ -261,8 +261,8 @@
      "display_string": "Item Level 20"
     },
     "durability": {
-     "value": 70,
-     "display_string": "Durability 70 / 70"
+     "value": 69,
+     "display_string": "Durability 69 / 70"
     }
    },
    "foot": {
@@ -1768,8 +1768,8 @@
   },
   "isRemix": false,
   "lastUpdatedTimestamp": {
-   "epoch": 1795042724000,
-   "iso8601": "2026-11-18T22:58:44Z"
+   "epoch": 1795106932000,
+   "iso8601": "2026-11-19T16:48:52Z"
   },
   "level": 26,
   "media": {
