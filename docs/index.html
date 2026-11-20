@@ -1,4 +1,4 @@
-﻿<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
 <title>Forsaken Grimoire</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -668,6 +668,9 @@ section:not(.fold) .foldwhy{display:none}
 .itt-n{font-size:14px;font-weight:600;margin-bottom:2px}
 .itt-row{display:flex;justify-content:space-between;gap:16px}
 .itt-g{color:#1eff00}
+.itt-cmp{margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.18)}
+.itt-up{color:#1eff00}.itt-down{color:#ff2020}
+.mdiff{display:block;font-family:var(--f-mono);font-size:.72rem;margin-top:2px}.mdiff .up{color:#4fd14f}.mdiff .down{color:#ff6b6b}
 .itt-dim{color:#c8c8c8}
 .itt-ours{margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.18);color:#f0cf74;font-size:12px}
 .upd-site{margin:0 0 var(--s2)}
@@ -1464,7 +1467,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-20T15:18:06Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-20T15:22:47Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -2171,6 +2174,23 @@ function slotBase(it, c){
   if(slots.length===2) return Math.min(sc(slots[0]), sc(slots[1]));
   return sc(slots[0]);
 }
+// The equipped item(s) an item would replace, mirroring slotBase: a two-hander replaces main + off hand,
+// a ring/trinket replaces the weaker of the pair. [] for an empty slot, null if it can't go in a slot.
+function replacedBy(it, c){
+  const g = (states[c].game && states[c].game.gear) || {}, slots = LOC_SLOTS[it.loc]; if(!slots) return null;
+  if(it.loc==="INVTYPE_2HWEAPON") return [g[16], g[17]].filter(Boolean);
+  if(slots.length===2){ const a = g[slots[0]], b = g[slots[1]]; if(!a || !b) return []; return [itemScore(a, c) <= itemScore(b, c) ? a : b]; }
+  return g[slots[0]] ? [g[slots[0]]] : [];
+}
+// WoW-style "if you replace this item" stat changes: [{k, name, d}] sorted gains first, losses last.
+function statChanges(it, c){
+  const old = replacedBy(it, c); if(!old) return null;
+  const sum = {}; for(const o of old) for(const [k,v] of Object.entries(o.st||{})) sum[k] = (sum[k]||0) + (+v||0);
+  const keys = new Set([...Object.keys(it.st||{}), ...Object.keys(sum)]), out = [];
+  for(const k of keys){ const d = Math.round(((+(it.st||{})[k]||0) - (sum[k]||0))*10)/10; if(d) out.push({k, name: STAT_NAME[k] || k, d}); }
+  return {old, list: out.sort((a,b)=>b.d-a.d)};
+}
+const fmtStatChange = x => `${x.d>0?"+":""}${x.d}${x.k==="dps"?" DPS":/%/.test(x.name)?"% "+x.name.replace(/ ?%$/,""):" "+x.name}`;
 // Upgrade delta for character c (positive = better than what's equipped), or null if not comparable.
 function upgradeFor(it, c){
   if(!LOC_SLOTS[it.loc] || !states[c].game || !states[c].game.gear) return null;
@@ -2324,6 +2344,12 @@ function itemCardHTML(it){
   if(!searched) lines.push(`<div class="itt-dim">Vendor: ${per}${it.n>1 && it.sell?` each · ${fmtCoin(it.sell*it.n)} for ${it.n}`:""}</div>`);
   const ah = ahOf(it);
   if(ah) lines.push(`<div class="itt-dim">AH: ${fmtCoin(ah)} each${it.aht && it.ah===ah ? ` · seen ${ago(it.aht)}` : ""}</div>`);
+  // The comparison WoW shows on shift-hover: what changes if you equip this instead of what you wear.
+  const ch = slot && !equipped ? statChanges(it, CHAR) : null;
+  if(ch){
+    const was = ch.old.length ? ch.old.map(o=>`<span style="color:${QCOL[o.q]||"#fff"}">${esc(o.name)}</span>`).join(" + ") : "an empty slot";
+    lines.push(`<div class="itt-cmp"><div class="itt-dim">If you replace ${was}:</div>${ch.list.length ? ch.list.map(x=>`<div class="${x.d>0?"itt-up":"itt-down"}">${esc(fmtStatChange(x))}</div>`).join("") : `<div class="itt-dim">No stat changes</div>`}</div>`);
+  }
   // Page's own read on it.
   const sc = itemScore(it, CHAR), me = equipped ? null : upgradeFor(it, CHAR);
   const extra = [];
@@ -4177,7 +4203,9 @@ function renderMarket(){
     const later = (it.req||0) > L ? `<span class="mtag later">at ${it.req}</span>` : "";
     // The pricier option is named so you can judge it, with the honest maths: extra points for extra gold.
     const alt = pricier ? `<br>Skip ${esc(pricier.it.name)}: only +${(pricier.gain-gain).toFixed(1)} pts more for ${fmtCoin(pricier.it.ah - it.ah)} extra` : "";
-    return mRow(it, `${esc(SLOT_NAMES[slot]||"")} · replaces ${cur ? esc(cur.name) : "an empty slot"}${alt}`, fmtCoin(it.ah),
+    // Compact version of the tooltip comparison, right on the row (top 5 changes).
+    const ch = statChanges(it, CHAR), diff = ch && ch.list.length ? `<span class="mdiff">${ch.list.slice(0,5).map(x=>`<span class="${x.d>0?"up":"down"}">${esc(fmtStatChange(x))}</span>`).join(" ")}${ch.list.length>5?" …":""}</span>` : "";
+    return mRow(it, `${esc(SLOT_NAMES[slot]||"")} · replaces ${cur ? esc(cur.name) : "an empty slot"}${diff}${alt}`, fmtCoin(it.ah),
       `<span class="mgain">+${gain} pts</span>${best?`<span class="mtag best">best value</span>`:""}${later}`);
   });
   const buyRows = p.buy.map(b=>mRow(b.it, b.why, b.n>1 ? `${b.n} × ${fmtCoin(b.it.ah)}<small>${fmtCoin(b.it.ah*b.n)}</small>` : fmtCoin(b.it.ah)));
