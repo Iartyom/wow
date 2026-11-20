@@ -1451,7 +1451,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-19T16:49:10Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-20T06:43:45Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -4069,17 +4069,28 @@ function marketPlan(){
   const c = CHAR, L = g.level || state.level, money = +g.money || 0;
   const shop = arrOf(g.ahShop && g.ahShop.items);
   const plan = {gear:[], buy:[], sell:[], alch:null, cost:0};
-  // 1. Gear: best upgrade per slot (ties go to the cheaper one), biggest gain first.
-  const perSlot = {};
+  // 1. Gear, value first (Nov 20: "expensive, not value for money" — it picked the biggest gain per slot, e.g.
+  // Elder's Pants of Shadow Wrath +15.9 for 2g 90s while Elder's Pants of the Whale gave +5.5 for 27s).
+  // Levelling gear is replaced every few levels, so each item must fit a budget (8% of your gold, min 30s) and
+  // earn at least 1 point per 20s. Per slot: the biggest gain inside that, cheaper on near-ties (within 1 pt).
+  // A much better but pricier option (+4 pts or more) is kept as a note, not a suggestion. Sorted by points per silver.
+  const budget = Math.max(3000, Math.round(money*0.08));
+  const perSlot = {}, topSlot = {};
   for(const it of shop.filter(x=>x.cat==="g")){
-    const gain = upgradeFor(it, c); if(!(gain > 0.5)) continue;
-    const slot = (LOC_SLOTS[it.loc]||[])[0], cur = perSlot[slot];
-    if(!cur || gain > cur.gain + 0.5 || (Math.abs(gain-cur.gain) <= 0.5 && it.ah < cur.it.ah)) perSlot[slot] = {it, gain, slot};
+    const gain = upgradeFor(it, c); if(!(gain >= 2.5) || !(it.ah > 0)) continue;   // under 2.5 pts is noise for the walk to the AH
+    const slot = (LOC_SLOTS[it.loc]||[])[0];
+    const t = topSlot[slot]; if(!t || gain > t.gain) topSlot[slot] = {it, gain};
+    if(it.ah > budget || gain / (it.ah/100) < 0.05) continue;
+    const cur = perSlot[slot];
+    if(!cur || gain > cur.gain + 1 || (Math.abs(gain-cur.gain) <= 1 && it.ah < cur.it.ah)) perSlot[slot] = {it, gain, slot};
   }
-  plan.gear = Object.values(perSlot).sort((a,b)=>b.gain-a.gain).slice(0, 8);
-  // "Best value" = most points per gold among the ones you can wear now.
-  const now = plan.gear.filter(x=>(x.it.req||0) <= L);
-  if(now.length) now.reduce((a,b)=> b.gain/Math.max(b.it.ah,100) > a.gain/Math.max(a.it.ah,100) ? b : a).best = true;
+  plan.budget = budget;
+  plan.gear = Object.values(perSlot).sort((a,b)=>b.gain/b.it.ah - a.gain/a.it.ah).slice(0, 8);
+  for(const x of plan.gear){ const t = topSlot[x.slot]; if(t && t.gain >= x.gain + 4) x.pricier = t; }
+  plan.skipped = Object.entries(topSlot).filter(([k,t])=>!perSlot[k] && t.gain >= 4).map(([k,t])=>({...t, slot:k}));
+  // "Best value" = most points per silver among what you can wear now or next level.
+  const soon = plan.gear.filter(x=>(x.it.req||0) <= L + 1);
+  if(soon.length) soon.reduce((a,b)=> b.gain/b.it.ah > a.gain/a.it.ah ? b : a).best = true;
   // 2. Bags: replace the smallest normal bag (or fill an empty bag slot) with the most slots per gold you can afford.
   const bi = arrOf(g.bagInfo), normal = bi.filter(b=>!+b.fam && +b.bag > 0), soul = bi.find(b=>+b.fam);
   const emptySlots = Math.max(0, 4 - bi.filter(b=>+b.bag > 0).length);
@@ -4144,10 +4155,12 @@ function renderMarket(){
     (p.cost ? `<span class="mpill gold">shopping list <b>${fmtCoin(p.cost)}</b></span>` : "");
   const card = (tag, rows, empty, foot = "") => `<article class="card mk"><span class="tag">${tag}</span>${rows.length ? `<ul class="mlist">${rows.join("")}</ul>` : `<p class="muted">${empty}</p>`}${foot}</article>`;
   const need = hasShop ? "" : ` <span class="muted">Needs addon 0.8: run <code>/grimoire scan</code> once more.</span>`;
-  const gearRows = p.gear.map(({it, gain, slot, best})=>{
+  const gearRows = p.gear.map(({it, gain, slot, best, pricier})=>{
     const cur = g.gear && g.gear[String(slot)];
     const later = (it.req||0) > L ? `<span class="mtag later">at ${it.req}</span>` : "";
-    return mRow(it, `${esc(SLOT_NAMES[slot]||"")} · replaces ${cur ? esc(cur.name) : "an empty slot"}`, fmtCoin(it.ah),
+    // The pricier option is named so you can judge it, with the honest maths: extra points for extra gold.
+    const alt = pricier ? `<br>Skip ${esc(pricier.it.name)}: only +${(pricier.gain-gain).toFixed(1)} pts more for ${fmtCoin(pricier.it.ah - it.ah)} extra` : "";
+    return mRow(it, `${esc(SLOT_NAMES[slot]||"")} · replaces ${cur ? esc(cur.name) : "an empty slot"}${alt}`, fmtCoin(it.ah),
       `<span class="mgain">+${gain} pts</span>${best?`<span class="mtag best">best value</span>`:""}${later}`);
   });
   const buyRows = p.buy.map(b=>mRow(b.it, b.why, b.n>1 ? `${b.n} × ${fmtCoin(b.it.ah)}<small>${fmtCoin(b.it.ah*b.n)}</small>` : fmtCoin(b.it.ah)));
@@ -4164,7 +4177,9 @@ function renderMarket(){
   }
   box.innerHTML =
     card(`Gear upgrades on the AH`, gearRows, (hasShop ? "Nothing on the AH beats your gear right now." : "No gear data yet.") + need,
-      gearRows.length ? `<p class="muted mfoot">Points use your stat weights (Item worth). Cheapest listing of that exact item; check it in game before buying.</p>` : "")+
+      (gearRows.length ? `<p class="mfoot">All ${gearRows.length}: <b>${fmtCoin(p.gear.reduce((a,x)=>a+x.it.ah,0))}</b>. Each one costs at most ${fmtCoin(p.budget)} (8% of your gold) and earns 1 point per 20s or better: you replace levelling gear every few levels, so pricier upgrades rarely pay off.</p>` : "")+
+      (p.skipped.length ? `<p class="muted mfoot">Too pricey for what they add: ${p.skipped.map(x=>`${esc(x.it.name)} (+${x.gain} pts, ${fmtCoin(x.it.ah)})`).join(", ")}.</p>` : "")+
+      (gearRows.length ? `<p class="muted mfoot">Points use your stat weights (Item worth). Hover a row for its stats; check the listing in game before buying.</p>` : ""))+
     card(`Shopping list`, buyRows, (hasShop ? "Nothing you need right now." : "No bag or potion data yet.") + need,
       p.cost ? `<p class="mfoot">Total <b>${fmtCoin(p.cost)}</b> of your ${fmtCoin(money)}.</p>` : "")+
     card(`Sell on the AH`, sellRows, `Nothing in your bags sells for clearly more than a vendor pays. Vendor the rest.`,
