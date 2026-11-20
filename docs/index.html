@@ -406,6 +406,9 @@ body.nobasics .basic{display:none!important}
 .mpill.gold{border-color:rgba(214,178,94,.5);color:var(--gold)} .mpill.gold b{color:var(--gold)}
 .mpill.warn{border-color:var(--warn);color:var(--warn)}
 .mk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,21rem),1fr));gap:var(--s4);align-items:start}
+/* Gear is the long card: full width with a 2-column list, so it doesn't leave a tall empty gap beside it (Nov 20). */
+.mk-grid>.mk-wide{grid-column:1/-1}
+@media (min-width:900px){.mk-wide .mlist{display:grid;grid-template-columns:1fr 1fr;column-gap:var(--s5)}}
 .mk .tag{margin-bottom:2px}
 .mlist{list-style:none;margin:0;padding:0}
 .mrow{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
@@ -682,6 +685,15 @@ section:not(.fold) .foldwhy{display:none}
 .svc .poi{vertical-align:-3px;margin-right:4px;width:16px;height:16px;font-size:9px}
 .foldall{display:flex;gap:var(--s2);flex-wrap:wrap;align-items:center;margin-top:var(--s2)}
 .updline{font:12px/1.3 var(--f-mono);color:var(--muted);margin-left:auto}
+/* Phones (Nov 20): the sticky bar was ~400px of an 835px screen. Hide the brand + update line, put the fold buttons
+   on one sideways-scrolling row, tighten gaps. Level, character switch and section nav stay. */
+@media (max-width:600px){
+  .bar .brand,.bar .updline{display:none}
+  .bar .wrap{gap:var(--s2) var(--s3);padding-block:6px}
+  .foldall{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-top:0}
+  .foldall .foldbtn{white-space:nowrap;font-size:.75rem;padding:3px 10px}
+  .bar .charsw button{padding-block:2px}
+}
 /* Armory stat strip (mirrors the Armory's ring-icon tiles) and the base-vs-gear bars.
    Bar colours validated with the dataviz palette checker on --surface: violet base, WoW-green gear. */
 .astats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--s3) var(--s4);margin-top:var(--s4)}
@@ -1452,7 +1464,7 @@ section:not(.fold) .foldwhy{display:none}
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-20T06:55:22Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-20T06:58:24Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -3089,16 +3101,20 @@ function ownedCounts(){
 }
 // True when a profession wants a trainer visit (within 5 of its cap) or a known recipe still gives skill
 // and you own its reagents. Drives the Chapter VII fold.
+// Now-list text naming WHICH profession and what to do (Nov 20: the old line just said "a profession needs you").
+// "" when nothing is due. Near the cap: train the next rank. Otherwise: recipes you can craft right now for a skill-up.
 function profNeedsYou(){
-  const g = state.game; if(!g || !g.profs) return false;
-  const own = ownedCounts();
-  return Object.entries(g.profs).some(([name, rank])=>{
-    if(!(PROF_GATHER[name] || PROF_CRAFT.test(name))) return false;
+  const g = state.game; if(!g || !g.profs) return "";
+  const own = ownedCounts(), out = [];
+  for(let [name, rank] of Object.entries(g.profs)){
+    if(!(PROF_GATHER[name] || PROF_CRAFT.test(name))) continue;
     rank = +rank||0; const {cap} = profCap(name, rank);
-    if(cap < 300 && rank >= 5 && cap - rank <= 5) return true;
+    if(cap < 300 && rank >= 5 && cap - rank <= 5){ out.push(`<b>${esc(name)} ${rank}/${cap}</b>: train the next rank at a trainer before you hit ${cap}`); continue; }
     const c = g.crafts && g.crafts[name];
-    return !!c && arrOf(c.list).some(r=>(r.d==="o"||r.d==="y") && arrOf(r.r).length && arrOf(r.r).every(x=>own.of(x) >= (x.n||1)));
-  });
+    const can = c ? arrOf(c.list).filter(r=>(r.d==="o"||r.d==="y") && arrOf(r.r).length && arrOf(r.r).every(x=>own.of(x) >= (x.n||1))) : [];
+    if(can.length) out.push(`<b>${esc(name)} ${rank}/${cap}</b>: you have the mats for ${can.slice(0,2).map(r=>`<b>${esc(r.name)}</b>`).join(" and ")}${can.length>2?` (+${can.length-2} more)`:""}, a skill-up each`);
+  }
+  return out.join("; ");
 }
 function renderProfs(){
   const box = $("#profHelper"); if(!box) return;
@@ -4154,7 +4170,7 @@ function renderMarket(){
   const old = info.full && Date.now()/1000 - info.full > 2*86400;
   head.innerHTML = `<span class="mpill">${(+info.n).toLocaleString()} prices</span><span class="mpill${old?" warn":""}">scanned ${esc(ago(info.full||info.t))}${old?" · rescan":""}</span><span class="mpill">you have <b>${fmtCoin(money)}</b></span>`+
     (p.cost ? `<span class="mpill gold">shopping list <b>${fmtCoin(p.cost)}</b></span>` : "");
-  const card = (tag, rows, empty, foot = "") => `<article class="card mk"><span class="tag">${tag}</span>${rows.length ? `<ul class="mlist">${rows.join("")}</ul>` : `<p class="muted">${empty}</p>`}${foot}</article>`;
+  const card = (tag, rows, empty, foot = "", cls = "") => `<article class="card mk${cls}"><span class="tag">${tag}</span>${rows.length ? `<ul class="mlist">${rows.join("")}</ul>` : `<p class="muted">${empty}</p>`}${foot}</article>`;
   const need = hasShop ? "" : ` <span class="muted">Needs addon 0.8: run <code>/grimoire scan</code> once more.</span>`;
   const gearRows = p.gear.map(({it, gain, slot, best, pricier})=>{
     const cur = g.gear && g.gear[String(slot)];
@@ -4180,7 +4196,7 @@ function renderMarket(){
     card(`Gear upgrades on the AH`, gearRows, (hasShop ? "Nothing on the AH beats your gear right now." : "No gear data yet.") + need,
       (gearRows.length ? `<p class="mfoot">All ${gearRows.length}: <b>${fmtCoin(p.gear.reduce((a,x)=>a+x.it.ah,0))}</b>. Each one costs at most ${fmtCoin(p.budget)} (8% of your gold) and earns 1 point per 20s or better: you replace levelling gear every few levels, so pricier upgrades rarely pay off.</p>` : "")+
       (p.skipped.length ? `<p class="muted mfoot">Too pricey for what they add: ${p.skipped.map(x=>`${esc(x.it.name)} (+${x.gain} pts, ${fmtCoin(x.it.ah)})`).join(", ")}.</p>` : "")+
-      (gearRows.length ? `<p class="muted mfoot">Points use your stat weights (Item worth). Hover a row for its stats; check the listing in game before buying.</p>` : ""))+
+      (gearRows.length ? `<p class="muted mfoot">Points use your stat weights (Item worth). Hover a row for its stats; check the listing in game before buying.</p>` : ""), gearRows.length > 3 ? " mk-wide" : "")+
     card(`Shopping list`, buyRows, (hasShop ? "Nothing you need right now." : "No bag or potion data yet.") + need,
       p.cost ? `<p class="mfoot">Total <b>${fmtCoin(p.cost)}</b> of your ${fmtCoin(money)}.</p>` : "")+
     card(`Sell on the AH`, sellRows, `Nothing in your bags sells for clearly more than a vendor pays. Vendor the rest.`,
@@ -4308,7 +4324,8 @@ function renderNow(){
   // Class quest coming up (or overdue) and not ticked.
   const cq = CHARS[CHAR].checks.flatMap(gr=>gr.items).find(([id, label])=>{ const lv = lvlOf(label); return lv != null && lv <= L + 4 && !state.checks[id]; });
   if(cq) add(6, "Class quest", `${esc(cq[1])} <a href="#quests">details</a>`);
-  if(typeof profNeedsYou === "function" && profNeedsYou()) add(7, "Professions", `A profession needs you: capped skill or skill-ups to craft. <a href="#extras">helper</a>`);
+  const pn = typeof profNeedsYou === "function" ? profNeedsYou() : "";
+  if(pn) add(7, "Professions", `${pn}. <a href="#extras">helper</a>`);
   const mk = marketNow(); if(mk) add(4.5, "Market", mk);
   if(CHAR==="wl" && L >= 25) add(8, "Legacy", `Unlocked at 25: open the Legacy screen. Suggested start: <b>Thrill of Adventure</b>, then Well Rested, then Frequent Flier if you can reach it. <a href="#extras">build</a>`);
 
