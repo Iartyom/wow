@@ -1,5 +1,5 @@
 {
- "fetched": "2026-11-19T22:12:35.273Z",
+ "fetched": "2026-11-20T13:00:19.055Z",
  "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/dark-bober",
  "character": {
   "avatar": {
@@ -1768,8 +1768,8 @@
   },
   "isRemix": false,
   "lastUpdatedTimestamp": {
-   "epoch": 1795106932000,
-   "iso8601": "2026-11-19T16:48:52Z"
+   "epoch": 1795157719000,
+   "iso8601": "2026-11-20T06:55:19Z"
   },
   "level": 26,
   "media": {
@@ -1801,7 +1801,7 @@
        "id": 2937,
        "maxSkillPoints": 75,
        "name": "Alchemy",
-       "skillPoints": 64
+       "skillPoints": 65
       }
      ]
     },
