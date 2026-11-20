@@ -1407,13 +1407,17 @@ section:not(.fold) .foldwhy{display:none}
       <article class="card" data-only="wl">
         <span class="tag">Legacy build · 16 points</span>
         <p>Points are shared by the account, but each character can spend only <b>16</b>. The first point comes at level 25, then one each for Alchemy 150, 225 and 300, and more from dungeon sets, raids and other classes. Extra points only unlock cosmetics (Innkeeper Wiley, Ratchet).</p>
+        <!-- Nov 20 rework: the old card said "skip Talented"; Method.gg's pure-leveling build and the wiki tree show Talented
+             has 5 ranks (full talents up to 5 levels early) behind a maxed Well Rested. No perk adds XP directly. -->
+        <p><b>The leveling build</b> (all 16 points). No perk adds XP to kills or quests. These three make leveling faster in other ways:</p>
         <ol class="rot">
-          <li><b>Thrill of Adventure</b> (5): each kill restores health and mana outside dungeons. You kill all day, so it means less Life Tap and less waiting for the priest.</li>
-          <li><b>Well Rested</b> (5): rested XP builds faster and caps higher. Log out at inns.</li>
-          <li><b>Frequent Flier</b> (1): flights cost half and fly 20% faster. Take it as soon as the tree lets you reach it.</li>
-          <li>Rest: <b>Bountiful Harvest</b> (more scarce herbs, for gold) or <b>Working Overtime</b> (faster Alchemy skill-ups, which also earn Legacy points).</li>
+          <li><b>Thrill of Adventure</b> (5): each kill outside dungeons gives back up to 5% health and mana. Less Life Tap, less waiting for the priest, less drinking. Take this first: it pays off from the very next kill.</li>
+          <li><b>Well Rested</b> (5): rested XP builds faster and caps higher, so each session starts with more double XP. This is the only perk that touches XP. Log out at inns. It's also required for Talented.</li>
+          <li><b>Talented</b> (5): talent points arrive up to 5 levels early, so you have the full tree at 55. At your level that's Shadow Mastery, Dark Pact and Siphon Life sooner.</li>
+          <li><b>Field Medicine</b> (1): the last point.</li>
         </ol>
-        <p class="muted"><b>Skip:</b> Talented (one talent point early, nothing at 60), Reagent Economy (warlocks use Soul Shards, not bought reagents), and the reputation, honor, fishing and cooking perks. <span class="badge unv">verify</span> No source shows how many points each row of the tree needs, so check it in game. A respec costs about 10g at your class trainer.</p>
+        <p class="muted"><b>At 60:</b> respec out of Talented (about 10g at your class trainer), because it does nothing once every talent point is unlocked. Then switch to Frequent Flier (needs Field Guide first) and the profession perks (Bountiful Harvest for herbs, Working Overtime for Alchemy).</p>
+        <p class="muted"><b>Skip while leveling:</b> Frequent Flier (4 points with Field Guide, for flights you take a few times a session), Reagent Economy (warlocks use Soul Shards) and the reputation, honor, fishing and cooking perks. <span class="badge unv">verify</span> Guides disagree on exact numbers and on prerequisites (some say Thrill needs Well Rested first). If the game won't let you take Thrill of Adventure first, start with Well Rested.</p>
       </article>
       <article class="card">
         <span class="tag">Systems to use</span>
@@ -1703,7 +1707,7 @@ section:not(.fold) .foldwhy{display:none}
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-20T15:47:41Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-20T18:17:02Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -4591,7 +4595,7 @@ function renderNow(){
   const pn = typeof profNeedsYou === "function" ? profNeedsYou() : "";
   if(pn) add(7, "Professions", `${pn}. <a href="#extras">helper</a>`);
   const mk = marketNow(); if(mk) add(4.5, "Market", mk);
-  if(CHAR==="wl" && L >= 25) add(8, "Legacy", `Unlocked at 25: open the Legacy screen. Suggested start: <b>Thrill of Adventure</b>, then Well Rested, then Frequent Flier if you can reach it. <a href="#extras">build</a>`);
+  if(CHAR==="wl" && L >= 25) add(8, "Legacy", `Unlocked at 25: open the Legacy screen. Leveling build: <b>Thrill of Adventure</b>, then Well Rested, then Talented (talent points up to 5 levels early). <a href="#extras">build</a>`);
 
   items.sort((a,b)=>a.p-b.p);
   box.innerHTML = items.map(it=>`<li${it.hi?' class="hi"':""}><span class="ntag">${it.tag}</span><div>${it.html}</div></li>`).join("")
