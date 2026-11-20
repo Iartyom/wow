@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+﻿<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
 <title>Forsaken Grimoire</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -761,7 +761,7 @@ section:not(.fold) .foldwhy{display:none}
   </div>
   <div class="wrap">
     <nav class="toc" aria-label="Sections">
-      <a href="#newbie" data-only="pal">Start here</a><a href="#now">Now</a><a href="#market">Market</a><a href="#game">From the game</a><a href="#items">Item worth</a><a href="#kit">Your kit</a><a href="#questlog">Quest log</a><a href="#rotation">Your spec</a><a href="#training" data-only="wl">Talents &amp; trainer</a><a href="#ahead">Road ahead</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a>
+      <a href="#newbie" data-only="pal">Start here</a><a href="#now">Now</a><a href="#market">Market</a><a href="#game">From the game</a><a href="#items">Item worth</a><a href="#kit">Your kit</a><a href="#questlog">Quest log</a><a href="#rotation">Your spec</a><a href="#training" data-only="wl">Talents &amp; trainer</a><a href="#ahead">Road ahead</a><a href="#map">Map</a><a href="#route">Leveling route</a><a href="#dungeons">Dungeons</a><a href="#quests">Class quests</a><a href="#extras">Profs &amp; gold</a><a href="#notes">Notes</a><a href="#setup">Setup</a><a href="#sources">Sources</a><a href="#portal">Countdown</a>
     </nav>
     <div class="foldall"><button type="button" class="foldbtn" data-foldall="auto">Show only what matters now</button><button type="button" class="foldbtn" data-foldall="open">Open everything</button><button type="button" class="foldbtn" id="basicsBtn" aria-pressed="false">Beginner tips</button><span class="updline" id="updated"></span></div>
   </div>
@@ -1466,8 +1466,245 @@ section:not(.fold) .foldwhy{display:none}
   </div>
 </section>
 
+<!-- ---- Dark Portal countdown (Nov 20): you set when you can play, a giant portal counts it down and opens at zero.
+     Self-contained: own CSS + JS, state in localStorage only (per browser, nothing synced or sent anywhere). ---- -->
+<section id="portal" class="ptl-sec">
+  <div class="wrap">
+    <header><p class="eyebrow">The Dark Portal</p><h2>Until you can play</h2><p>Set when you're free. The portal counts down and opens when it's time.</p></header>
+    <div class="ptl" id="ptl" data-state="idle">
+      <div class="ptl-stage">
+        <div class="ptl-embers" id="ptlEmbers" aria-hidden="true"></div>
+        <div class="ptl-void" aria-hidden="true"><i></i></div>
+        <svg class="ptl-ring" viewBox="0 0 600 600" aria-hidden="true">
+          <defs>
+            <radialGradient id="ptlStone" cx="50%" cy="50%" r="50%">
+              <stop offset="78%" stop-color="#3b352b"/><stop offset="90%" stop-color="#211d17"/><stop offset="100%" stop-color="#0d0b08"/>
+            </radialGradient>
+            <linearGradient id="ptlSpike" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#5a5042"/><stop offset=".55" stop-color="#2a251d"/><stop offset="1" stop-color="#14110c"/>
+            </linearGradient>
+            <filter id="ptlGlow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <path id="ptlCirc" d="M300,300 m-214,0 a214,214 0 1,1 428,0 a214,214 0 1,1 -428,0"/>
+          </defs>
+          <g id="ptlSpikes"></g>
+          <circle cx="300" cy="300" r="262" fill="none" stroke="url(#ptlStone)" stroke-width="44"/>
+          <circle class="ptl-blocks" cx="300" cy="300" r="262" fill="none" stroke="#0b0907" stroke-width="44" stroke-dasharray="2 46"/>
+          <circle cx="300" cy="300" r="284" fill="none" stroke="#6b5a3a" stroke-width="2" opacity=".7"/>
+          <circle cx="300" cy="300" r="240" fill="none" stroke="#6b5a3a" stroke-width="2" opacity=".7"/>
+          <g id="ptlRivets"></g>
+          <circle class="ptl-track" cx="300" cy="300" r="226" fill="none" stroke-width="7"/>
+          <circle class="ptl-prog" id="ptlProg" cx="300" cy="300" r="226" fill="none" stroke-width="7" stroke-linecap="round" filter="url(#ptlGlow)" transform="rotate(-90 300 300)"/>
+          <g class="ptl-runes"><text><textPath href="#ptlCirc" textLength="1330">ᚠᛟᚱᛋᚨᚴᛖᚾ ✦ ᚹᛖ ᚨᚱᛖ ᚾᛟᛏ ᛏᚺᛖ ᛋᚲᛟᚢᚱᚷᛖ ✦ ᛞᛖᚨᚦ ᛏᛟ ᛏᚺᛖ ᛚᛁᚹᛁᚾᚷ ✦ ᚺᛖᚱ ᛞᚨᚱᚲ ᛚᚨᛞᚤ ᚹᚨᛏᚲᚺᛖᛋ ✦</textPath></text></g>
+        </svg>
+        <div class="ptl-core">
+          <div class="ptl-digits" id="ptlDigits" aria-live="off"></div>
+          <div class="ptl-open" aria-hidden="true">Log in</div>
+          <div class="ptl-msg" id="ptlMsg" aria-live="polite">Set when you can play</div>
+        </div>
+      </div>
+      <div class="ptl-ctl">
+        <div class="ptl-presets" role="group" aria-label="Quick times">
+          <button type="button" data-add="15">+15 min</button><button type="button" data-add="30">+30 min</button>
+          <button type="button" data-add="60">+1 hour</button><button type="button" data-add="120">+2 hours</button>
+          <button type="button" data-at="20">Tonight 8 pm</button><button type="button" data-at="20" data-day="1">Tomorrow 8 pm</button>
+        </div>
+        <div class="ptl-row">
+          <label class="ptl-at">Play at <input type="datetime-local" id="ptlAt"></label>
+          <button type="button" class="ptl-btn" id="ptlGo">Open the portal</button>
+          <button type="button" class="ptl-btn ghost" id="ptlClear">Clear</button>
+          <label class="ptl-snd"><input type="checkbox" id="ptlSnd" checked> Gong when it opens</label>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<style>
+.ptl-sec{position:relative;overflow:hidden;background:
+  radial-gradient(55% 45% at 50% 52%, rgba(122,63,192,.20), transparent 70%),
+  radial-gradient(40% 30% at 50% 60%, rgba(155,212,74,.08), transparent 70%)}
+.ptl-sec header{text-align:center}.ptl-sec header p{margin-inline:auto}
+.ptl-stage{position:relative;width:min(100%,640px);aspect-ratio:1;margin:var(--s5) auto var(--s4)}
+.ptl-ring{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.ptl-track{stroke:rgba(155,212,74,.12)}
+.ptl-prog{stroke:var(--fel);transition:stroke-dashoffset 1s linear,stroke .6s}
+.ptl-runes text{font:600 19px/1 "Segoe UI Symbol","Noto Sans Runic",var(--f-mono);fill:#d6b25e;opacity:.75;letter-spacing:2px}
+.ptl-runes{transform-origin:300px 300px;animation:ptlSpin 90s linear infinite}
+.ptl-spike{fill:url(#ptlSpike);stroke:#0b0907;stroke-width:2}
+.ptl-rivet{fill:#8a7550;stroke:#2a2216;stroke-width:1.5}
+/* swirling void: a dark conic vortex plus counter-rotating arms */
+.ptl-void{position:absolute;inset:17%;border-radius:50%;overflow:hidden;
+  background:conic-gradient(from 0deg,#14081f,#4b1f78,#1b2a0c,#6a33a8,#0d0716,#3a6d14,#2a0f45,#14081f);
+  box-shadow:inset 0 0 90px 30px #000,0 0 70px rgba(155,212,74,.18),0 0 140px rgba(122,63,192,.25);
+  animation:ptlSpin 22s linear infinite;filter:saturate(1.15)}
+.ptl-void::before{content:"";position:absolute;inset:-20%;
+  background:repeating-conic-gradient(from 0deg,rgba(155,212,74,.22) 0 5deg,transparent 5deg 24deg,rgba(165,127,224,.2) 24deg 29deg,transparent 29deg 45deg);
+  -webkit-mask:radial-gradient(circle,transparent 18%,#000 55%,transparent 72%);mask:radial-gradient(circle,transparent 18%,#000 55%,transparent 72%);
+  animation:ptlSpin 9s linear infinite reverse;filter:blur(3px)}
+.ptl-void::after{content:"";position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle,rgba(4,6,3,.92) 0 34%,rgba(4,6,3,.55) 50%,transparent 70%)}
+.ptl-void i{position:absolute;inset:30%;border-radius:50%;background:radial-gradient(circle,rgba(155,212,74,.35),transparent 70%);
+  animation:ptlBreath 4s ease-in-out infinite;z-index:1;mix-blend-mode:screen}
+.ptl-core{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--s2);text-align:center;pointer-events:none}
+.ptl-digits{display:flex;align-items:flex-start;gap:clamp(4px,1.2vw,12px);font-family:"Cinzel",var(--f-display);font-weight:800;
+  font-size:clamp(2rem,8.4vw,4.6rem);line-height:1;color:#eaffd2;font-variant-numeric:tabular-nums;
+  text-shadow:0 0 10px rgba(155,212,74,.9),0 0 34px rgba(155,212,74,.55),0 2px 0 #000}
+.ptl-digits .u{display:flex;flex-direction:column;align-items:center;min-width:1.35em}
+.ptl-digits .u b{font-weight:800;display:block}
+.ptl-digits .u i{font:600 clamp(.55rem,1.6vw,.72rem)/1 var(--f-mono);letter-spacing:.22em;text-transform:uppercase;font-style:normal;color:#c9b98a;text-shadow:none;margin-top:8px;opacity:.85}
+.ptl-digits .sep{animation:ptlBlink 1s steps(2,start) infinite;opacity:.8}
+.ptl-digits b.tick{animation:ptlTick .45s ease-out}
+.ptl-msg{font:500 clamp(.8rem,2.2vw,1rem)/1.3 var(--f-body);color:#d8cfb8;max-width:60%;text-shadow:0 1px 6px #000}
+.ptl-open{display:none;font-family:var(--f-black);font-weight:800;font-size:clamp(3rem,13vw,7.5rem);line-height:.9;
+  background:linear-gradient(100deg,#f7e3a1 0%,#d6b25e 30%,#fffbe8 50%,#d6b25e 70%,#f7e3a1 100%);background-size:220% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 18px rgba(214,178,94,.8)) drop-shadow(0 3px 0 #000);
+  animation:ptlShine 2.4s linear infinite}
+/* embers rising through the portal */
+.ptl-embers{position:absolute;inset:8%;border-radius:50%;pointer-events:none;z-index:2}
+.ptl-embers span{position:absolute;bottom:12%;width:var(--sz,4px);height:var(--sz,4px);border-radius:50%;
+  background:radial-gradient(circle,#f3ffd9,var(--fel) 45%,transparent 70%);box-shadow:0 0 8px var(--fel);
+  opacity:0;animation:ptlEmber var(--d,6s) ease-in infinite;animation-delay:var(--dl,0s)}
+.ptl-embers span.v{background:radial-gradient(circle,#f0e4ff,var(--void) 45%,transparent 70%);box-shadow:0 0 8px var(--void)}
+/* states */
+.ptl[data-state=idle] .ptl-prog{stroke-dashoffset:var(--c)!important}
+.ptl[data-state=idle] .ptl-void{filter:saturate(.5) brightness(.7)}
+.ptl[data-state=final] .ptl-digits{color:#fff3cf;text-shadow:0 0 10px rgba(214,178,94,.95),0 0 40px rgba(214,178,94,.6),0 2px 0 #000}
+.ptl[data-state=final] .ptl-prog{stroke:var(--gold)}
+.ptl[data-state=final] .ptl-void{animation-duration:6s}
+.ptl[data-state=final] .ptl-void::before{animation-duration:3s}
+.ptl[data-state=final] .ptl-stage{animation:ptlQuake .5s ease-in-out infinite}
+.ptl[data-state=open] .ptl-digits{display:none}
+.ptl[data-state=open] .ptl-open{display:block}
+.ptl[data-state=open] .ptl-prog{stroke:var(--gold)}
+.ptl[data-state=open] .ptl-void{animation-duration:4s;box-shadow:inset 0 0 60px 10px #000,0 0 90px rgba(155,212,74,.6),0 0 200px rgba(214,178,94,.35)}
+.ptl[data-state=open] .ptl-void::after{background:radial-gradient(circle,rgba(220,255,170,.55) 0 18%,rgba(155,212,74,.25) 40%,transparent 70%)}
+.ptl[data-state=open] .ptl-embers span{animation-duration:2.6s}
+.ptl[data-state=open] .ptl-msg{color:#f7e3a1;font-weight:700}
+/* controls */
+.ptl-ctl{display:flex;flex-direction:column;align-items:center;gap:var(--s3);max-width:760px;margin:0 auto}
+.ptl-presets{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--s2)}
+.ptl-presets button{font:600 .8rem/1 var(--f-mono);color:#d8cfb8;background:var(--surface-2);border:1px solid var(--line);border-radius:99px;padding:7px 12px;cursor:pointer}
+.ptl-presets button:hover{border-color:var(--fel-dim);color:var(--fel)}
+.ptl-row{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:var(--s3)}
+.ptl-at{display:flex;align-items:center;gap:var(--s2);font-family:"Cinzel",var(--f-display);color:#c9b98a;font-weight:700}
+.ptl-at input{color-scheme:dark;font:500 .95rem var(--f-mono);color:var(--fg);background:#0c0e0a;border:1px solid #6b5a3a;border-radius:4px;padding:7px 9px}
+/* WoW-style red-and-gold button */
+.ptl-btn{font:700 .95rem/1 "Cinzel",var(--f-display);letter-spacing:.04em;color:#ffd977;cursor:pointer;padding:10px 18px;border-radius:4px;
+  background:linear-gradient(#a3221a,#6b0f0a 55%,#4a0906);border:1px solid #d6b25e;box-shadow:inset 0 1px 0 rgba(255,220,150,.35),0 2px 0 #000,0 0 0 2px #2a0503;
+  text-shadow:0 1px 0 #000}
+.ptl-btn:hover{background:linear-gradient(#c22b21,#85150e 55%,#5c0c08);color:#fff0b8}
+.ptl-btn:active{transform:translateY(1px)}
+.ptl-btn.ghost{background:linear-gradient(#2b2a22,#17160f);color:#c9b98a;border-color:#6b5a3a}
+.ptl-snd{font-size:.85rem;color:var(--muted);display:flex;gap:6px;align-items:center}
+@keyframes ptlSpin{to{transform:rotate(360deg)}}
+@keyframes ptlBreath{50%{transform:scale(1.25);opacity:.6}}
+@keyframes ptlBlink{to{opacity:.25}}
+@keyframes ptlTick{from{transform:translateY(-6px);filter:brightness(1.8)}to{transform:none;filter:none}}
+@keyframes ptlShine{to{background-position:-220% 0}}
+@keyframes ptlQuake{25%{transform:translate(1px,-1px)}50%{transform:translate(-1px,1px)}75%{transform:translate(1px,1px)}}
+@keyframes ptlEmber{0%{opacity:0;transform:translate(0,0) scale(.6)}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx,0),-330%) scale(1.1)}}
+@media (max-width:520px){.ptl-msg{max-width:72%}.ptl-digits .u{min-width:1.2em}}
+</style>
+<script>
+/* Dark Portal countdown. State {start, end, snd} in localStorage "grimoirePortal" (wrapped: storage can be blocked).
+   start is when you set it, so the ring shows how much of the wait is behind you. */
+(function portal(){
+  const root = document.getElementById("ptl"); if(!root) return;
+  const KEY = "grimoirePortal", NS = "http://www.w3.org/2000/svg";
+  const $p = id => document.getElementById(id);
+  const digits = $p("ptlDigits"), msg = $p("ptlMsg"), prog = $p("ptlProg"), at = $p("ptlAt"), snd = $p("ptlSnd");
+  const C = 2*Math.PI*226; prog.style.strokeDasharray = C; root.style.setProperty("--c", C); prog.style.strokeDashoffset = C;
+  // Spikes and rivets around the stone ring (drawn once; a Dark Portal-ish crown of teeth).
+  const spikes = $p("ptlSpikes"), rivets = $p("ptlRivets");
+  for(let i = 0; i < 18; i++){
+    const a = i*20, tall = i % 3 === 0 ? 44 : 26;
+    const p = document.createElementNS(NS, "polygon"); p.setAttribute("class", "ptl-spike");
+    p.setAttribute("points", `288,22 312,22 300,${22 - tall}`); p.setAttribute("transform", `rotate(${a} 300 300)`); spikes.appendChild(p);
+    const r = document.createElementNS(NS, "circle"); r.setAttribute("class", "ptl-rivet"); r.setAttribute("r", "5");
+    r.setAttribute("cx", 300 + 262*Math.cos((a+10)*Math.PI/180)); r.setAttribute("cy", 300 + 262*Math.sin((a+10)*Math.PI/180)); rivets.appendChild(r);
+  }
+  const emb = $p("ptlEmbers");
+  for(let i = 0; i < 30; i++){
+    const s = document.createElement("span"); if(i % 4 === 0) s.className = "v";
+    s.style.cssText = `left:${18 + Math.random()*64}%;--sz:${2 + Math.random()*4}px;--d:${4 + Math.random()*5}s;--dl:${-Math.random()*8}s;--dx:${(Math.random()-.5)*80}px`;
+    emb.appendChild(s);
+  }
+  let st = {}; try{ st = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; }catch(e){ st = {}; }
+  const save = () => { try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} };
+  if(st.snd === false) snd.checked = false;
+  const baseTitle = document.title;
+  const pad = n => String(n).padStart(2, "0");
+  const localVal = t => { const d = new Date(t); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+  if(st.end) at.value = localVal(st.end);
+  // Synthesised gong (no audio file): low partials with a long decay plus a high shimmer. Needs a click first (browser rule),
+  // which setting the time provides, so the context is created/resumed there.
+  let ac = null;
+  const unlock = () => { try{ ac = ac || new (window.AudioContext || window.webkitAudioContext)(); ac.resume && ac.resume(); }catch(e){} };
+  function gong(){
+    if(!ac || !snd.checked) return;
+    const t = ac.currentTime, out = ac.createGain(); out.gain.value = .5; out.connect(ac.destination);
+    [[73,1],[110,.8],[146.8,.55],[220,.35],[293.7,.2],[587,.08],[880,.05]].forEach(([f, v], i)=>{
+      const o = ac.createOscillator(), g = ac.createGain(); o.type = i < 3 ? "sine" : "triangle"; o.frequency.value = f;
+      o.frequency.exponentialRampToValueAtTime(f*0.985, t + 6);
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v*.5, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + 6 + i*.2);
+      o.connect(g); g.connect(out); o.start(t); o.stop(t + 7);
+    });
+  }
+  let lastShown = "", opened = false;
+  function unit(v, label){ return `<span class="u"><b data-v="${v}">${v}</b><i>${label}</i></span>`; }
+  function render(){
+    const now = Date.now();
+    if(!st.end){
+      root.dataset.state = "idle"; digits.innerHTML = unit("--","hours") + `<span class="sep">:</span>` + unit("--","min") + `<span class="sep">:</span>` + unit("--","sec");
+      msg.textContent = "Set when you can play"; document.title = baseTitle; lastShown = ""; return;
+    }
+    const left = Math.max(0, st.end - now), total = Math.max(1, st.end - (st.start || now));
+    prog.style.strokeDashoffset = C * (1 - Math.min(1, left/total));   // full ring at the start, drains to zero
+    if(left <= 0){
+      root.dataset.state = "open";
+      msg.textContent = `The gates are open. Go, ${(typeof charName === "function" && typeof CHAR !== "undefined" && charName(CHAR)) || "Forsaken"}.`;
+      document.title = "⚔ Time to play! · " + baseTitle;
+      if(!opened){ opened = true; if(now - st.end < 5000) gong(); }
+      return;
+    }
+    opened = false;
+    const s = Math.floor(left/1000), d = Math.floor(s/86400), h = Math.floor(s%86400/3600), m = Math.floor(s%3600/60), sec = s%60;
+    root.dataset.state = left <= 60000 ? "final" : "running";
+    const parts = (d ? [unit(d, d===1?"day":"days")] : []).concat([unit(pad(h),"hours"), unit(pad(m),"min"), unit(pad(sec),"sec")]);
+    const html = parts.join(`<span class="sep">:</span>`);
+    if(html !== lastShown){
+      // Re-render, then flick only the numbers that changed (a small drop + flash).
+      const prev = [...digits.querySelectorAll("b")].map(b=>b.dataset.v);
+      digits.innerHTML = html; lastShown = html;
+      [...digits.querySelectorAll("b")].forEach((b, i)=>{ if(prev[i] !== undefined && prev[i] !== b.dataset.v) b.classList.add("tick"); });
+    }
+    const when = new Date(st.end);
+    msg.textContent = left <= 60000 ? "The portal stirs… get ready." :
+      `Opens ${when.toLocaleDateString() === new Date().toLocaleDateString() ? "today" : when.toLocaleDateString(undefined,{weekday:"long"})} at ${when.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"})}`;
+    document.title = `${d ? d+"d " : ""}${pad(h)}:${pad(m)}:${pad(sec)} · ${baseTitle}`;
+  }
+  function start(end){
+    unlock();
+    if(!(end > Date.now())){ msg.textContent = "That time has already passed. Pick a later one."; return; }
+    st = {start: Date.now(), end, snd: snd.checked}; save(); at.value = localVal(end); opened = false; render();
+  }
+  root.querySelectorAll(".ptl-presets button").forEach(b => b.addEventListener("click", () => {
+    let t;
+    if(b.dataset.add) t = Date.now() + (+b.dataset.add)*60000;
+    else { const d = new Date(); d.setHours(+b.dataset.at, 0, 0, 0); if(b.dataset.day) d.setDate(d.getDate() + 1); else if(d <= new Date()) d.setDate(d.getDate() + 1); t = +d; }
+    start(t);
+  }));
+  $p("ptlGo").addEventListener("click", () => { const t = at.value ? +new Date(at.value) : NaN; if(isNaN(t)) { msg.textContent = "Pick a date and time first."; at.focus(); return; } start(t); });
+  at.addEventListener("keydown", e => { if(e.key === "Enter") $p("ptlGo").click(); });
+  $p("ptlClear").addEventListener("click", () => { st = {snd: snd.checked}; save(); at.value = ""; render(); });
+  snd.addEventListener("change", () => { st.snd = snd.checked; save(); if(snd.checked) unlock(); });
+  render();
+  // setTimeout aligned to the next whole second keeps the digits in step with the clock.
+  (function loop(){ render(); setTimeout(loop, 1000 - Date.now() % 1000 + 5); })();
+})();
+</script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-20T15:22:47Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-20T15:47:41Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
