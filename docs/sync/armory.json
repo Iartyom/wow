@@ -1,5 +1,5 @@
 {
- "fetched": "2026-11-20T21:12:16.242Z",
+ "fetched": "2026-11-21T02:24:13.576Z",
  "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/dark-bober",
  "character": {
   "avatar": {
@@ -261,8 +261,8 @@
      "display_string": "Item Level 20"
     },
     "durability": {
-     "value": 51,
-     "display_string": "Durability 51 / 70"
+     "value": 41,
+     "display_string": "Durability 41 / 70"
     }
    },
    "foot": {
@@ -394,8 +394,8 @@
      "display_string": "Item Level 24"
     },
     "durability": {
-     "value": 22,
-     "display_string": "Durability 22 / 30"
+     "value": 18,
+     "display_string": "Durability 18 / 30"
     }
    },
    "hand": {
@@ -516,8 +516,8 @@
      "display_string": "Item Level 23"
     },
     "durability": {
-     "value": 15,
-     "display_string": "Durability 15 / 20"
+     "value": 11,
+     "display_string": "Durability 11 / 20"
     }
    },
    "head": {
@@ -637,8 +637,8 @@
      "display_string": "Item Level 32"
     },
     "durability": {
-     "value": 41,
-     "display_string": "Durability 41 / 45"
+     "value": 33,
+     "display_string": "Durability 33 / 45"
     }
    },
    "leftFinger": {
@@ -855,8 +855,8 @@
      "display_string": "Item Level 24"
     },
     "durability": {
-     "value": 38,
-     "display_string": "Durability 38 / 50"
+     "value": 26,
+     "display_string": "Durability 26 / 50"
     }
    },
    "neck": {
@@ -954,12 +954,12 @@
     "is_subclass_hidden": true
    },
    "offhand": {
-    "id": 5323,
+    "id": 281294,
     "item": {
      "key": {
-      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/5323?namespace=static-forever-eu"
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/item/281294?namespace=static-forever-eu"
      },
-     "id": 5323
+     "id": 281294
     },
     "slot": {
      "type": "OFF_HAND",
@@ -971,22 +971,22 @@
      "type": "UNCOMMON",
      "name": "Uncommon"
     },
-    "name": "Everglow Lantern",
+    "name": "Expended Apothecary Vial",
     "media": {
      "key": {
-      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/5323?namespace=static-forever-eu"
+      "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/281294?namespace=static-forever-eu"
      },
-     "id": 5323,
+     "id": 281294,
      "content": {
       "_links": {
        "self": {
-        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/5323?namespace=static-forever-eu"
+        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/media/item/281294?namespace=static-forever-eu"
        }
       },
       "assets": [
        {
         "key": "icon",
-        "value": "https://render.worldofwarcraft.com/forever-eu/icons/56/134249.jpg"
+        "value": "https://render.worldofwarcraft.com/forever-eu/icons/56/134743.jpg"
        }
       ]
      }
@@ -1016,6 +1016,22 @@
     "stats": [
      {
       "type": {
+       "type": "INTELLECT",
+       "name": "Intellect"
+      },
+      "value": 3,
+      "display": {
+       "display_string": "+3 Intellect",
+       "color": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+       }
+      }
+     },
+     {
+      "type": {
        "type": "SPIRIT",
        "name": "Spirit"
       },
@@ -1032,25 +1048,13 @@
       "is_equip_bonus": true
      }
     ],
-    "spells": [
-     {
-      "spell": {
-       "key": {
-        "href": "https://partner-eu.api.blizzard.net/GameDataService/v1/wow/spell/14053?namespace=static-forever-eu"
-       },
-       "name": "Heal",
-       "id": 14053
-      },
-      "description": "Use: Heal your target for 135 to 165. (30 Min Cooldown)"
-     }
-    ],
     "sell_price": {
-     "value": 1632,
+     "value": 1033,
      "display_strings": {
       "header": "Sell Price:",
       "gold": "0",
-      "silver": "16",
-      "copper": "32"
+      "silver": "10",
+      "copper": "33"
      }
     },
     "level": {
@@ -1187,8 +1191,8 @@
      "display_string": "Item Level 28"
     },
     "durability": {
-     "value": 40,
-     "display_string": "Durability 40 / 50"
+     "value": 38,
+     "display_string": "Durability 38 / 50"
     }
    },
    "rightFinger": {
@@ -1427,8 +1431,8 @@
      "display_string": "Item Level 24"
     },
     "durability": {
-     "value": 28,
-     "display_string": "Durability 28 / 40"
+     "value": 22,
+     "display_string": "Durability 22 / 40"
     }
    },
    "waist": {
@@ -1547,8 +1551,8 @@
      "display_string": "Item Level 23"
     },
     "durability": {
-     "value": 14,
-     "display_string": "Durability 14 / 20"
+     "value": 12,
+     "display_string": "Durability 12 / 20"
     }
    },
    "weapon": {
@@ -1795,8 +1799,8 @@
      "display_string": "Item Level 24"
     },
     "durability": {
-     "value": 14,
-     "display_string": "Durability 14 / 20"
+     "value": 9,
+     "display_string": "Durability 9 / 20"
     }
    }
   },
@@ -1808,8 +1812,8 @@
   },
   "isRemix": false,
   "lastUpdatedTimestamp": {
-   "epoch": 1795203657000,
-   "iso8601": "2026-11-20T19:40:57Z"
+   "epoch": 1795216884000,
+   "iso8601": "2026-11-20T23:21:24Z"
   },
   "level": 27,
   "media": {
@@ -1857,7 +1861,7 @@
        "id": 2944,
        "maxSkillPoints": 150,
        "name": "Herbalism",
-       "skillPoints": 78
+       "skillPoints": 79
       }
      ]
     }
@@ -1899,8 +1903,8 @@
   },
   "pvp": {
    "honorableKills": {
-    "tier": 0,
-    "value": 78
+    "tier": 100,
+    "value": 173
    },
    "rank": {
     "value": 0
@@ -2010,7 +2014,7 @@
       "slug": "mana",
       "value": {
        "type": "WHOLE",
-       "value": 1408
+       "value": 1453
       }
      },
      {
@@ -2100,7 +2104,7 @@
        "slug": "mana",
        "value": {
         "type": "WHOLE",
-        "value": 1408
+        "value": 1453
        }
       },
       {
@@ -2205,15 +2209,15 @@
         },
         "bonus": {
          "type": "WHOLE",
-         "value": 25
+         "value": 28
         },
         "effective": {
          "type": "WHOLE",
-         "value": 76
+         "value": 79
         },
         "rating": {
          "type": "WHOLE",
-         "value": 76
+         "value": 79
         },
         "type": "ENHANCED"
        },
@@ -2221,7 +2225,7 @@
        "slug": "intellect",
        "value": {
         "type": "WHOLE",
-        "value": 76
+        "value": 79
        }
       },
       {
@@ -2280,7 +2284,7 @@
        "slug": "critical-strike",
        "value": {
         "type": "PERCENTAGE",
-        "value": 1.2906001
+        "value": 1.3305999
        }
       },
       {
@@ -2527,7 +2531,7 @@
        "slug": "dodge",
        "value": {
         "type": "PERCENTAGE",
-        "value": 4.7305994
+        "value": 4.8106
        }
       },
       {
@@ -2601,7 +2605,7 @@
      "slug": "mana",
      "value": {
       "type": "WHOLE",
-      "value": 1408
+      "value": 1453
      }
     },
     {
@@ -2639,15 +2643,15 @@
       },
       "bonus": {
        "type": "WHOLE",
-       "value": 25
+       "value": 28
       },
       "effective": {
        "type": "WHOLE",
-       "value": 76
+       "value": 79
       },
       "rating": {
        "type": "WHOLE",
-       "value": 76
+       "value": 79
       },
       "type": "ENHANCED"
      },
@@ -2655,7 +2659,7 @@
      "slug": "intellect",
      "value": {
       "type": "WHOLE",
-      "value": 76
+      "value": 79
      }
     },
     {
@@ -2736,7 +2740,7 @@
      "slug": "critical-strike",
      "value": {
       "type": "PERCENTAGE",
-      "value": 1.2906001
+      "value": 1.3305999
      }
     },
     {
@@ -2799,6 +2803,41 @@
   "region": "eu",
   "reputations": [
    {
+    "id": "horde-forces",
+    "max": false,
+    "name": "Horde Forces",
+    "reputations": [
+     {
+      "id": "the-defilers",
+      "max": false,
+      "maxValue": 3000,
+      "name": "The Defilers",
+      "standing": "Neutral",
+      "standingType": {
+       "id": 3,
+       "name": "Neutral",
+       "enum": "NEUTRAL",
+       "slug": "neutral"
+      },
+      "value": 250
+     },
+     {
+      "id": "warsong-outriders",
+      "max": false,
+      "maxValue": 3000,
+      "name": "Warsong Outriders",
+      "standing": "Neutral",
+      "standingType": {
+       "id": 3,
+       "name": "Neutral",
+       "enum": "NEUTRAL",
+       "slug": "neutral"
+      },
+      "value": 255
+     }
+    ]
+   },
+   {
     "id": "horde",
     "max": false,
     "name": "Horde",
@@ -2815,7 +2854,7 @@
        "enum": "FRIENDLY",
        "slug": "friendly"
       },
-      "value": 713
+      "value": 851
      },
      {
       "id": "orgrimmar",
@@ -2829,7 +2868,7 @@
        "enum": "FRIENDLY",
        "slug": "friendly"
       },
-      "value": 1801
+      "value": 1938
      },
      {
       "id": "thunder-bluff",
@@ -2843,7 +2882,7 @@
        "enum": "NEUTRAL",
        "slug": "neutral"
       },
-      "value": 2521
+      "value": 2771
      },
      {
       "id": "undercity",
@@ -2857,7 +2896,7 @@
        "enum": "HONORED",
        "slug": "honored"
       },
-      "value": 4895
+      "value": 5332
      }
     ]
    },
