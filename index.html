@@ -1213,6 +1213,14 @@ section:not(.fold) .foldwhy{display:none}
         <div id="trainPlan" class="train"></div>
         <p class="muted">Spell list from <a href="https://wowforever.wclbox.com/en/fashu/warlock/levels" target="_blank" rel="noopener">WCLBox</a>. <span class="badge unv">verify</span> The skip advice is my call for this build, not from a guide; if the trainer shows a spell that isn't here, buy it.</p>
       </article>
+      <!-- Demon spells: rows rendered by renderDemons() from PET_BOOKS and the addon's pet scan (1.3). -->
+      <article class="card tplan-card">
+        <span class="tag">Your demons' spells</span>
+        <p class="muted">Demons learn from <b>Grimoires</b>, sold by the demon trainer next to your warlock trainer. Summon the demon, then right-click the book. With addon 1.3, each demon's real spells are read the moment you summon it.</p>
+        <p class="tnext" id="petNext"></p>
+        <div id="petPlan" class="train"></div>
+        <p class="muted"><span class="badge unv">verify</span> Book levels are Classic's; Forever may have moved some. If the demon trainer sells a book that isn't here, it's probably worth buying.</p>
+      </article>
     </div>
   </div>
 </section>
@@ -1708,7 +1716,7 @@ section:not(.fold) .foldwhy{display:none}
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-22T14:01:53Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-22T18:27:39Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -2045,7 +2053,8 @@ function applySnap(c, s, source){
     // addon 0.4+: where you stood, NPCs you talked to. 0.5+: skill caps and recipes from profession windows.
     ahInfo: objOrNull(s.ahInfo),
     ahShop: objOrNull(s.ahShop) ? {t:+s.ahShop.t||0, items:compactList(s.ahShop.items)} : null,
-    bagInfo: inv && inv.bagInfo ? arrOf(inv.bagInfo).map(b=>({bag:+b.bag, name:b.name||"", size:+b.size||0, free:+b.free||0, fam:+b.fam||0})) : null, pos: objOrNull(s.pos), npcs: objOrNull(s.npcs), profMax: objOrNull(s.profMax), crafts: objOrNull(s.crafts), qlog: objOrNull(s.qlog)};
+    bagInfo: inv && inv.bagInfo ? arrOf(inv.bagInfo).map(b=>({bag:+b.bag, name:b.name||"", size:+b.size||0, free:+b.free||0, fam:+b.fam||0})) : null, pos: objOrNull(s.pos), npcs: objOrNull(s.npcs), profMax: objOrNull(s.profMax), crafts: objOrNull(s.crafts), qlog: objOrNull(s.qlog),
+    pets: objOrNull(s.pets)};   // addon 1.3: {Succubus:{spells:{"Lash of Pain":1}, t}}, read when each demon is summoned
   // 0.2+ files keep the character name in `who` (items use `name`); older files used `name`.
   const who = s.who || (!inv && s.name); if(who) st.charName = String(who);
   st.level = Math.max(1, Math.min(60, Math.round(s.level)));
@@ -4371,6 +4380,52 @@ function renderTraining(){
     + (known ? (missing.length ? `<br><b style="color:var(--warn)">Not learned yet (${missing.length}):</b> ${missing.join(", ")}. Visit your trainer.` : `<br><b>From the game:</b> everything up to your level is learned.`) : "");
 }
 
+// Demon books by level (Classic data, same table as PET_BOOKS in the addon). [name, [level of rank 1, rank 2, ...]]
+const PET_BOOKS = {
+  Imp:[["Firebolt",[1,8,18,28,38,48,58]],["Blood Pact",[4,14,26,38,50]],["Fire Shield",[14,24,34,44,54]],["Phase Shift",[12]]],
+  Voidwalker:[["Torment",[10,20,30,40,50,60]],["Sacrifice",[16,24,32,40,48,56]],["Consume Shadows",[18,26,34,42,50,58]],["Suffering",[24,36,48,60]]],
+  Succubus:[["Lash of Pain",[20,28,36,44,52,60]],["Soothing Kiss",[22,34,46,58]],["Seduction",[26]],["Lesser Invisibility",[32]]],
+  Felhunter:[["Devour Magic",[30,38,46,54]],["Tainted Blood",[32,40,48,56]],["Spell Lock",[36,52]],["Paranoia",[42]]]
+};
+const PET_QUEST_LV = {Imp:1, Voidwalker:10, Succubus:20, Felhunter:30};
+const PET_SKIP = {"Lesser Invisibility":"You'd rarely sneak past anything with her.", "Paranoia":"Stealth detection; rarely matters while questing.",
+  "Phase Shift":"Keeps the Imp out of fights; you want it fighting."};
+/* One row per demon: every book it can use at your level, ✓ if the scan shows it, "not learned" if it's missing.
+   Demons not scanned yet only show what's available, since there's nothing to compare against. */
+function renderDemons(){
+  const box=$("#petPlan"), nx=$("#petNext"); if(!box) return;
+  const L=state.level|0, g=state.game||{}, pets=g.pets||{}, known=g.spells||{};
+  // Pet spellbooks only print "Rank N" from rank 2; if the player's spells carry ranks, the pet's are trusted too.
+  const ranked = Object.values(known).some(v=>v>1) || Object.values(pets).some(p=>Object.values((p&&p.spells)||{}).some(v=>v>1));
+  const todo = [], unseen = [];
+  const rows = Object.entries(PET_BOOKS).map(([fam, books])=>{
+    const p = pets[fam] || (fam==="Succubus" && pets.Incubus), sp = p && p.spells;
+    const have = +known["Summon "+fam] > 0 || !!p;
+    if(!have && L < PET_QUEST_LV[fam]) return null;
+    const chips = books.map(([name, lv])=>{
+      const best = lv.filter(x=>x<=L).length, nextLv = lv[best];
+      const lab = best>1 ? `${name} (rank ${best})` : name;
+      const later = nextLv ? `<span class="sp muted" style="font-size:.78rem">rank ${best+1} at ${nextLv}</span>` : "";
+      if(!best) return `<span class="sp" style="opacity:.6">${name} at ${lv[0]}</span>`;
+      if(PET_SKIP[name]) return `<span class="sp skip" title="${esc(PET_SKIP[name])}">${lab}</span>`;
+      if(!sp) return `<span class="sp">${lab}</span>${later}`;
+      const r = +sp[name]||0, ok = ranked ? r>=best : r>0;
+      if(!ok){ todo.push(`${lab} for ${fam}`); return `<span class="sp miss">${lab}</span>`; }
+      return `<span class="sp have">${lab}</span>${later}`;
+    }).join("");
+    if(have && !sp) unseen.push(fam);
+    // status goes after the chips: the level column is only 4.6rem wide
+    const status = !have ? `<span class="sp muted">(class quest at ${PET_QUEST_LV[fam]})</span>` : !sp ? `<span class="sp muted">(not scanned: summon it once)</span>` : "";
+    return {html:`<li class="${have?"now":"soon"}"><span class="tlv">${fam}</span><span>${chips}${status}</span></li>`, group:"near"};
+  }).filter(Boolean);
+  box.innerHTML = foldPlan(rows, "", "");
+  const scanned = Object.keys(pets).length;
+  nx.innerHTML = !g.spells ? `Load your addon file to check your demons.`
+    : !scanned ? `No demon scans yet: needs addon 1.3. Summon each demon once, then <code>/reload</code>.`
+    : (todo.length ? `<b style="color:var(--warn)">Books to buy (${todo.length}):</b> ${todo.map(esc).join(", ")}.` : `<b>From the game:</b> your scanned demons know everything they can at your level.`)
+      + (unseen.length ? `<br><span class="muted">Not scanned yet: ${unseen.join(", ")}. Summon each once.</span>` : "");
+}
+
 /* ---- Market: what to buy, sell and swap, from the addon's own AH scan ----
    Inputs: AH_P (every price from GrimoireSyncDB.ah, account-wide), g.ahShop (0.8: full records of gear your class
    can wear near your level, bags, potions, herbs, each with its cheapest listing), g.bagInfo (bag sizes),
@@ -4939,7 +4994,7 @@ document.addEventListener("click", e => {
   if(sec && sec.classList.contains("fold")) setFold(id, true);
 });
 
-function renderAll(){ renderBar(); renderGame(); renderArmory(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderCombat(); renderAhead(); renderItems(); renderMarket(); renderProfs(); renderQuestLog(); renderNow();
+function renderAll(){ renderBar(); renderGame(); renderArmory(); renderRoute(); renderDungeons(); renderChecks(); renderMap(); renderTalents(); renderTraining(); renderDemons(); renderGates(); renderCombat(); renderAhead(); renderItems(); renderMarket(); renderProfs(); renderQuestLog(); renderNow();
   const nb=$("#notesBox"); if(document.activeElement!==nb) nb.value = state.notes||"";
   applyFolds(); }
 
@@ -5032,7 +5087,7 @@ function setChar(c){
 document.querySelectorAll(".charsw button").forEach(b=>b.addEventListener("click", ()=>setChar(b.dataset.char)));
 
 // ---------- events ----------
-$("#level").addEventListener("input", e=>{ state.level=+e.target.value; followLevel(); renderBar(); renderRoute(); renderDungeons(); renderMap(); renderTalents(); renderTraining(); renderGates(); renderCombat(); renderAhead(); renderItems(); renderMarket(); renderNow(); applyFolds(); scheduleSave(); });
+$("#level").addEventListener("input", e=>{ state.level=+e.target.value; followLevel(); renderBar(); renderRoute(); renderDungeons(); renderMap(); renderTalents(); renderTraining(); renderDemons(); renderGates(); renderCombat(); renderAhead(); renderItems(); renderMarket(); renderNow(); applyFolds(); scheduleSave(); });
 document.addEventListener("change", e=>{
   if(e.target.id==="svFile"){ const f=e.target.files[0]; if(f) importFile(f); e.target.value=""; return; }
   const id = e.target && e.target.dataset && e.target.dataset.id; if(!id) return;

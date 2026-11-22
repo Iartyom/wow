@@ -2,7 +2,7 @@
 ## Title: Grimoire Sync
 ## Notes: Records level, zone, gold, demons, professions, talents, spells, inventory and Auction House prices for the Forsaken Grimoire guide page.
 ## Author: Art
-## Version: 1.2.0
+## Version: 1.3.0
 ## SavedVariables: GrimoireSyncDB
 
 MobQuests.lua

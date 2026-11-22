@@ -934,6 +934,7 @@ local function snapshot(event)
     qlog = questState,
     talents = scanTalents(),
     spells = scanSpells(),
+    pets = GrimoireSyncDB.pets,   -- 1.3: each demon's spells, read when it's summoned
     time = time(),
     inv = invState,
     -- AH scan summary only; the full price table stays in GrimoireSyncDB.ah (account-wide, read by the page too).
@@ -1283,8 +1284,9 @@ local function mobQuests(unit)
       end
       if o and not o.done and not seen[o] then
         seen[o] = true
-        if not out[q.id] then out[q.id] = { title = q.title, lines = {} }; order[#order + 1] = q.id end
+        if not out[q.id] then out[q.id] = { title = q.title, lines = {}, objs = {} }; order[#order + 1] = q.id end
         table.insert(out[q.id].lines, o.text)
+        table.insert(out[q.id].objs, o)
       end
     end
   end
@@ -1309,6 +1311,215 @@ if TooltipDataProcessor and TooltipDataProcessor.AddTooltipPostCall and Enum and
 elseif GameTooltip and GameTooltip.HookScript then
   pcall(GameTooltip.HookScript, GameTooltip, "OnTooltipSetUnit", onUnitTooltip)
 end
+
+-- ---- Trainer reminder, demon books, nameplate quest marks (1.3) ----
+local function say(msg) print("|cff8fdc5aGrimoire|r " .. msg) end
+
+-- Warlock trainer, level -> spells (mirrors TRAIN_WL in index.html; keep in sync). "Name N" = rank N.
+local TRAIN = {
+  [4]="Corruption 1|Curse of Weakness 1", [6]="Life Tap 1|Shadow Bolt 2", [8]="Bane of Agony 1|Fear 1",
+  [10]="Drain Soul 1|Create Healthstone 1|Demon Skin 2|Immolate 2", [12]="Health Funnel 1|Curse of Weakness 2|Shadow Bolt 3",
+  [14]="Curse of Recklessness 1|Drain Life 1|Corruption 2", [16]="Unending Breath 1|Life Tap 2",
+  [18]="Create Soulstone 1|Searing Pain 1|Bane of Agony 2",
+  [20]="Curse of the Elements 1|Demon Armor 1|Ritual of Summoning 1|Rain of Fire 1|Health Funnel 2|Immolate 3|Shadow Bolt 4",
+  [22]="Eye of Kilrogg 1|Curse of Weakness 3|Drain Life 2|Create Healthstone 2",
+  [24]="Drain Mana 1|Sense Demons 1|Corruption 3|Drain Soul 2|Shadowburn 2",
+  [26]="Curse of Tongues 1|Detect Invisibility 1|Life Tap 3|Searing Pain 2",
+  [28]="Banish 1|Create Firestone 1|Bane of Agony 3|Curse of Recklessness 2|Health Funnel 3|Shadow Bolt 5",
+  [30]="Subjugate Demon 1|Hellfire 1|Drain Life 3|Curse of the Elements 2|Create Soulstone 2|Demon Armor 2|Immolate 4",
+  [32]="Shadow Ward 1|Curse of Weakness 4|Fear 2|Shadowburn 3|Conflagrate 2",
+  [34]="Corruption 4|Drain Mana 2|Create Healthstone 3|Searing Pain 3|Rain of Fire 2",
+  [36]="Create Spellstone 1|Life Tap 4|Health Funnel 4|Create Firestone 2|Shadow Bolt 6",
+  [38]="Bane of Agony 4|Drain Soul 3|Drain Life 4|Siphon Life 2|Detect Invisibility 2",
+  [40]="Howl of Terror 1|Curse of the Elements 3|Create Soulstone 3|Demon Armor 3|Immolate 5|Shadowburn 4|Conflagrate 3",
+  [42]="Death Coil 1|Curse of Weakness 5|Curse of Recklessness 3|Shadow Ward 2|Searing Pain 4|Hellfire 2",
+  [44]="Corruption 5|Drain Mana 3|Health Funnel 5|Subjugate Demon 2|Shadow Bolt 7",
+  [46]="Life Tap 5|Drain Life 5|Create Healthstone 4|Create Firestone 3|Rain of Fire 3",
+  [48]="Soul Fire 1|Bane of Agony 5|Siphon Life 3|Banish 2|Create Spellstone 2|Shadowburn 5|Conflagrate 4",
+  [50]="Curse of the Elements 4|Curse of Tongues 2|Death Coil 2|Create Soulstone 4|Demon Armor 4|Detect Invisibility 3|Immolate 6|Searing Pain 5|Incinerate 2",
+  [52]="Curse of Weakness 6|Drain Soul 4|Health Funnel 6|Shadow Ward 3|Shadow Bolt 8",
+  [54]="Corruption 6|Drain Life 6|Drain Mana 4|Howl of Terror 2|Conflagrate 5|Hellfire 3",
+  [56]="Life Tap 6|Fear 3|Curse of Recklessness 4|Create Firestone 4|Shadowburn 6|Soul Fire 2",
+  [58]="Bane of Agony 6|Siphon Life 4|Death Coil 3|Create Healthstone 5|Subjugate Demon 3|Searing Pain 6|Rain of Fire 4",
+  [60]="Bane of Doom 1|Summoning Portal 1|Ritual of Doom 1|Corruption 7|Health Funnel 7|Create Soulstone 5|Demon Armor 5|Shadow Ward 4|Create Spellstone 3|Immolate 7|Immolate 8|Shadow Bolt 9|Shadow Bolt 10|Conflagrate 6|Incinerate 3",
+}
+-- Same skip rules as trainSkip() on the page (Affliction build): true = fine to leave at the trainer.
+local RARE = { ["Curse of Weakness"]=1, ["Curse of Recklessness"]=1, ["Curse of Tongues"]=1, ["Drain Mana"]=1,
+               ["Detect Invisibility"]=1, ["Subjugate Demon"]=1, ["Shadow Ward"]=1 }
+local function trainSkip(name, rank)
+  if name == "Shadowburn" or name == "Conflagrate" or name == "Incinerate" then return true end
+  if name == "Create Firestone" or name == "Rain of Fire" or name == "Hellfire" then return true end
+  if name == "Eye of Kilrogg" or name == "Sense Demons" then return true end
+  if rank > 1 and (name == "Searing Pain" or RARE[name]) then return true end
+  return false
+end
+local function label(name, rank) return rank > 1 and (name .. " (rank " .. rank .. ")") or name end
+
+-- -> buy (spells at levels <= `level` you don't have, not skippable), skip (same but skippable), sorted by level.
+-- `upto` limits to one trainer level (the level-up message); nil = everything up to `level`.
+local function trainerTodo(level, known, only)
+  local hasRanks = false
+  for _, r in pairs(known) do if r > 1 then hasRanks = true break end end
+  local buy, skip = {}, {}
+  for lvl = 2, level, 2 do
+    if TRAIN[lvl] and (not only or lvl == only) then
+      for s in TRAIN[lvl]:gmatch("[^|]+") do
+        local name, rank = s:match("^(.-) (%d+)$"); rank = tonumber(rank)
+        local have = known[name] or 0
+        -- no rank text on this client: only "never learned" can be told apart
+        local missing = hasRanks and have < rank or (not hasRanks and have == 0)
+        if missing then table.insert(trainSkip(name, rank) and skip or buy, label(name, rank)) end
+      end
+    end
+  end
+  return buy, skip
+end
+
+-- Demon books (Grimoires) by level, from Classic data. [verify on Forever] The vendor next to your trainer sells them.
+local PET_BOOKS = {
+  Imp = { {"Firebolt",{1,8,18,28,38,48,58}}, {"Blood Pact",{4,14,26,38,50}}, {"Fire Shield",{14,24,34,44,54}}, {"Phase Shift",{12}} },
+  Voidwalker = { {"Torment",{10,20,30,40,50,60}}, {"Sacrifice",{16,24,32,40,48,56}}, {"Consume Shadows",{18,26,34,42,50,58}}, {"Suffering",{24,36,48,60}} },
+  Succubus = { {"Lash of Pain",{20,28,36,44,52,60}}, {"Soothing Kiss",{22,34,46,58}}, {"Seduction",{26}}, {"Lesser Invisibility",{32}} },
+  Felhunter = { {"Devour Magic",{30,38,46,54}}, {"Tainted Blood",{32,40,48,56}}, {"Spell Lock",{36,52}}, {"Paranoia",{42}} },
+}
+PET_BOOKS.Incubus = PET_BOOKS.Succubus
+local PET_SKIP = { ["Lesser Invisibility"] = true, ["Paranoia"] = true, ["Phase Shift"] = true }
+
+-- Reads the summoned demon's spellbook into GrimoireSyncDB.pets[family] = {spells = {name = rank}, t}.
+-- Only the demon that's out can be read, so each one shows up after you've summoned it once.
+local function scanPet()
+  local fam = safe(UnitCreatureFamily, "pet"); if not fam then return end
+  local out, n = {}, 0
+  local function add(name, sub)
+    if not name then return end
+    local r = tonumber(sub and sub:match("(%d+)")) or 1
+    if r > (out[name] or 0) then out[name] = r end
+    n = n + 1
+  end
+  if C_SpellBook and C_SpellBook.HasPetSpells and C_SpellBook.GetSpellBookItemName and Enum and Enum.SpellBookSpellBank then
+    for i = 1, safe(C_SpellBook.HasPetSpells) or 0 do add(safe(C_SpellBook.GetSpellBookItemName, i, Enum.SpellBookSpellBank.Pet)) end
+  else
+    local getName = GetSpellBookItemName or GetSpellName
+    for i = 1, safe(HasPetSpells) or 0 do add(safe(getName, i, BOOKTYPE_PET or "pet")) end
+  end
+  if n == 0 then return end   -- spellbook not loaded yet right after the summon: keep the last good scan
+  GrimoireSyncDB.pets = GrimoireSyncDB.pets or {}
+  GrimoireSyncDB.pets[fam] = { spells = out, t = time() }
+end
+
+-- -> list of "Lash of Pain (rank 2) for Succubus" you can use now, plus demons never scanned.
+local function petTodo(level, demonsKnown)
+  local pets, books, unseen = GrimoireSyncDB.pets or {}, {}, {}
+  local ranked = false
+  -- the demon spellbook only says "Rank N" from rank 2 on; if YOUR spells carry ranks, trust its ranks too
+  for _, r in pairs(demonsKnown) do if r > 1 then ranked = true end end
+  for _, p in pairs(pets) do for _, r in pairs(p.spells or {}) do if r > 1 then ranked = true end end end
+  for _, fam in ipairs({ "Imp", "Voidwalker", "Succubus", "Felhunter" }) do
+    local p = pets[fam] or (fam == "Succubus" and pets.Incubus)
+    if p then
+      for _, b in ipairs(PET_BOOKS[fam]) do
+        local best = 0
+        for i, lv in ipairs(b[2]) do if lv <= level then best = i end end
+        local have = p.spells[b[1]] or 0
+        if best > 0 and not PET_SKIP[b[1]] and (ranked and have < best or have == 0) then
+          books[#books + 1] = label(b[1], best) .. " for " .. fam
+        end
+      end
+    elseif demonsKnown["Summon " .. fam] then unseen[#unseen + 1] = fam end
+  end
+  return books, unseen
+end
+
+-- Chat summary. `only` = the level you just reached (level-up message); nil = full list (trainer opened, /grimoire train).
+local function trainerReport(level, only)
+  local _, cls = safe(UnitClass, "player"); if cls ~= "WARLOCK" then return end
+  local known = scanSpells()
+  if only and not TRAIN[only] then
+    say(("Level %d. No new spells; next trainer visit at %d."):format(only, only + 1))
+  else
+    local buy, skip = trainerTodo(level, known, only)
+    if #buy > 0 then say("Trainer, buy: |cffffffff" .. table.concat(buy, ", ") .. "|r")
+    elseif only then say(("Level %d: nothing to buy at the trainer for this build."):format(only))
+    else say("Trainer: you have everything this build needs.") end
+    if #skip > 0 then say("Skip (this build won't use them): |cff999999" .. table.concat(skip, ", ") .. "|r") end
+  end
+  if only then   -- spells from earlier visits you walked past
+    local all = trainerTodo(level - 1, known)
+    if #all > 0 then say("Still missing from earlier visits: |cffffffff" .. table.concat(all, ", ") .. "|r") end
+  end
+  local books, unseen = petTodo(level, known)
+  if #books > 0 then say("Demon books (vendor next to the trainer): |cffffffff" .. table.concat(books, ", ") .. "|r") end
+  if #unseen > 0 then say("Summon your " .. table.concat(unseen, " / ") .. " once so I can check its spells.") end
+end
+
+-- Nameplate mark: a quest icon plus "3/8" next to the health bar of mobs you still need.
+-- Needs enemy nameplates on (V). Display only, like the tooltip line.
+local function plateMark(unit)
+  local plate = C_NamePlate and C_NamePlate.GetNamePlateForUnit and safe(C_NamePlate.GetNamePlateForUnit, unit)
+  if not plate then return end
+  local m = plate.GrimoireQ
+  local list = not GrimoireSyncDB.noPlates and mobQuests(unit)
+  if not list or #list == 0 then if m then m:Hide() end return end
+  if not m then
+    m = CreateFrame("Frame", nil, plate)
+    m:SetSize(48, 16)
+    local uf = plate.UnitFrame
+    local anchor = (uf and (uf.healthBar or uf.HealthBar)) or plate
+    m:SetPoint("LEFT", anchor, "RIGHT", 3, 0)
+    m.icon = m:CreateTexture(nil, "OVERLAY")
+    m.icon:SetSize(14, 14); m.icon:SetPoint("LEFT")
+    m.icon:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon")
+    m.text = m:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    m.text:SetPoint("LEFT", m.icon, "RIGHT", 1, 0)
+    plate.GrimoireQ = m
+  end
+  local o = list[1].objs[1]
+  m.text:SetText((o and o.have and o.need) and (o.have .. "/" .. o.need) or "")
+  m:Show()
+end
+local function refreshPlates()
+  if not (C_NamePlate and C_NamePlate.GetNamePlates) then return end
+  for _, p in ipairs(safe(C_NamePlate.GetNamePlates) or {}) do
+    local u = p.namePlateUnitToken or (p.UnitFrame and p.UnitFrame.unit)
+    if u then pcall(plateMark, u) end
+  end
+end
+
+local f13 = CreateFrame("Frame")
+for _, e in ipairs({ "PLAYER_LEVEL_UP", "TRAINER_SHOW", "UNIT_PET", "PET_BAR_UPDATE", "NAME_PLATE_UNIT_ADDED",
+                     "NAME_PLATE_UNIT_REMOVED", "QUEST_LOG_UPDATE" }) do
+  pcall(f13.RegisterEvent, f13, e)
+end
+local petPending, platePending = false, false
+local function later(sec, fn) if C_Timer and C_Timer.After then C_Timer.After(sec, fn) else fn() end end
+f13:SetScript("OnEvent", function(_, event, arg1)
+  if event == "NAME_PLATE_UNIT_ADDED" then pcall(plateMark, arg1) return end
+  if event == "NAME_PLATE_UNIT_REMOVED" then
+    local p = C_NamePlate and safe(C_NamePlate.GetNamePlateForUnit, arg1)
+    if p and p.GrimoireQ then p.GrimoireQ:Hide() end   -- plates are recycled for other mobs
+    return
+  end
+  if event == "QUEST_LOG_UPDATE" then
+    -- the main frame rescans the log 1s after the burst; redraw just after that
+    if not platePending then platePending = true; later(1.3, function() platePending = false; refreshPlates() end) end
+    return
+  end
+  if event == "UNIT_PET" or event == "PET_BAR_UPDATE" then
+    if event == "UNIT_PET" and arg1 ~= "player" then return end
+    if not petPending then petPending = true; later(1, function() petPending = false; pcall(scanPet) end) end
+    return
+  end
+  if event == "PLAYER_LEVEL_UP" then
+    local lvl = tonumber(arg1)
+    if lvl then later(3, function() pcall(trainerReport, lvl, lvl) end) end   -- 3s: let the new level settle first
+    return
+  end
+  if event == "TRAINER_SHOW" then
+    -- profession trainers fire this too
+    if IsTradeskillTrainer and safe(IsTradeskillTrainer) then return end
+    pcall(trainerReport, safe(UnitLevel, "player") or 1)
+  end
+end)
 
 local f = CreateFrame("Frame")
 -- PLAYER_ENTERING_WORLD instead of LOGIN: unit data is ready by then. XP/money events keep the
@@ -1383,6 +1594,13 @@ end)
 SLASH_GRIMOIRESYNC1 = "/grimoire"
 SlashCmdList.GRIMOIRESYNC = function(msg)
   if msg and msg:lower():match("^%s*scan") then ahStartScan() return end
+  if msg and msg:lower():match("^%s*train") then pcall(trainerReport, safe(UnitLevel, "player") or 1) return end
+  if msg and msg:lower():match("^%s*plates") then
+    GrimoireSyncDB.noPlates = not GrimoireSyncDB.noPlates
+    refreshPlates()
+    print("|cff8fdc5aGrimoire Sync|r quest marks on nameplates " .. (GrimoireSyncDB.noPlates and "off" or "on") .. ".")
+    return
+  end
   if msg and msg:lower():match("^%s*tips") then
     GrimoireSyncDB.noTips = not GrimoireSyncDB.noTips
     print("|cff8fdc5aGrimoire Sync|r upgrade lines on tooltips " .. (GrimoireSyncDB.noTips and "off" or "on") .. ".")
