@@ -996,6 +996,7 @@ section:not(.fold) .foldwhy{display:none}
     <details class="card weights" style="margin-top:var(--s4)">
       <summary>Stat weights <span class="badge unv">guess</span></summary>
       <p class="muted">How many points one of each stat is worth for this character. The defaults are my estimate for leveling, not simulation output: Warlock favours Shadow damage and wand DPS, Paladin favours two-hander DPS and Strength. Change any number and every verdict updates.</p>
+      <p class="muted" id="weightTuned"></p>
       <div class="statgrid" id="weightGrid"></div>
       <button type="button" class="btn" id="weightReset" style="margin-top:var(--s3)">Reset to defaults</button>
     </details>
@@ -1708,7 +1709,7 @@ section:not(.fold) .foldwhy{display:none}
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-22T13:58:41Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-22T14:01:53Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -2380,7 +2381,35 @@ function bagMeta(r){
 }
 function compactList(a){ return (Array.isArray(a)?a:Object.values(a||{})).map(compactItem).filter(Boolean); }
 
-function weightsFor(c){ return {...DEFAULT_WEIGHTS[c], ...((states[c] && states[c].weights) || {})}; }
+// Crit and hit priced from YOUR character instead of fixed guesses (Nov 22). Both are worth "x% more damage",
+// so their value in spell-damage points scales with how hard your main spell hits:
+//   1% more Shadow Bolt damage = D * 1% / 0.857 points, D = rank's base average + 0.857 * your spell damage.
+//   Crit: +50% on a crit, and only ~40% of leveling damage can crit (DoTs and wand can't) -> 0.2 x that.
+//   Hit: worth the full 1% until you reach HIT_NEED, then 0. Spells vs mobs 0-1 levels above you miss
+//   3-4% of the time (Classic table, [Likely] same on Forever); Suppression (Forever: +1% hit per rank) counts.
+// Your own edits in the weights box still win over these.
+const SB_AVG = [98, 15.5, 29, 56.5, 98, 160, 226.5, 309.5, 394, 481, 544];   // Shadow Bolt avg base damage by rank (Classic)
+const TALENT_SPELL_HIT = {Suppression:1};                                       // % spell hit per talent rank
+const HIT_NEED = 4;
+const tunedCache = new WeakMap();
+// -> {w, why} for character c: default weights with crit/hit recomputed from spells, gear and talents.
+function tunedWeights(c){
+  const base = DEFAULT_WEIGHTS[c], g = states[c] && states[c].game;
+  if(c!=="wl" || !g) return {w:base, why:null};
+  if(tunedCache.has(g)) return tunedCache.get(g);
+  const rank = (g.spells && +g.spells["Shadow Bolt"]) || 0;
+  let sp = 0, gearHit = 0;
+  for(const it of Object.values(g.gear||{})){ const st = (it && it.st) || {}; sp += (st.sp||0) + (st.shadow||0); gearHit += st.shit||0; }
+  let talHit = 0;
+  for(const [n,r] of Object.entries((g.talents && g.talents.ranks) || {})) if(TALENT_SPELL_HIT[n]) talHit += TALENT_SPELL_HIT[n]*r;
+  const D = (SB_AVG[rank] || SB_AVG[0]) + 0.857*sp, pct = D*0.01/0.857, hit = talHit + gearHit;
+  const w = {...base, scrit: Math.round(pct*0.2*100)/100, shit: hit >= HIT_NEED ? 0 : Math.round(pct*100)/100};
+  const why = `Crit and spell hit are worked out from your character: Shadow Bolt rank ${rank||"?"} plus ${sp} spell damage ≈ ${Math.round(D)} per cast, so 1% crit ≈ ${w.scrit} pts. `+
+    (hit >= HIT_NEED ? `You already have ${hit}% spell hit (${talHit}% from talents), enough against mobs your level, so more hit = 0.`
+                     : `You have ${hit}% spell hit of the ~${HIT_NEED}% that matters, so 1% hit ≈ ${w.shit} pts.`);
+  const out = {w, why}; tunedCache.set(g, out); return out;
+}
+function weightsFor(c){ return {...tunedWeights(c).w, ...((states[c] && states[c].weights) || {})}; }
 // Score of one item for character c. Weapon DPS counts as wand DPS in the ranged slot.
 function itemScore(it, c, w = weightsFor(c)){
   if(!it) return 0;
@@ -2905,10 +2934,11 @@ async function pickItem(id){
 }
 function renderWeights(){
   const el = $("#weightGrid"); if(!el) return;
-  const sig = CHAR + JSON.stringify(state.weights||{});
+  const tw = tunedWeights(CHAR), sig = CHAR + JSON.stringify(state.weights||{}) + (tw.why||"");
   if(el.dataset.char===sig || el.contains(document.activeElement)) return;   // rebuild only on char switch, so typing keeps focus
   el.dataset.char = sig; const w = weightsFor(CHAR);
   el.innerHTML = STAT_DEFS.map(([k,l])=>`<label><span>${l}</span><input type="number" step="0.05" data-w="${k}" value="${w[k]}"></label>`).join("");
+  const n = $("#weightTuned"); if(n) n.textContent = tw.why || "";
 }
 /* ---- Quest log helper ----
    Your quest log (addon 0.6 `qlog`) + Questie's Forever database (sync/quests.json, built by tools/quest-data.mjs)

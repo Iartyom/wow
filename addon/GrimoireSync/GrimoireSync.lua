@@ -950,10 +950,10 @@ end
 -- ---- Pawn-style upgrade line on item tooltips (1.0) ----
 -- Adds "Grimoire: +12% upgrade (Head)" to item tooltips (bags, loot, quest rewards, vendors, AH, chat links).
 -- Same maths as the page: score = sum of stat x weight; % = (new - what it replaces) / what it replaces.
--- WEIGHTS mirror DEFAULT_WEIGHTS in index.html; keep them in sync. Weights you edit on the page stay on the page
+-- WEIGHTS mirror DEFAULT_WEIGHTS in index.html (keep them in sync); a Warlock's crit/hit come from liveWeights(). Weights you edit on the page stay on the page
 -- (the addon can't read the browser). Display only: it never equips or moves anything. /grimoire tips toggles it.
 local WEIGHTS = {
-  WARLOCK = { sta=.5, int=.4, spi=.45, sp=1, shadow=1, fire=.15, scrit=6, shit=8, mp5=1, hp5=.5, armor=.01, rdps=1.75, res=.05 },
+  WARLOCK = { sta=.5, int=.4, spi=.45, sp=1, shadow=1, fire=.15, scrit=0, shit=0, mp5=1, hp5=.5, armor=.01, rdps=1.75, res=.05 },
   PALADIN = { sta=.5, int=.25, spi=.1, str=1, agi=.6, sp=.3, holy=.3, heal=.05, scrit=2, shit=2, crit=12, hit=12, ap=.5,
               mp5=.8, hp5=.5, armor=.02, mdps=7, res=.05 },
 }
@@ -1044,11 +1044,37 @@ local function scoreOf(link, w)
   return s
 end
 
+-- Crit/hit priced from the live character, same formula as tunedWeights() on the page (see the comment there):
+-- 1% more Shadow Bolt damage = D/85.7 pts, D = rank's base average + 0.857 x shadow spell damage;
+-- crit = 0.2 x that (50% bonus, ~40% of damage can crit); hit = that until 4% spell hit, then 0.
+-- Recomputed at most every 5s (gear, spells and talents only change between fights).
+local SB_AVG = { 15.5, 29, 56.5, 98, 160, 226.5, 309.5, 394, 481, 544 }
+local liveW, liveT, liveCls = nil, -1, nil
+local function liveWeights(classFile)
+  local w = WEIGHTS[classFile]
+  if classFile ~= "WARLOCK" or not w then return w end
+  local now = GetTime and GetTime() or time()
+  if liveW and liveCls == classFile and now - liveT < 5 then return liveW end
+  local last = GrimoireSyncDB.last or {}
+  local rank = tonumber(last.spells and last.spells["Shadow Bolt"]) or 4
+  local sp = tonumber(safe(GetSpellBonusDamage, 6)) or 0   -- school 6 = Shadow, includes gear and +all spell damage
+  local talHit = (last.talents and last.talents.ranks and tonumber(last.talents.ranks.Suppression)) or 0   -- Forever: +1%/rank
+  local hit = math.max(tonumber(safe(GetSpellHitModifier)) or 0, talHit)
+  local pct = ((SB_AVG[rank] or 98) + 0.857 * sp) * 0.01 / 0.857
+  local t = {}; for k, v in pairs(w) do t[k] = v end
+  t.scrit = math.floor(pct * 20 + .5) / 100
+  t.shit = hit >= 4 and 0 or math.floor(pct * 100 + .5) / 100
+  -- scores depend on the weights, so a change in crit/hit value drops the score cache
+  if not liveW or liveW.scrit ~= t.scrit or liveW.shit ~= t.shit then for k in pairs(scoreCache) do scoreCache[k] = nil end end
+  liveW, liveT, liveCls = t, now, classFile
+  return t
+end
+
 local GREY, GREEN = { .6, .6, .6 }, { .12, 1, 0 }
 -- Returns text, {r,g,b} for the tooltip line, or nil when the item isn't gear this class can wear.
 local function upgradeLine(link)
   local _, classFile = safe(UnitClass, "player")
-  local w, wear = WEIGHTS[classFile], CAN_WEAR[classFile]
+  local w, wear = liveWeights(classFile), CAN_WEAR[classFile]
   if not w then return end
   local _, itype, sub, loc = safe(GetItemInfoInstant, link)
   local slots = loc and UP_SLOTS[loc]
