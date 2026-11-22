@@ -1707,7 +1707,7 @@ section:not(.fold) .foldwhy{display:none}
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-20T18:17:02Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
+<footer><div class="wrap"><p class="upd-site">Site last updated <b id="siteBuilt" data-t="2026-11-22T13:58:41Z"></b> · game data <b id="gameUpd">—</b></p>First built Nov 3, 2026, the day before launch, from beta data. On the Claude page your progress saves to your Claude account. On the GitHub site, ticks are kept in that browser, and game data comes from the sync file.</div></footer>
 
 <script>
 /* Forsaken Grimoire: static guide content + a per-viewer progress tracker.
@@ -2438,6 +2438,19 @@ function upgradeFor(it, c){
   const base = slotBase(it, c); if(base===null) return null;
   return Math.round((itemScore(it, c) - base)*10)/10;
 }
+// Pawn-style "% upgrade": gain relative to the score of what it replaces (Pawn shows the same number in-game).
+// null when the slot is empty or scores <= 0 (any % of nothing is meaningless; the points say it instead).
+function upgradePct(it, c){
+  const d = upgradeFor(it, c); if(d===null) return null;
+  const base = slotBase(it, c); if(!(base > 0)) return null;
+  return Math.round(d / base * 100);
+}
+// "+12% upgrade (+4.5 pts)", or "+4.5 pts" for an empty slot. Short form for chips: "+12%".
+function upTxt(it, c, d, short = false){
+  const pc = upgradePct(it, c), sg = v => (v>0?"+":"")+v;
+  if(short) return pc===null ? `${sg(d)} pts` : `${sg(pc)}%`;
+  return pc===null ? `${sg(d)} pts` : `${sg(pc)}% ${pc>=0?"upgrade":"downgrade"} (${sg(d)} pts)`;
+}
 // "1g 20s", "45s", "1.5" (gold), "30c" -> copper. Returns null for empty/invalid input.
 function parseMoney(t){
   t = String(t||"").trim().toLowerCase(); if(!t) return null;
@@ -2476,13 +2489,13 @@ function verdict(it){
       const gear = (state.game && state.game.gear) || {}, slots = LOC_SLOTS[it.loc] || [];
       const empty = slots.find(s=>!gear[s]);
       const target = empty || (slots.length===2 ? (itemScore(gear[slots[0]],c) <= itemScore(gear[slots[1]],c) ? slots[0] : slots[1]) : slots[0]);
-      return {k:"equip", label:"Equip", why: empty ? `fills your empty ${SLOT_NAMES[target]||"slot"} (+${me} points)` : `+${me} points over your ${SLOT_NAMES[target]||"gear"}`, val:0, me};
+      return {k:"equip", label:"Equip", why: empty ? `fills your empty ${SLOT_NAMES[target]||"slot"} (+${me} points)` : `${upTxt(it, c, me)} over your ${SLOT_NAMES[target]||"gear"}`, val:0, me};
     }
-    if(/^level|^plate/.test(why) && it.req <= lvl+8) return {k:"later", label:"Keep for later", why:`+${me} points once you reach ${why}`, val:0, me};
+    if(/^level|^plate/.test(why) && it.req <= lvl+8) return {k:"later", label:"Keep for later", why:`${upTxt(it, c, me)} once you reach ${why}`, val:0, me};
   }
   if(!it.bound && states[o].game){
     const pd = upgradeFor(it, o);
-    if(pd!==null && pd>0.5) return {k:"give", label:"Give to "+charName(o), why:`+${pd} points for the ${CHARS[o].label.toLowerCase()}`+(it.req>states[o].game.level?` from level ${it.req}`:(o==="pal" && it.sub==="Plate" && states[o].game.level<40)?" from level 40 (plate)":""), val:0, pd};
+    if(pd!==null && pd>0.5) return {k:"give", label:"Give to "+charName(o), why:`${upTxt(it, o, pd)} for the ${CHARS[o].label.toLowerCase()}`+(it.req>states[o].game.level?` from level ${it.req}`:(o==="pal" && it.sub==="Plate" && states[o].game.level<40)?" from level 40 (plate)":""), val:0, pd};
   }
   if(it.type==="Consumable") return vendor || (sellable && ahPer) ? {...sell(), k:"use", label:"Use or sell", why:"consumable; "+sell().why}
     : {k:"use", label:"Use", why:"consumable with no sale value", val:0};
@@ -2593,7 +2606,7 @@ function itemCardHTML(it){
   // Page's own read on it.
   const sc = itemScore(it, CHAR), me = equipped ? null : upgradeFor(it, CHAR);
   const extra = [];
-  if(slot) extra.push(`Points for you: <b>${sc}</b>` + (me!==null ? ` (${me>0?"+":""}${me} vs what you wear)` : equipped ? " (equipped)" : ""));
+  if(slot) extra.push(me!==null ? `<b class="${me>0?"itt-up":"itt-down"}">${upTxt(it, CHAR, me)}</b> · score ${sc}` : `Score for you: <b>${sc}</b>${equipped ? " (equipped)" : ""}`);
   if(!equipped && !searched){ const v = verdict(it); extra.push(`<b>${esc(v.label)}</b>: ${esc(v.why)}`); }
   if(extra.length) lines.push(`<div class="itt-ours">${extra.join("<br>")}</div>`);
   return lines.join("");
@@ -4446,7 +4459,7 @@ function renderMarket(){
     // Compact version of the tooltip comparison, right on the row (top 5 changes).
     const ch = statChanges(it, CHAR), diff = ch && ch.list.length ? `<span class="mdiff">${ch.list.slice(0,5).map(x=>`<span class="${x.d>0?"up":"down"}">${esc(fmtStatChange(x))}</span>`).join(" ")}${ch.list.length>5?" …":""}</span>` : "";
     return mRow(it, `${esc(SLOT_NAMES[slot]||"")} · replaces ${cur ? esc(cur.name) : "an empty slot"}${diff}${alt}`, fmtCoin(it.ah),
-      `<span class="mgain">+${gain} pts</span>${best?`<span class="mtag best">best value</span>`:""}${later}`);
+      `<span class="mgain" title="+${gain} pts">${upTxt(it, CHAR, gain, true)}</span>${best?`<span class="mtag best">best value</span>`:""}${later}`);
   });
   const buyRows = p.buy.map(b=>mRow(b.it, b.why, b.n>1 ? `${b.n} × ${fmtCoin(b.it.ah)}<small>${fmtCoin(b.it.ah*b.n)}</small>` : fmtCoin(b.it.ah)));
   const sellTotal = p.sell.reduce((a,x)=>a+(x.v.val||0), 0);

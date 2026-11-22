@@ -947,6 +947,180 @@ local function snapshot(event)
   end
 end
 
+-- ---- Pawn-style upgrade line on item tooltips (1.0) ----
+-- Adds "Grimoire: +12% upgrade (Head)" to item tooltips (bags, loot, quest rewards, vendors, AH, chat links).
+-- Same maths as the page: score = sum of stat x weight; % = (new - what it replaces) / what it replaces.
+-- WEIGHTS mirror DEFAULT_WEIGHTS in index.html; keep them in sync. Weights you edit on the page stay on the page
+-- (the addon can't read the browser). Display only: it never equips or moves anything. /grimoire tips toggles it.
+local WEIGHTS = {
+  WARLOCK = { sta=.5, int=.4, spi=.45, sp=1, shadow=1, fire=.15, scrit=6, shit=8, mp5=1, hp5=.5, armor=.01, rdps=1.75, res=.05 },
+  PALADIN = { sta=.5, int=.25, spi=.1, str=1, agi=.6, sp=.3, holy=.3, heal=.05, scrit=2, shit=2, crit=12, hit=12, ap=.5,
+              mp5=.8, hp5=.5, armor=.02, mdps=7, res=.05 },
+}
+-- Paladin plate before 40 is still shown: the page's "keep for later" logic covers that case.
+local CAN_WEAR = {
+  WARLOCK = { Cloth=1, Miscellaneous=1, Daggers=1, Staves=1, ["One-Handed Swords"]=1, Wands=1, Wand=1, ["Fishing Poles"]=1 },
+  PALADIN = { Cloth=1, Leather=1, Mail=1, Plate=1, Shields=1, Librams=1, Miscellaneous=1, ["One-Handed Maces"]=1,
+              ["Two-Handed Maces"]=1, ["One-Handed Swords"]=1, ["Two-Handed Swords"]=1, ["One-Handed Axes"]=1,
+              ["Two-Handed Axes"]=1, Polearms=1, ["Fishing Poles"]=1 },
+}
+local UP_SLOTS = { INVTYPE_HEAD={1}, INVTYPE_NECK={2}, INVTYPE_SHOULDER={3}, INVTYPE_CHEST={5}, INVTYPE_ROBE={5},
+  INVTYPE_WAIST={6}, INVTYPE_LEGS={7}, INVTYPE_FEET={8}, INVTYPE_WRIST={9}, INVTYPE_HAND={10}, INVTYPE_FINGER={11,12},
+  INVTYPE_TRINKET={13,14}, INVTYPE_CLOAK={15}, INVTYPE_WEAPON={16}, INVTYPE_WEAPONMAINHAND={16}, INVTYPE_2HWEAPON={16},
+  INVTYPE_WEAPONOFFHAND={17}, INVTYPE_SHIELD={17}, INVTYPE_HOLDABLE={17}, INVTYPE_RANGED={18}, INVTYPE_RANGEDRIGHT={18},
+  INVTYPE_THROWN={18}, INVTYPE_RELIC={18} }
+local UP_NAMES = { [1]="Head", [2]="Neck", [3]="Shoulder", [5]="Chest", [6]="Waist", [7]="Legs", [8]="Feet", [9]="Wrist",
+  [10]="Hands", [11]="Ring", [12]="Ring", [13]="Trinket", [14]="Trinket", [15]="Back", [16]="Main hand", [17]="Off hand", [18]="Ranged" }
+-- Lua port of the page's STAT_RX, matched against the lower-cased line (Lua patterns have no /i).
+-- First match wins, like the page, so the specific wordings come before the generic ones.
+local STAT_PATS = {
+  { "^%+(%d+) stamina$", "sta" }, { "^%+(%d+) intellect$", "int" }, { "^%+(%d+) spirit$", "spi" },
+  { "^%+(%d+) strength$", "str" }, { "^%+(%d+) agility$", "agi" }, { "^(%d+) armor$", "armor" },
+  { "damage and healing done by magical spells and effects by up to (%d+)", "sp" },
+  { "spell power by up to (%d+)", "sp" }, { "spell power by (%d+)", "sp" },
+  { "spell damage by up to (%d+)", "sp" }, { "spell damage by (%d+)", "sp" },
+  { "^%+(%d+) spell power", "sp" }, { "^%+(%d+) spell damage", "sp" },
+  { "damage done by shadow spells and effects by up to (%d+)", "shadow" }, { "^%+(%d+) shadow spell damage", "shadow" },
+  { "damage done by fire spells and effects by up to (%d+)", "fire" }, { "^%+(%d+) fire spell damage", "fire" },
+  { "damage done by holy spells and effects by up to (%d+)", "holy" },
+  { "healing done by spells and effects by up to (%d+)", "heal" }, { "^%+(%d+) spell healing", "heal" }, { "^%+(%d+) healing", "heal" },
+  { "critical strike with spells by (%d+)%%", "scrit" }, { "chance to hit with spells by (%d+)%%", "shit" },
+  { "chance to get a critical strike by (%d+)%%", "crit" }, { "chance to hit by (%d+)%%", "hit" },
+  { "%+(%d+) ranged attack power", "ap" }, { "%+(%d+) attack power", "ap" },
+  { "restores (%d+) mana per 5 sec", "mp5" }, { "restores (%d+) health per 5 sec", "hp5" },
+  { "^%+(%d+) shadow resistance$", "res" }, { "^%+(%d+) fire resistance$", "res" }, { "^%+(%d+) frost resistance$", "res" },
+  { "^%+(%d+) nature resistance$", "res" }, { "^%+(%d+) arcane resistance$", "res" }, { "^%+(%d+) all resistances$", "res" },
+}
+local ENCH = { stamina="sta", intellect="int", spirit="spi", strength="str", agility="agi", armor="armor" }
+
+-- Tooltip lines (from tipLines) -> stats table, plus whether something other than the level is red.
+local function statsOf(lines)
+  local st, blocked = {}, false
+  for _, raw in ipairs(lines) do
+    local left, right = raw:match("^([^\t]*)\t?(.*)$")
+    local redL, redR = left:sub(1, 1) == "!", right:sub(1, 1) == "!"
+    if redL then left = left:sub(2) end
+    if (redL or redR) and not left:find("^Requires Level") then blocked = true end
+    local L = left:lower()
+    local dps = L:match("%((%d+%.?%d*) damage per second%)")
+    if dps then st.dps = (st.dps or 0) + tonumber(dps) end
+    if L:find("^use:") then
+      -- on-use effects aren't passive stats
+    elseif L:find("^enchanted:") then
+      for k, v in L:gmatch("(%a+) %+(%d+)") do if ENCH[k] then st[ENCH[k]] = (st[ENCH[k]] or 0) + tonumber(v) end end
+      for v, k in L:gmatch("%+(%d+) (%a+)") do if ENCH[k] then st[ENCH[k]] = (st[ENCH[k]] or 0) + tonumber(v) end end
+    else
+      local h, d = L:match("healing done by up to (%d+) and damage done by up to (%d+)")   -- Forever's split wording
+      if h then st.heal = (st.heal or 0) + tonumber(h); st.sp = (st.sp or 0) + tonumber(d)
+      else
+        for _, p in ipairs(STAT_PATS) do
+          local v = L:match(p[1]); if v then st[p[2]] = (st[p[2]] or 0) + tonumber(v); break end
+        end
+      end
+    end
+  end
+  return st, blocked
+end
+
+local scoreCache = {}   -- link -> score; a link's stats never change, and equipped links are looked up fresh each time
+local function scoreOf(link, w)
+  if not link then return 0 end
+  if scoreCache[link] then return scoreCache[link] end
+  local lines = tipLines(link)
+  if #lines == 0 then return nil end   -- item data not loaded yet: don't cache a fake 0
+  local st = statsOf(lines)
+  local _, _, sub, loc = safe(GetItemInfoInstant, link)
+  local s = 0
+  for k, v in pairs(st) do
+    if k == "dps" then
+      -- Ranged-slot DPS only counts for wands (a caster can't shoot a bow); melee DPS uses the melee weight.
+      if loc == "INVTYPE_RANGED" or loc == "INVTYPE_RANGEDRIGHT" or loc == "INVTYPE_THROWN" then
+        s = s + v * ((sub == "Wands" or sub == "Wand") and (w.rdps or 0) or 0)
+      else s = s + v * (w.mdps or 0) end
+    else s = s + v * (w[k] or 0) end
+  end
+  s = math.floor(s * 10 + .5) / 10
+  scoreCache[link] = s
+  return s
+end
+
+local GREY, GREEN = { .6, .6, .6 }, { .12, 1, 0 }
+-- Returns text, {r,g,b} for the tooltip line, or nil when the item isn't gear this class can wear.
+local function upgradeLine(link)
+  local _, classFile = safe(UnitClass, "player")
+  local w, wear = WEIGHTS[classFile], CAN_WEAR[classFile]
+  if not w then return end
+  local _, itype, sub, loc = safe(GetItemInfoInstant, link)
+  local slots = loc and UP_SLOTS[loc]
+  if not slots or (itype ~= "Armor" and itype ~= "Weapon") or not wear[sub] then return end
+  local mine = scoreOf(link, w); if not mine then return end
+  local _, blocked = statsOf(tipLines(link))
+  if blocked then return end   -- red text other than the level: wrong class, unlearned skill, etc.
+  local function eq(s) return safe(GetInventoryItemLink, "player", s) end
+  -- What it would replace, mirroring the page: a 2H replaces main + off hand, a ring/trinket the weaker of the pair.
+  local base, slot, empty
+  if loc == "INVTYPE_2HWEAPON" then
+    local a, b = eq(16), eq(17)
+    if a == link then return ("Grimoire: score %.1f (equipped)"):format(mine), GREY end
+    base = (scoreOf(a, w) or 0) + (scoreOf(b, w) or 0); slot = 16; empty = not a and not b
+  elseif slots[1] == 17 then
+    local mh, o = eq(16), eq(17)
+    if o == link then return ("Grimoire: score %.1f (equipped)"):format(mine), GREY end
+    local _, _, _, mloc = safe(GetItemInfoInstant, mh or "")
+    if mh and mloc == "INVTYPE_2HWEAPON" then return ("Grimoire: score %.1f (you hold a two-hander)"):format(mine), GREY end
+    base = scoreOf(o, w) or 0; slot = 17; empty = not o
+  elseif #slots == 2 then
+    local a, b = eq(slots[1]), eq(slots[2])
+    if a == link or b == link then return ("Grimoire: score %.1f (equipped)"):format(mine), GREY end
+    if not a or not b then base, slot, empty = 0, slots[1], true
+    else
+      local sa, sb = scoreOf(a, w) or 0, scoreOf(b, w) or 0
+      if sa <= sb then base, slot = sa, slots[1] else base, slot = sb, slots[2] end
+    end
+  else
+    local o = eq(slots[1])
+    if o == link then return ("Grimoire: score %.1f (equipped)"):format(mine), GREY end
+    base = scoreOf(o, w) or 0; slot = slots[1]; empty = not o
+  end
+  local d = math.floor((mine - base) * 10 + .5) / 10
+  local where = UP_NAMES[slot] or "slot"
+  local _, _, _, _, req = safe(GetItemInfo, link)
+  local lvl = safe(UnitLevel, "player") or 0
+  local later = (req and req > lvl) and (" at level %d"):format(req) or ""
+  if empty then
+    if mine <= 0 then return end
+    return ("Grimoire: fills empty %s (+%.1f)%s"):format(where, mine, later), GREEN
+  end
+  -- Pawn's %: gain relative to what you wear. A 0-score item in the slot makes % meaningless, so show points.
+  if base <= 0 then
+    if d <= 0 then return ("Grimoire: no gain over your %s"):format(where), GREY end
+    return ("Grimoire: +%.1f pts (%s)%s"):format(d, where, later), GREEN
+  end
+  local pct = math.floor(d / base * 100 + .5)
+  if pct >= 1 then return ("Grimoire: +%d%% upgrade (%s)%s"):format(pct, where, later), GREEN end
+  if pct <= -1 then return ("Grimoire: %d%% vs your %s"):format(pct, where), GREY end
+  return ("Grimoire: same as your %s"):format(where), GREY
+end
+
+-- Only the tooltips the player looks at. Our own scanning tooltips (GrimoireSyncTip...) must be skipped,
+-- because tipLines() calls SetHyperlink on them from inside this hook.
+local function onItemTooltip(tt)
+  if GrimoireSyncDB.noTips then return end
+  if tt ~= GameTooltip and tt ~= ItemRefTooltip then return end
+  local okL, _, link = pcall(tt.GetItem, tt)
+  if not okL or not link then return end
+  local ok, text, col = pcall(upgradeLine, link)
+  if ok and text then tt:AddLine(text, col[1], col[2], col[3]); tt:Show() end
+end
+-- Newer clients route item tooltips through TooltipDataProcessor; older ones fire OnTooltipSetItem.
+if TooltipDataProcessor and TooltipDataProcessor.AddTooltipPostCall and Enum and Enum.TooltipDataType then
+  TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, onItemTooltip)
+else
+  for _, tt in ipairs({ GameTooltip, ItemRefTooltip }) do
+    if tt and tt.HookScript then pcall(tt.HookScript, tt, "OnTooltipSetItem", onItemTooltip) end
+  end
+end
+
 local f = CreateFrame("Frame")
 -- PLAYER_ENTERING_WORLD instead of LOGIN: unit data is ready by then. XP/money events keep the
 -- snapshot current, so nothing needs to be read at logout (when the values are already gone).
@@ -1020,6 +1194,11 @@ end)
 SLASH_GRIMOIRESYNC1 = "/grimoire"
 SlashCmdList.GRIMOIRESYNC = function(msg)
   if msg and msg:lower():match("^%s*scan") then ahStartScan() return end
+  if msg and msg:lower():match("^%s*tips") then
+    GrimoireSyncDB.noTips = not GrimoireSyncDB.noTips
+    print("|cff8fdc5aGrimoire Sync|r upgrade lines on tooltips " .. (GrimoireSyncDB.noTips and "off" or "on") .. ".")
+    return
+  end
   snapshot()
   local s = GrimoireSyncDB.last
   if not s then print("|cff8fdc5aGrimoire Sync|r no data yet, try again in a few seconds.") return end
