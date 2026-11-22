@@ -951,7 +951,7 @@ end
 -- Adds "Grimoire: +12% upgrade (Head)" to item tooltips (bags, loot, quest rewards, vendors, AH, chat links).
 -- Same maths as the page: score = sum of stat x weight; % = (new - what it replaces) / what it replaces.
 -- WEIGHTS mirror DEFAULT_WEIGHTS in index.html (keep them in sync); a Warlock's crit/hit come from liveWeights(). Weights you edit on the page stay on the page
--- (the addon can't read the browser). Display only: it never equips or moves anything. /grimoire tips toggles it.
+-- (the addon can't read the browser). Display only: it never equips, sells or moves anything. /grimoire tips toggles it.
 local WEIGHTS = {
   WARLOCK = { sta=.5, int=.4, spi=.45, sp=1, shadow=1, fire=.15, scrit=0, shit=0, mp5=1, hp5=.5, armor=.01, rdps=1.75, res=.05 },
   PALADIN = { sta=.5, int=.25, spi=.1, str=1, agi=.6, sp=.3, holy=.3, heal=.05, scrit=2, shit=2, crit=12, hit=12, ap=.5,
@@ -1128,6 +1128,88 @@ local function upgradeLine(link)
   return ("Grimoire: same as your %s"):format(where), GREY
 end
 
+
+-- ---- The page's bag verdict on the tooltip (1.1) ----
+-- Mirrors verdict() in index.html for things that aren't an upgrade: keep / quest item / auction vs vendor /
+-- profession mat / consumable. Same numbers as the page: AH keeps 5% plus a 1s listing fee, and the AH only
+-- wins when it beats the vendor by 30% + 5s (the walk and the wait have to be worth it).
+-- Not mirrored: "Give to <partner>" (needs the other character's gear; the page still shows it).
+local KEEP_IDS = { [6265] = "Soul Shard: Drain Soul ammo, keep a few", [6948] = "Hearthstone" }
+local AH_FEE = 100
+local function coin(c)
+  c = math.floor((c or 0) + .5)
+  local g, sv, cp = math.floor(c / 10000), math.floor(c % 10000 / 100), c % 100
+  local out = {}
+  if g > 0 then out[#out + 1] = g .. "g" end
+  if sv > 0 then out[#out + 1] = sv .. "s" end
+  if g == 0 and cp > 0 then out[#out + 1] = cp .. "c" end
+  return #out > 0 and table.concat(out, " ") or "0c"
+end
+-- Stack size and Soulbound for the hovered bag slot. The tooltip owner is the bag button; the link check
+-- guards against owners that aren't bag slots (their IDs would point at a random slot).
+local function hoveredSlot(tt, link)
+  local ok, owner = pcall(tt.GetOwner, tt); if not ok or not owner then return end
+  local bag = owner.GetBagID and safe(owner.GetBagID, owner)
+  if not bag and owner.GetParent then local par = owner:GetParent(); bag = par and par.GetID and safe(par.GetID, par) end
+  local slot = owner.GetID and safe(owner.GetID, owner)
+  if not bag or not slot then return end
+  local l, count, bound = slotInfo(bag, slot)
+  if l == link then return count, bound end
+end
+-- Fallback for Soulbound: read the visible tooltip (hyperlink tooltips from tipLines() never show it).
+local function tipSays(tt, text)
+  local nm = tt.GetName and tt:GetName(); if not nm then return false end
+  for i = 2, math.min(tt:NumLines() or 0, 6) do
+    local fs = _G[nm .. "TextLeft" .. i]; local t = fs and fs:GetText()
+    if t == text then return true end
+  end
+  return false
+end
+local GOLD, WHITE = { 1, .82, 0 }, { .9, .9, .9 }
+-- Returns text, colour or nil.
+local function verdictLine(tt, link)
+  local id = itemIdOf(link); if not id then return end
+  if KEEP_IDS[id] then return "Grimoire: keep. " .. KEEP_IDS[id], WHITE end
+  local name, _, q, _, _, itype, sub, _, _, _, sellPrice = safe(GetItemInfo, link)
+  if not name then return end
+  local lines = tipLines(link)
+  local quest, bop = itype == "Quest", false
+  for _, l in ipairs(lines) do
+    if l:find("^Quest Item") or l:find("^This Item Begins a Quest") then quest = true end
+    if l:find("^Binds when picked up") then bop = true end
+  end
+  if quest then return "Grimoire: quest item, keep it", WHITE end
+  local n, bound = hoveredSlot(tt, link)
+  n = n or 1
+  if bound == nil then bound = tipSays(tt, "Soulbound") end
+  local ah, at = ahPriceOf(id)
+  local vendor = (sellPrice or 0) * n
+  local net = ah and (math.floor(ah * n * .95) - AH_FEE) or 0
+  local each = n > 1 and (" for " .. n) or ""
+  local old = (ah and at and time() - at > 3 * 86400) and " (AH price " .. math.floor((time() - at) / 86400) .. "d old)" or ""
+  local sellTxt, col
+  if not bound and not bop and ah and net > vendor * 1.3 + 500 then
+    sellTxt, col = ("AH ~%s%s after the cut (vendor %s)%s"):format(coin(net), each, coin(vendor), old), GOLD
+  elseif vendor > 0 then
+    sellTxt, col = ("vendor %s%s"):format(coin(vendor), each), WHITE
+  else
+    sellTxt, col = "no sale value, destroy when you need the space", { .6, .6, .6 }
+  end
+  local profs = (GrimoireSyncDB.last and GrimoireSyncDB.last.profs) or {}
+  local alch, fa = tonumber(profs.Alchemy) or 0, tonumber(profs["First Aid"]) or 0
+  if q == 0 then return "Grimoire: junk, " .. sellTxt, col end
+  if itype == "Consumable" then return "Grimoire: use it, or " .. sellTxt, col end
+  if sub == "Herb" and alch > 0 and alch < 300 then
+    return ("Grimoire: Alchemy mat (you're %d), brew while it gives skill; else %s"):format(alch, sellTxt), col end
+  if sub == "Cloth" and fa > 0 and fa < 300 then
+    for _, c in ipairs({ "Linen", "Wool", "Silk", "Mageweave", "Runecloth" }) do
+      if name:find(c, 1, true) then
+        return ("Grimoire: bandages for First Aid (you're %d); extras: %s"):format(fa, sellTxt), col end
+    end
+  end
+  return "Grimoire: " .. (col == GOLD and "sell on the " or "") .. sellTxt, col
+end
+
 -- Only the tooltips the player looks at. Our own scanning tooltips (GrimoireSyncTip...) must be skipped,
 -- because tipLines() calls SetHyperlink on them from inside this hook.
 local function onItemTooltip(tt)
@@ -1136,7 +1218,15 @@ local function onItemTooltip(tt)
   local okL, _, link = pcall(tt.GetItem, tt)
   if not okL or not link then return end
   local ok, text, col = pcall(upgradeLine, link)
-  if ok and text then tt:AddLine(text, col[1], col[2], col[3]); tt:Show() end
+  if not ok then text = nil end
+  if text then tt:AddLine(text, col[1], col[2], col[3]) end
+  -- An upgrade (green) already says what to do with it, and what you wear isn't for sale; anything else
+  -- also gets the keep/sell verdict.
+  if not (text and (col == GREEN or text:find("(equipped)", 1, true))) then
+    local ok2, vt, vc = pcall(verdictLine, tt, link)
+    if ok2 and vt then tt:AddLine(vt, vc[1], vc[2], vc[3], true); text = vt end
+  end
+  if text then tt:Show() end
 end
 -- Newer clients route item tooltips through TooltipDataProcessor; older ones fire OnTooltipSetItem.
 if TooltipDataProcessor and TooltipDataProcessor.AddTooltipPostCall and Enum and Enum.TooltipDataType then
