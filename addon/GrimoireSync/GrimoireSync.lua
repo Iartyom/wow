@@ -1237,6 +1237,79 @@ else
   end
 end
 
+
+-- ---- Quest mobs on the unit tooltip (1.2) ----
+-- Point at a mob (no need to target it): if it's part of a quest in your log, the tooltip shows the quest and
+-- your live progress, e.g. "Elixir of Pain" / "  - Gnoll Paw: 3/8". Kill targets and mobs that DROP an
+-- objective item both count. Which mob is which comes from MobQuests.lua (QuestieDB, built by
+-- tools/mob-quests.mjs); the progress comes from your quest log (questState, rescanned 1s after each change).
+-- Finished objectives and completed quests are hidden, so a mob with no line left has nothing for you.
+local function npcIdOf(unit)
+  local g = unit and safe(UnitGUID, unit)
+  if not g then return end
+  -- not "g and g:match(...)": `and` keeps only the first capture, which lost the id
+  local kind, id = g:match("^(%a+)%-%d+%-%d+%-%d+%-%d+%-(%d+)")
+  if kind == "Creature" or kind == "Vehicle" then return tonumber(id) end
+end
+-- Pick the log objective an entry refers to: the one naming the mob/item, else the only open one of that type.
+local function pickObjective(objs, wantType, name)
+  local open = {}
+  for _, o in ipairs(objs or {}) do
+    if o.type == wantType and o.text then
+      if name and o.text:lower():find(name:lower(), 1, true) then return o end
+      if not o.done then open[#open + 1] = o end
+    end
+  end
+  if #open == 1 then return open[1] end
+end
+-- -> { {title=, lines={...}} } for quests in your log that still need something from this mob.
+local function mobQuests(unit)
+  local id = npcIdOf(unit)
+  local entries = id and GrimoireSyncMQ and GrimoireSyncMQ[id]
+  if not entries or not questState then return end
+  local byId = {}
+  for _, q in ipairs(questState.list or {}) do if q.id then byId[q.id] = q end end
+  local mob = safe(UnitName, unit)
+  local out, seen, order = {}, {}, {}
+  for _, e in ipairs(entries) do
+    local q = byId[e[1]]
+    if q and not q.done and not q.failed then
+      local o
+      if e[2] == 0 then o = pickObjective(q.obj, "monster", mob)
+      else
+        local itemName = safe(GetItemInfo, e[2])
+        if not itemName and C_Item and C_Item.RequestLoadItemDataByID then safe(C_Item.RequestLoadItemDataByID, e[2]) end
+        o = pickObjective(q.obj, "item", itemName)
+      end
+      if o and not o.done and not seen[o] then
+        seen[o] = true
+        if not out[q.id] then out[q.id] = { title = q.title, lines = {} }; order[#order + 1] = q.id end
+        table.insert(out[q.id].lines, o.text)
+      end
+    end
+  end
+  local list = {}
+  for _, qid in ipairs(order) do list[#list + 1] = out[qid] end
+  return list
+end
+local function onUnitTooltip(tt)
+  if GrimoireSyncDB.noTips or tt ~= GameTooltip then return end
+  local okU, _, unit = pcall(tt.GetUnit, tt)
+  if not okU or not unit then return end
+  local ok, list = pcall(mobQuests, unit)
+  if not ok or not list or #list == 0 then return end
+  for _, q in ipairs(list) do
+    tt:AddLine(q.title, 1, .82, 0)                                    -- quest title in quest-log yellow
+    for _, l in ipairs(q.lines) do tt:AddLine("  - " .. l, .9, .9, .9) end
+  end
+  tt:Show()
+end
+if TooltipDataProcessor and TooltipDataProcessor.AddTooltipPostCall and Enum and Enum.TooltipDataType and Enum.TooltipDataType.Unit then
+  TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, onUnitTooltip)
+elseif GameTooltip and GameTooltip.HookScript then
+  pcall(GameTooltip.HookScript, GameTooltip, "OnTooltipSetUnit", onUnitTooltip)
+end
+
 local f = CreateFrame("Frame")
 -- PLAYER_ENTERING_WORLD instead of LOGIN: unit data is ready by then. XP/money events keep the
 -- snapshot current, so nothing needs to be read at logout (when the values are already gone).
