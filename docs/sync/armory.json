@@ -1,5 +1,5 @@
 {
- "fetched": "2026-11-21T23:25:06.058Z",
+ "fetched": "2026-11-25T04:55:27.433Z",
  "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/dark-bober",
  "character": {
   "avatar": {
@@ -261,8 +261,8 @@
      "display_string": "Item Level 20"
     },
     "durability": {
-     "value": 36,
-     "display_string": "Durability 36 / 70"
+     "value": 70,
+     "display_string": "Durability 70 / 70"
     }
    },
    "foot": {
@@ -394,8 +394,8 @@
      "display_string": "Item Level 24"
     },
     "durability": {
-     "value": 18,
-     "display_string": "Durability 18 / 30"
+     "value": 30,
+     "display_string": "Durability 30 / 30"
     }
    },
    "hand": {
@@ -516,8 +516,8 @@
      "display_string": "Item Level 23"
     },
     "durability": {
-     "value": 10,
-     "display_string": "Durability 10 / 20"
+     "value": 20,
+     "display_string": "Durability 20 / 20"
     }
    },
    "head": {
@@ -637,8 +637,8 @@
      "display_string": "Item Level 32"
     },
     "durability": {
-     "value": 31,
-     "display_string": "Durability 31 / 45"
+     "value": 45,
+     "display_string": "Durability 45 / 45"
     }
    },
    "leftFinger": {
@@ -855,8 +855,8 @@
      "display_string": "Item Level 24"
     },
     "durability": {
-     "value": 21,
-     "display_string": "Durability 21 / 50"
+     "value": 50,
+     "display_string": "Durability 50 / 50"
     }
    },
    "neck": {
@@ -1081,8 +1081,8 @@
      "display_string": "Item Level 28"
     },
     "durability": {
-     "value": 36,
-     "display_string": "Durability 36 / 50"
+     "value": 50,
+     "display_string": "Durability 50 / 50"
     }
    },
    "rightFinger": {
@@ -1312,8 +1312,8 @@
      "display_string": "Item Level 24"
     },
     "durability": {
-     "value": 18,
-     "display_string": "Durability 18 / 40"
+     "value": 40,
+     "display_string": "Durability 40 / 40"
     }
    },
    "waist": {
@@ -1432,8 +1432,8 @@
      "display_string": "Item Level 23"
     },
     "durability": {
-     "value": 8,
-     "display_string": "Durability 8 / 20"
+     "value": 20,
+     "display_string": "Durability 20 / 20"
     }
    },
    "weapon": {
@@ -1706,8 +1706,8 @@
      "display_string": "Item Level 24"
     },
     "durability": {
-     "value": 9,
-     "display_string": "Durability 9 / 20"
+     "value": 20,
+     "display_string": "Durability 20 / 20"
     }
    }
   },
@@ -1719,10 +1719,10 @@
   },
   "isRemix": false,
   "lastUpdatedTimestamp": {
-   "epoch": 1795297595000,
-   "iso8601": "2026-11-21T21:46:35Z"
+   "epoch": 1795556706000,
+   "iso8601": "2026-11-24T21:45:06Z"
   },
-  "level": 28,
+  "level": 29,
   "media": {
    "main-sd-raw": {
     "url": "https://render.worldofwarcraft.com/forever-eu/character/180/11422388-main-sd-raw.png"
@@ -1752,7 +1752,7 @@
        "id": 2937,
        "maxSkillPoints": 150,
        "name": "Alchemy",
-       "skillPoints": 65
+       "skillPoints": 69
       }
      ]
     },
@@ -1839,8 +1839,18 @@
     },
     "id": "affliction",
     "name": "Affliction",
-    "spentPoints": 12,
+    "spentPoints": 13,
     "talents": [
+     {
+      "cast": "Passive",
+      "description": "Increases the amount of Mana awarded by your Life Tap spell by 10%.",
+      "icon": {
+       "url": "https://render.worldofwarcraft.com/forever-eu/icons/56/136126.jpg"
+      },
+      "id": 135452,
+      "name": "Improved Life Tap",
+      "rank": 1
+     },
      {
       "cast": "Passive",
       "description": "Improves your chance to hit by 5% and reduces all threat you generate by 20%.",
@@ -1913,7 +1923,7 @@
       "slug": "health",
       "value": {
        "type": "WHOLE",
-       "value": 824
+       "value": 851
       }
      },
      {
@@ -1921,7 +1931,7 @@
       "slug": "mana",
       "value": {
        "type": "WHOLE",
-       "value": 1547
+       "value": 1597
       }
      },
      {
@@ -1967,11 +1977,11 @@
       "value": {
        "max": {
         "type": "WHOLE",
-        "value": 58.142857
+        "value": 58.357143
        },
        "min": {
         "type": "WHOLE",
-        "value": 40.142857
+        "value": 40.357143
        },
        "type": "RANGE"
       }
@@ -1981,7 +1991,7 @@
       "slug": "attack-power",
       "value": {
        "type": "WHOLE",
-       "value": 24
+       "value": 25
       }
      },
      {
@@ -2003,7 +2013,7 @@
        "slug": "health",
        "value": {
         "type": "WHOLE",
-        "value": 824
+        "value": 851
        }
       },
       {
@@ -2011,7 +2021,7 @@
        "slug": "mana",
        "value": {
         "type": "WHOLE",
-        "value": 1547
+        "value": 1597
        }
       },
       {
@@ -2058,7 +2068,7 @@
        "details": {
         "base": {
          "type": "WHOLE",
-         "value": 28
+         "value": 29
         },
         "bonus": {
          "type": "WHOLE",
@@ -2066,11 +2076,11 @@
         },
         "effective": {
          "type": "WHOLE",
-         "value": 28
+         "value": 29
         },
         "rating": {
          "type": "WHOLE",
-         "value": 28
+         "value": 29
         },
         "type": "ENHANCED"
        },
@@ -2078,7 +2088,7 @@
        "slug": "strength",
        "value": {
         "type": "WHOLE",
-        "value": 28
+        "value": 29
        }
       },
       {
@@ -2112,7 +2122,7 @@
        "details": {
         "base": {
          "type": "WHOLE",
-         "value": 52
+         "value": 54
         },
         "bonus": {
          "type": "WHOLE",
@@ -2120,11 +2130,11 @@
         },
         "effective": {
          "type": "WHOLE",
-         "value": 83
+         "value": 85
         },
         "rating": {
          "type": "WHOLE",
-         "value": 83
+         "value": 85
         },
         "type": "ENHANCED"
        },
@@ -2132,14 +2142,14 @@
        "slug": "intellect",
        "value": {
         "type": "WHOLE",
-        "value": 83
+        "value": 85
        }
       },
       {
        "details": {
         "base": {
          "type": "WHOLE",
-         "value": 38
+         "value": 39
         },
         "bonus": {
          "type": "WHOLE",
@@ -2147,11 +2157,11 @@
         },
         "effective": {
          "type": "WHOLE",
-         "value": 67
+         "value": 68
         },
         "rating": {
          "type": "WHOLE",
-         "value": 67
+         "value": 68
         },
         "type": "ENHANCED"
        },
@@ -2159,7 +2169,7 @@
        "slug": "stamina",
        "value": {
         "type": "WHOLE",
-        "value": 67
+        "value": 68
        }
       }
      ]
@@ -2328,11 +2338,11 @@
        "value": {
         "max": {
          "type": "WHOLE",
-         "value": 58.142857
+         "value": 58.357143
         },
         "min": {
          "type": "WHOLE",
-         "value": 40.142857
+         "value": 40.357143
         },
         "type": "RANGE"
        }
@@ -2342,7 +2352,7 @@
        "slug": "attack-power",
        "value": {
         "type": "WHOLE",
-        "value": 24
+        "value": 25
        }
       },
       {
@@ -2358,7 +2368,7 @@
        "slug": "attack-dps",
        "value": {
         "type": "DECIMAL",
-        "value": 16.380953
+        "value": 16.452381
        }
       }
      ]
@@ -2438,7 +2448,7 @@
        "slug": "dodge",
        "value": {
         "type": "PERCENTAGE",
-        "value": 4.6470003
+        "value": 4.5670004
        }
       },
       {
@@ -2504,7 +2514,7 @@
      "slug": "health",
      "value": {
       "type": "WHOLE",
-      "value": 824
+      "value": 851
      }
     },
     {
@@ -2512,14 +2522,14 @@
      "slug": "mana",
      "value": {
       "type": "WHOLE",
-      "value": 1547
+      "value": 1597
      }
     },
     {
      "details": {
       "base": {
        "type": "WHOLE",
-       "value": 28
+       "value": 29
       },
       "bonus": {
        "type": "WHOLE",
@@ -2527,11 +2537,11 @@
       },
       "effective": {
        "type": "WHOLE",
-       "value": 28
+       "value": 29
       },
       "rating": {
        "type": "WHOLE",
-       "value": 28
+       "value": 29
       },
       "type": "ENHANCED"
      },
@@ -2539,14 +2549,14 @@
      "slug": "strength",
      "value": {
       "type": "WHOLE",
-      "value": 28
+      "value": 29
      }
     },
     {
      "details": {
       "base": {
        "type": "WHOLE",
-       "value": 52
+       "value": 54
       },
       "bonus": {
        "type": "WHOLE",
@@ -2554,11 +2564,11 @@
       },
       "effective": {
        "type": "WHOLE",
-       "value": 83
+       "value": 85
       },
       "rating": {
        "type": "WHOLE",
-       "value": 83
+       "value": 85
       },
       "type": "ENHANCED"
      },
@@ -2566,7 +2576,7 @@
      "slug": "intellect",
      "value": {
       "type": "WHOLE",
-      "value": 83
+      "value": 85
      }
     },
     {
@@ -2600,7 +2610,7 @@
      "details": {
       "base": {
        "type": "WHOLE",
-       "value": 38
+       "value": 39
       },
       "bonus": {
        "type": "WHOLE",
@@ -2608,11 +2618,11 @@
       },
       "effective": {
        "type": "WHOLE",
-       "value": 67
+       "value": 68
       },
       "rating": {
        "type": "WHOLE",
-       "value": 67
+       "value": 68
       },
       "type": "ENHANCED"
      },
@@ -2620,7 +2630,7 @@
      "slug": "stamina",
      "value": {
       "type": "WHOLE",
-      "value": 67
+      "value": 68
      }
     },
     {
@@ -2654,7 +2664,7 @@
      "details": {
       "base": {
        "type": "WHOLE",
-       "value": 61
+       "value": 62
       },
       "bonus": {
        "type": "WHOLE",
@@ -2662,11 +2672,11 @@
       },
       "effective": {
        "type": "WHOLE",
-       "value": 88
+       "value": 89
       },
       "rating": {
        "type": "WHOLE",
-       "value": 88
+       "value": 89
       },
       "type": "ENHANCED"
      },
@@ -2674,7 +2684,7 @@
      "slug": "spirit",
      "value": {
       "type": "WHOLE",
-      "value": 88
+      "value": 89
      }
     }
    ]
@@ -2761,7 +2771,7 @@
        "enum": "FRIENDLY",
        "slug": "friendly"
       },
-      "value": 957
+      "value": 1101
      },
      {
       "id": "orgrimmar",
@@ -2775,7 +2785,7 @@
        "enum": "FRIENDLY",
        "slug": "friendly"
       },
-      "value": 2045
+      "value": 2188
      },
      {
       "id": "thunder-bluff",
@@ -2789,7 +2799,7 @@
        "enum": "FRIENDLY",
        "slug": "friendly"
       },
-      "value": 196
+      "value": 771
      },
      {
       "id": "undercity",
@@ -2803,7 +2813,7 @@
        "enum": "HONORED",
        "slug": "honored"
       },
-      "value": 5438
+      "value": 5582
      }
     ]
    },
