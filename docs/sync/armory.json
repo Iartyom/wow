@@ -1,11 +1,10 @@
 {
- "fetched": "2026-11-25T04:55:27.433Z",
+ "fetched": "2026-11-26T00:27:52.453Z",
  "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/dark-bober",
  "character": {
   "avatar": {
    "url": "https://render.worldofwarcraft.com/forever-eu/character/180/11422388-avatar.jpg"
   },
-  "averageItemLevel": 22,
   "class": {
    "id": 9,
    "name": "Warlock",
@@ -118,10 +117,6 @@
       "value": 19,
       "display_string": "Requires Level 19"
      }
-    },
-    "level": {
-     "value": 24,
-     "display_string": "Item Level 24"
     },
     "is_subclass_hidden": true
    },
@@ -256,13 +251,9 @@
       "display_string": "Requires Level 15"
      }
     },
-    "level": {
-     "value": 20,
-     "display_string": "Item Level 20"
-    },
     "durability": {
-     "value": 70,
-     "display_string": "Durability 70 / 70"
+     "value": 52,
+     "display_string": "Durability 52 / 70"
     }
    },
    "foot": {
@@ -389,13 +380,9 @@
       "copper": "28"
      }
     },
-    "level": {
-     "value": 24,
-     "display_string": "Item Level 24"
-    },
     "durability": {
-     "value": 30,
-     "display_string": "Durability 30 / 30"
+     "value": 26,
+     "display_string": "Durability 26 / 30"
     }
    },
    "hand": {
@@ -511,13 +498,9 @@
       "display_string": "Requires Level 18"
      }
     },
-    "level": {
-     "value": 23,
-     "display_string": "Item Level 23"
-    },
     "durability": {
-     "value": 20,
-     "display_string": "Durability 20 / 20"
+     "value": 17,
+     "display_string": "Durability 17 / 20"
     }
    },
    "head": {
@@ -632,13 +615,9 @@
       "display_string": "Requires Level 27"
      }
     },
-    "level": {
-     "value": 32,
-     "display_string": "Item Level 32"
-    },
     "durability": {
-     "value": 45,
-     "display_string": "Durability 45 / 45"
+     "value": 35,
+     "display_string": "Durability 35 / 45"
     }
    },
    "leftFinger": {
@@ -745,10 +724,6 @@
       "copper": "60"
      }
     },
-    "level": {
-     "value": 29,
-     "display_string": "Item Level 29"
-    },
     "is_subclass_hidden": true
    },
    "leg": {
@@ -850,13 +825,9 @@
       "display_string": "Requires Level 19"
      }
     },
-    "level": {
-     "value": 24,
-     "display_string": "Item Level 24"
-    },
     "durability": {
-     "value": 50,
-     "display_string": "Durability 50 / 50"
+     "value": 47,
+     "display_string": "Durability 47 / 50"
     }
    },
    "neck": {
@@ -946,10 +917,6 @@
       "silver": "5",
       "copper": "65"
      }
-    },
-    "level": {
-     "value": 20,
-     "display_string": "Item Level 20"
     },
     "is_subclass_hidden": true
    },
@@ -1076,13 +1043,9 @@
       "copper": "46"
      }
     },
-    "level": {
-     "value": 28,
-     "display_string": "Item Level 28"
-    },
     "durability": {
-     "value": 50,
-     "display_string": "Durability 50 / 50"
+     "value": 49,
+     "display_string": "Durability 49 / 50"
     }
    },
    "rightFinger": {
@@ -1188,10 +1151,6 @@
       "silver": "86",
       "copper": "30"
      }
-    },
-    "level": {
-     "value": 31,
-     "display_string": "Item Level 31"
     },
     "is_subclass_hidden": true
    },
@@ -1307,13 +1266,9 @@
       "display_string": "Requires Level 19"
      }
     },
-    "level": {
-     "value": 24,
-     "display_string": "Item Level 24"
-    },
     "durability": {
-     "value": 40,
-     "display_string": "Durability 40 / 40"
+     "value": 34,
+     "display_string": "Durability 34 / 40"
     }
    },
    "waist": {
@@ -1427,13 +1382,9 @@
       "display_string": "Requires Level 18"
      }
     },
-    "level": {
-     "value": 23,
-     "display_string": "Item Level 23"
-    },
     "durability": {
-     "value": 20,
-     "display_string": "Durability 20 / 20"
+     "value": 18,
+     "display_string": "Durability 18 / 20"
     }
    },
    "weapon": {
@@ -1585,10 +1536,6 @@
       "display_string": "Requires Level 24"
      }
     },
-    "level": {
-     "value": 29,
-     "display_string": "Item Level 29"
-    },
     "durability": {
      "value": 85,
      "display_string": "Durability 85 / 85"
@@ -1701,13 +1648,9 @@
       "copper": "58"
      }
     },
-    "level": {
-     "value": 24,
-     "display_string": "Item Level 24"
-    },
     "durability": {
-     "value": 20,
-     "display_string": "Durability 20 / 20"
+     "value": 18,
+     "display_string": "Durability 18 / 20"
     }
    }
   },
@@ -1719,8 +1662,8 @@
   },
   "isRemix": false,
   "lastUpdatedTimestamp": {
-   "epoch": 1795556706000,
-   "iso8601": "2026-11-24T21:45:06Z"
+   "epoch": 1795645612000,
+   "iso8601": "2026-11-25T22:26:52Z"
   },
   "level": 29,
   "media": {
@@ -1938,8 +1881,7 @@
       "enum": "ITEMLEVEL",
       "slug": "item-level",
       "value": {
-       "type": "WHOLE",
-       "value": 22
+       "type": "WHOLE"
       }
      },
      {
@@ -2028,8 +1970,7 @@
        "enum": "ITEMLEVEL",
        "slug": "item-level",
        "value": {
-        "type": "WHOLE",
-        "value": 22
+        "type": "WHOLE"
        }
       },
       {
@@ -2448,7 +2389,7 @@
        "slug": "dodge",
        "value": {
         "type": "PERCENTAGE",
-        "value": 4.5670004
+        "value": 4.727
        }
       },
       {
