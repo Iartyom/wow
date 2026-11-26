@@ -1,5 +1,5 @@
 {
- "fetched": "2026-11-26T00:27:52.453Z",
+ "fetched": "2026-11-26T09:37:39.507Z",
  "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/dark-bober",
  "character": {
   "avatar": {
@@ -2661,41 +2661,6 @@
   "region": "eu",
   "reputations": [
    {
-    "id": "horde-forces",
-    "max": false,
-    "name": "Horde Forces",
-    "reputations": [
-     {
-      "id": "the-defilers",
-      "max": false,
-      "maxValue": 3000,
-      "name": "The Defilers",
-      "standing": "Neutral",
-      "standingType": {
-       "id": 3,
-       "name": "Neutral",
-       "enum": "NEUTRAL",
-       "slug": "neutral"
-      },
-      "value": 250
-     },
-     {
-      "id": "warsong-outriders",
-      "max": false,
-      "maxValue": 3000,
-      "name": "Warsong Outriders",
-      "standing": "Neutral",
-      "standingType": {
-       "id": 3,
-       "name": "Neutral",
-       "enum": "NEUTRAL",
-       "slug": "neutral"
-      },
-      "value": 255
-     }
-    ]
-   },
-   {
     "id": "horde",
     "max": false,
     "name": "Horde",
@@ -2832,6 +2797,41 @@
        "slug": "neutral"
       },
       "value": 750
+     }
+    ]
+   },
+   {
+    "id": "horde-forces",
+    "max": false,
+    "name": "Horde Forces",
+    "reputations": [
+     {
+      "id": "the-defilers",
+      "max": false,
+      "maxValue": 3000,
+      "name": "The Defilers",
+      "standing": "Neutral",
+      "standingType": {
+       "id": 3,
+       "name": "Neutral",
+       "enum": "NEUTRAL",
+       "slug": "neutral"
+      },
+      "value": 250
+     },
+     {
+      "id": "warsong-outriders",
+      "max": false,
+      "maxValue": 3000,
+      "name": "Warsong Outriders",
+      "standing": "Neutral",
+      "standingType": {
+       "id": 3,
+       "name": "Neutral",
+       "enum": "NEUTRAL",
+       "slug": "neutral"
+      },
+      "value": 255
      }
     ]
    }
